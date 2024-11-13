@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5D938156-9413-4B59-B99B-20196CCDED49}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Capa2_Aplicacion.ModuloPrincipal</RootNamespace>
+    <AssemblyName>Capa2_Aplicacion.ModuloPrincipal</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Servicios\GestionarCitaServicio.cs" />
+    <Compile Include="Servicios\GestionarPacienteServicio.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Capa3_Dominio.ModuloPrincipal\Capa3_Dominio.ModuloPrincipal.csproj">
+      <Project>{d2f0a773-f912-4ef7-baac-52b4c1e95955}</Project>
+      <Name>Capa3_Dominio.ModuloPrincipal</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Capa4_Persistencia.SqlServer.ModuloBase\Capa4_Persistencia.SqlServer.ModuloBase.csproj">
+      <Project>{89b50410-4744-4a48-9ca7-614acd9888bb}</Project>
+      <Name>Capa4_Persistencia.SqlServer.ModuloBase</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Capa4_Persistencia.SqlServer.ModuloPrincipal\Capa4_Persistencia.SqlServer.ModuloPrincipal.csproj">
+      <Project>{900fa022-71b5-4855-a26e-5b740bb0e2e5}</Project>
+      <Name>Capa4_Persistencia.SqlServer.ModuloPrincipal</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

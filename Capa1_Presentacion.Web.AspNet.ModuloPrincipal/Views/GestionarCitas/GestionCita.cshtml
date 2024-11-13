@@ -1,0 +1,251 @@
+﻿@{
+    ViewBag.Title = "Gestión de Citas";
+}
+
+<div class="container">
+    <h2>Gestión de Citas</h2>
+
+    <!-- Formulario de búsqueda de citas -->
+    <div class="search-section">
+        <label for="pacienteCodigo">Código del Paciente:</label>
+        <input type="text" id="pacienteCodigo" placeholder="Ingrese el código del paciente" />
+        <button class="btn btn-search" id="buscarCitas">Buscar Citas</button>
+    </div>
+
+    <!-- Tabla de citas -->
+    <table id="tablaCitas" class="citas-table">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Paciente</th>
+                <th>Doctor (Especialidad)</th>
+                <th>Tipo de Consulta</th>
+                <th>Fecha y Hora</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Filas de citas se llenarán con JavaScript -->
+        </tbody>
+    </table>
+
+    <!-- Botón para abrir el formulario de registro de nueva cita -->
+    <button class="btn btn-register" id="abrirRegistrarCita">Registrar Nueva Cita</button>
+
+    <!-- Modal de registro de nueva cita -->
+    <div id="modalRegistrarCita" class="modal">
+        <div class="modal-content">
+            <h3>Registrar Nueva Cita</h3>
+            <label for="nuevoCodigo">Código del Paciente:</label>
+            <input type="text" id="nuevoCodigo" /><br />
+
+            <label for="nuevoNombre">Nombre del Paciente:</label>
+            <input type="text" id="nuevoNombre" /><br />
+
+            <label for="nuevoDoctor">Doctor (Especialidad):</label>
+            <input type="text" id="nuevoDoctor" /><br />
+
+            <label for="nuevoTipoConsulta">Tipo de Consulta:</label>
+            <input type="text" id="nuevoTipoConsulta" /><br />
+
+            <label for="nuevoFechaHora">Fecha y Hora:</label>
+            <input type="datetime-local" id="nuevoFechaHora" /><br />
+
+            <button class="btn btn-submit" id="registrarCita">Registrar Cita</button>
+            <button class="btn btn-cancel" id="cerrarModal">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Estilos CSS para una mejor apariencia -->
+<style>
+    .container {
+        width: 80%;
+        margin: 0 auto;
+        font-family: Arial, sans-serif;
+    }
+
+    h2 {
+        text-align: center;
+        color: #333;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .search-section {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+        .search-section label {
+            margin-right: 10px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .search-section input {
+            width: 300px;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+    .btn {
+        cursor: pointer;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 4px;
+        border: none;
+        color: white;
+    }
+
+    .btn-search {
+        background-color: #4CAF50;
+        margin-left: 10px;
+    }
+
+    .btn-register {
+        background-color: #007BFF;
+        display: block;
+        margin: 20px auto;
+    }
+
+    .citas-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+        .citas-table th, .citas-table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .citas-table th {
+            background-color: #f2f2f2;
+            color: #333;
+            font-weight: bold;
+        }
+
+    /* Estilos para el modal */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        width: 400px;
+        text-align: center;
+    }
+
+    .btn-submit {
+        background-color: #4CAF50;
+        margin-top: 10px;
+    }
+
+    .btn-cancel {
+        background-color: #f44336;
+        margin-top: 10px;
+    }
+</style>
+
+<!-- JavaScript para la funcionalidad -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    // Función para cargar citas por código de paciente
+    function cargarCitas() {
+        const pacienteCodigo = $('#pacienteCodigo').val();
+
+        if (!pacienteCodigo) {
+            alert("Por favor, ingrese el código del paciente.");
+            return;
+        }
+
+        $.getJSON('/GestionarCitas/ObtenerCitasPorPaciente', { pacienteCodigo: pacienteCodigo }, function (response) {
+            if (response.consultaExitosa) {
+                const citas = response.data;
+                const tbody = $('#tablaCitas tbody');
+                tbody.empty();
+
+                if (citas && citas.length > 0) {
+                    citas.forEach(cita => {
+                        tbody.append(`
+                            <tr>
+                                <td>${cita.Codigo}</td>
+                                <td>${cita.PacienteNombre}</td>
+                                <td>${cita.DoctorNombre} (${cita.DoctorEspecialidad})</td>
+                                <td>${cita.TipoConsulta}</td>
+                                <td>${cita.FechaHora}</td>
+                                <td>
+                                    <button class="btn btn-edit" onclick="editarCita('${cita.Codigo}')">Modificar</button>
+                                </td>
+                            </tr>
+                        `);
+                    });
+                } else {
+                    tbody.append('<tr><td colspan="6">No se encontraron citas para el paciente.</td></tr>');
+                }
+            } else {
+                alert("Error: " + response.mensaje);
+            }
+        }).fail(function () {
+            alert("Error al cargar citas.");
+        });
+    }
+
+    // Evento de clic para buscar citas
+    $('#buscarCitas').on('click', cargarCitas);
+
+    // Evento para abrir el modal de registro de cita
+    $('#abrirRegistrarCita').on('click', function () {
+        $('#modalRegistrarCita').fadeIn();
+    });
+
+    // Evento para cerrar el modal de registro de cita
+    $('#cerrarModal').on('click', function () {
+        $('#modalRegistrarCita').fadeOut();
+    });
+
+    // Evento de clic para registrar una nueva cita
+    $('#registrarCita').on('click', function () {
+        const cita = {
+            Codigo: $('#nuevoCodigo').val(),
+            PacienteNombre: $('#nuevoNombre').val(),
+            DoctorNombre: $('#nuevoDoctor').val(),
+            TipoConsulta: $('#nuevoTipoConsulta').val(),
+            FechaHora: $('#nuevoFechaHora').val()
+        };
+
+        $.ajax({
+            url: '/GestionarCitas/RegistrarCita',
+            method: 'POST',
+            data: cita,
+            success: function (response) {
+                if (response.consultaExitosa) {
+                    alert("Cita registrada correctamente.");
+                    $('#modalRegistrarCita').fadeOut();
+                    cargarCitas();
+                } else {
+                    alert("Error: " + response.mensaje);
+                }
+            },
+            error: function () {
+                alert("Error al registrar la cita.");
+            }
+        });
+    });
+</script>
+

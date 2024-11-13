@@ -1,0 +1,142 @@
+﻿@{
+    ViewBag.Title = "ListaPacientes";
+}
+
+@section customStyles {
+    <link rel="stylesheet" href="~/Content/Estilos-GestionarPacientes/ListasPacientes.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+}
+<div id="lista-pacientes-container" class="">
+
+    <div class="input-group rounded">
+        <span class="input-group-text border-0" id="search-addon">
+            <i class="fas fa-search"></i>
+        </span>
+        <input type="search" id="buscador-personalizado" class="form-control rounded-end " placeholder="buscar" aria-label="Search" aria-describedby="search-addon" />
+    </div>
+
+    <div class="d-flex align-items-center my-3">
+        <ul class="nav ">
+            <li class="nav-item">
+                <a class="nav-link active" href="#" data-filter="all">All <span id="total-count" class="badge badge-custom">0</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-filter="Activo">Activos <span id="active-count" class="badge badge-custom">0</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-filter="Inactivo">Inactivos <span id="inactive-count" class="badge badge-custom">0</span></a>
+            </li>
+        </ul>
+        <a class="text-primary ms-3 px-4 agregar-btn " style="text-decoration: none; cursor: pointer; " data-bs-toggle="modal" data-bs-target="#modalAgregarPaciente">
+            <i class="fas fa-plus-circle"></i> Agregar nuevo paciente
+        </a>
+    </div>
+    <hr />
+
+    <table id="tabla_pacientes" class="table table-hover" data-url-listar-pacientes="@Url.Action("ListarPacientesActivos", "GestionarPacientes")">
+        <thead>
+            <tr>
+                <th></th>
+                <th>#</th>
+                <th>NOMBRES PACIENTES</th>
+                <th>ESTADO</th>
+                <th>EXPEDIENTE</th>
+                <th>CONTACTO</th>
+                <th>SEGURO</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <!-- Modal para agregar un nuevo paciente -->
+    <div class="modal fade" id="modalAgregarPaciente" tabindex="-1" aria-labelledby="modalAgregarPacienteLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form id="formAgregarPaciente">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAgregarPacienteLabel">Agregar Nuevo Paciente</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Campos del formulario -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text">Nombre</span>
+                                    <input type="text" class="form-control" id="PacienteNombres" name="PacienteNombres" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text">Apellidos</span>
+                                    <input type="text" class="form-control" id="PacienteApellidos" name="PacienteApellidos" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text">DNI</span>
+                                    <input type="text" class="form-control" id="PacienteDNI" name="PacienteDNI" maxlength="8" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text">Teléfono</span>
+                                    <input type="text" class="form-control" id="PacienteTelefono" name="PacienteTelefono">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="">
+                            <div class=" mb-3">
+                                <div class="input-group row mx-0">
+                                    <span class="input-group-text col-3">Correo Electrónico </span>
+                                    <input type="email" class="form-control flex-grow-1 col-9" id="PacienteCorreoElectronico" name="PacienteCorreoElectronico">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="">
+                            <div class=" mb-3">
+                                <div class="input-group row mx-0 ">
+                                    <span class="input-group-text col-3">Dirección</span>
+                                    <input type="text" class="form-control flex-grow-1 col-9" id="PacienteDireccion" name="PacienteDireccion">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text">Nacimiento</span>
+                                    <input type="date" class="form-control" id="PacienteFechaNacimiento" name="PacienteFechaNacimiento" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text">Seguro</span>
+                                    <input type="text" class="form-control" id="PacienteSeguro" name="PacienteSeguro">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+@section scripts {
+    <script>
+        var urlRegistrarPaciente = '@Url.Action("RegistrarPaciente", "GestionarPacientes")';
+    </script>
+    <script src="~/Scripts/GestionasPacientesScripts/ListaPacientes.js"></script>
+}
