@@ -1,0 +1,77 @@
+﻿input:focus, .form-control:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.nav-item .nav-link {
+    color: #5e5adb !important;
+    font-weight: 500 !important;
+    background-color: transparent !important; /* Remove background */
+    border: none !important; /* Remove any Bootstrap borders */
+}
+
+    /* Specific styles for active nav-link with underline effect */
+    .nav-item .nav-link.active {
+        background-color: transparent !important; /* No background on active */
+        color: #5e5adb !important; /* Text color */
+        border-bottom: 2px solid #5e5adb !important; /* Underline effect */
+        font-weight: 600 !important; /* Slightly bolder text */
+        padding-bottom: 5px !important; /* Space between text and underline */
+    }
+
+.badge-custom {
+    background-color: #e9edf5;
+    color: #333333;
+}
+
+
+.nav-pills .badge {
+    font-size: 0.75em;
+    margin-left: 5px;
+}
+
+a.text-primary {
+    color: #5e5adb !important;
+    font-weight: 500;
+}
+
+.agregar-btn {
+    border-left: 2px solid #d5dbe5;
+}
+
+.expansion-content {
+    background-color: #f7f9fc;
+    color: #333;
+    transition: max-height 0.5s ease, padding 0.5s ease;
+    margin-left: -9px;
+    margin-right: -9px;
+    border: none;
+    margin-top: -8px;
+    margin-bottom: -8px;
+    padding: 4px 35px;
+}
+
+    .expansion-content .contenido {
+        height: 99%;
+        padding: 15px 10px;
+        border-left: 3px solid #d5dbe5;
+    }
+
+table.dataTable thead th, table.dataTable thead td {
+    padding: 10px 18px;
+    border-bottom: 1px solid #e9edf5;
+    background-color: #f8fafc;
+    color: #687182;
+    font-size: 13px;
+}
+thead, tbody, tfoot, tr, td, th {
+    border-color: #f3f5f9;
+    border-style: solid;
+    border-width: 0;
+}
+
+.nombre-paciente {
+    color: #5e5adb;
+    font-weight: bold; 
+    padding-left: 10px;
+}
