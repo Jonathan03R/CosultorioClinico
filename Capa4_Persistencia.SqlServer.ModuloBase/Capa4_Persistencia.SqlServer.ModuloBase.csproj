@@ -51,5 +51,9 @@
     <Compile Include="ExcepcionPacienteInvalido.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="ProcedimientosAlmacenadosCompleto.sql" />
+    <Content Include="TablasCompletas.sql" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
