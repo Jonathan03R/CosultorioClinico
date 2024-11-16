@@ -63,7 +63,7 @@ de la base de datos.
 Parámetros:
     - @pacienteCodigo: Código único del paciente que se desea marcar como inactivo.
 ******************************************************************************************/
-create procedure pro_Eliminar_Paciente
+create or alter procedure pro_Eliminar_Paciente
 		@pacienteCodigo nchar(10)
 	as
 	set nocount on;
@@ -79,13 +79,12 @@ Descripción: Retorna la información de un paciente específico utilizando su códi
 Parámetros:
     - @pacienteCodigo: Código único del paciente cuyo detalle se desea obtener.
 ******************************************************************************************/
-create procedure pro_Mostrar_Paciente_por_codigo
+create or alter procedure pro_Mostrar_Paciente_por_codigo
 		@pacienteCodigo nchar(10)
 	as
 	set nocount on;
 
 	select pacienteCodigo,
-		   pacienteHistorialClinicoCodigo,
 		   pacienteDNI,
 		   pacienteNombreCompleto,
 		   pacienteFechaNacimiento,
@@ -132,21 +131,18 @@ con el médico que lo atendió.
 Parámetros:
     - @pacienteCodigo: Código único del paciente cuyo historial clínico se desea obtener.
 ******************************************************************************************/
-create procedure pro_Mostrar_HistoriaClinica
+create or alter procedure pro_Mostrar_HistoriaClinica
 		@pacienteCodigo nchar(10)
 	as
 	set nocount on;
 
 	select hc.historialClinicoCodigo,
 		   hc.pacienteCodigo,
-		   hc.medicoCodigo,
-		   m.medicoNombre,
 		   hc.antecedentesMedicos,
 		   hc.alergias,
 		   hc.fechaCreacion,
 		   hc.fechaActualizacion
 	from Salud.HistoriaClinica hc
-	inner join Administracion.Medico m on hc.medicoCodigo = m.medicoCodigo
 	where hc.pacienteCodigo = @pacienteCodigo;
 go
 
@@ -156,7 +152,7 @@ Descripción: Muestra los contactos de emergencia asociados a un paciente específ
 Parámetros:
     - @pacienteCodigo: Código único del paciente cuyos contactos de emergencia se desean obtener.
 ******************************************************************************************/
-create procedure pro_Mostrar_ContactosEmergencia
+create or alter procedure pro_Mostrar_ContactosEmergencia
 		@pacienteCodigo nchar(10)
 	as
 	set nocount on;
@@ -170,10 +166,46 @@ create procedure pro_Mostrar_ContactosEmergencia
 go
 
 /******************************************************************************************
+Procedimiento: pro_Agregar_ContactosEmergencia
+Descripción: agrega contasto de emergencia para un paciente en especifico
+Parámetros:
+    - @pacienteCodigo: Código único del paciente cuyos contactos de emergencia se desean obtener.
+******************************************************************************************/
+
+create or alter procedure pro_AgregarContactosEmergencia
+	@ContactoEmergenciaCodigo nchar(10),
+	@ContactoEmergenciaNombre nvarchar(100),
+	@ContactoEmergenciaRelacion nvarchar(50),
+	@ContactoEmergenciaTelefono nvarchar(15),
+	@CodigoPacientes nvarchar(10)
+	as
+	set nocount on;
+	insert into Salud.ContactosEmergencia
+	(
+		contactoEmergenciaCodigo, 
+		contactoEmergenciaNombre, 
+		contactoEmergenciaRelacion,
+		contactoEmergenciaTelefono,
+		pacienteCodigo
+	)values
+	(
+		@ContactoEmergenciaCodigo ,
+		@ContactoEmergenciaNombre ,
+		@ContactoEmergenciaRelacion ,
+		@ContactoEmergenciaTelefono ,
+		@CodigoPacientes 
+	);
+	
+go
+
+
+
+
+/******************************************************************************************
 Procedimiento: pro_Mostrar_MedicosConEspecialidad
 Descripción: Muestra la lista de médicos junto con la especialidad a la que pertenecen.
 ******************************************************************************************/
-create procedure pro_Mostrar_MedicosConEspecialidad
+create or alter procedure pro_Mostrar_MedicosConEspecialidad
 	as
 	set nocount on;
 
@@ -202,7 +234,7 @@ Parámetros:
   -@citaMedicoCodigo: Código del médico.
 ***************************************************************************************************************************/
 --crear pacientes sp de gestionar pacientes 
-CREATE PROCEDURE pro_Insertar_Cita
+CREATE or alter PROCEDURE pro_Insertar_Cita
     @citaCodigo nchar(10),
     @citaEstado nchar(1) = 'P',
     @citaFechaHora datetime,
@@ -258,7 +290,7 @@ Parámetros:
  -@pacienteNombreCompleto: El nombre completo del paciente que se desea buscar (puede ser NULL).
  -@pacienteTelefono: El teléfono del paciente que se desea buscar (puede ser NULL).
 ***************************************************************************************************************************/
-CREATE PROCEDURE pro_Buscar_Paciente
+CREATE or alter PROCEDURE pro_Buscar_Paciente
     @pacienteDNI nchar(8) = NULL,
     @pacienteNombreCompleto nvarchar(200) = NULL,
     @pacienteTelefono nvarchar(25) = NULL
@@ -292,7 +324,7 @@ Parámetros:
  -@citaCodigo: El codigo de la cita a cambiar estado.
 
 ***************************************************************************************************************************/
-CREATE PROCEDURE pro_Cancelar_Cita
+CREATE or alter PROCEDURE pro_Cancelar_Cita
     @citaCodigo nchar(10)
 AS
 BEGIN
@@ -311,7 +343,7 @@ Parámetros:
  -@pacienteCodigo: El codigo del paciente.
 
 ***************************************************************************************************************************/
-CREATE PROCEDURE pro_CambiarEstadoPaciente
+CREATE or alter PROCEDURE pro_CambiarEstadoPaciente
     @pacienteCodigo nchar(10)
 AS
 BEGIN
@@ -332,7 +364,7 @@ Parámetros:
 
 ***************************************************************************************************************************/
 
-CREATE PROCEDURE pro_VisualizarCitasPaciente
+CREATE or alter PROCEDURE pro_VisualizarCitasPaciente
     @pacienteCodigo nchar(10)
 AS
 BEGIN

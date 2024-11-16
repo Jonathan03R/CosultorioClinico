@@ -33,7 +33,7 @@
     </div>
     <hr />
 
-    <table id="tabla_pacientes" class="table table-hover" data-url-listar-pacientes="@Url.Action("ListarPacientesActivos", "GestionarPacientes")">
+    <table id="tabla_pacientes" class="table table-hover" data-url-listar-pacientes="@Url.Action("ListarPacientes", "GestionarPacientes")">
         <thead>
             <tr>
                 <th></th>
@@ -43,6 +43,7 @@
                 <th>EXPEDIENTE</th>
                 <th>CONTACTO</th>
                 <th>SEGURO</th>
+                @*<th>ACCION</th>*@
             </tr>
         </thead>
         <tbody>
@@ -122,6 +123,11 @@
                                 </div>
                             </div>
                         </div>
+                        @*<hr>*@
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalAgregarPacienteLabel">Contactos de Emergencia</h5>
+                        </div>
+
                     </div>
 
                     <div class="modal-footer">

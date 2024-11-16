@@ -77,6 +77,32 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
         }
 
 
+        public void cambiarEstadoInactivoPaciente(Paciente paciente) 
+        {
+            //if (!paciente.esPacienteActivo()) 
+            //{
+            //    throw new ArgumentException("Este paciente ya esta incativo");
+            //}
+            if (paciente.PacienteCodigo == null) 
+            {
+                throw new ArgumentException("erro al selecionar el paciente");
+            }
+
+            accesoSQLServer.IniciarTransaccion();
+            try
+            {
+                pacienteSQL.EliminarPaciente(paciente);
+                accesoSQLServer.TerminarTransaccion();
+            }
+            catch (Exception ex)
+            {
+                accesoSQLServer.CancelarTransaccion();
+                throw ex;   
+            }
+
+        }
+
+
         public List<Paciente> ObtenerHistorialPacientes()
         {
             List<Paciente> result = new List<Paciente>();
@@ -122,7 +148,7 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
         //    }
         //}
 
-        public List<HistoriaClinica> listarPacientesActivos()
+        public List<HistoriaClinica> listarPacientes()
         {
             try
             {

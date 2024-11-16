@@ -42,13 +42,13 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
         }
 
 
-        public void EliminarPaciente(string pacienteCodigo)
+        public void EliminarPaciente(Paciente pacienteCodigo)
         {
             string procedimientoSQL = "pro_Eliminar_Paciente";
             try
             {
                 SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
-                comandoSQL.Parameters.Add(new SqlParameter("@pacienteCodigo", pacienteCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@pacienteCodigo", pacienteCodigo.PacienteCodigo));
                 comandoSQL.ExecuteNonQuery();
             }
             catch (SqlException)

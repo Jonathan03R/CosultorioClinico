@@ -6,7 +6,6 @@
             "type": "GET",
             "dataSrc": function (json) {
                 if (json.consultaExitosa) {
-                    // Establecer valores por defecto para las propiedades faltantes
                     var processedData = json.data.map(function (item) {
                         return {
                             PacienteCodigo: item.PacienteCodigo,
@@ -56,15 +55,33 @@
             },
             {
                 "data": "PacienteEstado",
-                "render": {
-                    "display": function (data) {
-                        return data === "Activo" ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-danger">Inactivo</span>';
-                    },
-                    "filter": function (data) {
+                "render": function (data, type, row) {
+                    if (type === 'display') {
+                        // Aquí retornas el HTML personalizado para mostrar en la tabla
+                        let estadoActual = data === "Activo" ? "Desactivar" : "Activar";
+                        let estadoClase = data === "Activo" ? "badge bg-success" : "badge bg-danger";
+
+                        return `
+                            <div class="dropdown">
+                                <span class="${estadoClase} dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                                    ${data}
+                                </span>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item cambiar-estado" href="#" data-id="${row.PacienteCodigo}" data-estado="${estadoActual}">
+                                            ${estadoActual}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        `;
+                    } else {
+                        // Para filtrado y ordenamiento, retornas el valor original de los datos
                         return data;
                     }
                 }
             },
+              //return data === "Activo" ? '<span class="badge bg-success">Activo</span>' : '<span class="badge bg-danger">Inactivo</span>';
             {
                 "data": "PacienteHistorialClinicoCodigo",
                 "render": function (data) {
@@ -72,12 +89,18 @@
                 }
             },
             { "data": "PacienteTelefono" },
-            { "data": "PacienteSeguro" }
+            { "data": "PacienteSeguro" },
+            //{ // Columna para el botón de acción
+            //    "data": null,
+            //    "orderable": false,
+            //    "className": 'text-center',
+            //    "defaultContent": '<button class="btn btn-danger btn-sm btn-eliminar">Eliminar</button>'
+            //}
         ],
         "language": {
             "url": "//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json"
         },
-        "responsive": false, // Deshabilitamos el modo responsive para evitar conflictos
+        "responsive": false, 
         "ordering": false,
         "columnDefs": [
             { "targets": 0, "orderable": false },
@@ -85,7 +108,6 @@
         ]
     });
 
-    // Oculta el encabezado de la columna de expansión
     $('#tabla_pacientes thead th').eq(0).html('');
 
     // Evento de clic para expandir/contraer detalles
@@ -128,7 +150,7 @@
             var searchTerm = $('#buscador-personalizado').val().toLowerCase();
 
             if (searchTerm === '') {
-                return true; // No se aplica ningún filtro
+                return true;
             }
 
             var nombre = data[2].toLowerCase(); // Columna 'Nombre Pacientes'
@@ -164,7 +186,6 @@
         }
     });
 
-
     $('#formAgregarPaciente').on('submit', function (e) {
         e.preventDefault();
 
@@ -199,6 +220,35 @@
             }
         });
     });
+
+    // Evento para cambiar el estado
+    $('#tabla_pacientes tbody').on('click', '.cambiar-estado', function (e) {
+        e.preventDefault();
+
+        let pacienteId = $(this).data('id');
+        let nuevoEstado = $(this).data('estado') === "Activar" ? "Activo" : "Inactivo";
+
+        if (confirm(`¿Estás seguro de que deseas ${nuevoEstado === "Activo" ? "activar" : "desactivar"} este paciente?`)) {
+            $.ajax({
+                url: '/GestionarPacientes/EliminarPaciente',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ PacienteCodigo: pacienteId }),
+                success: function (response) {
+                    if (response.transaccionExitosa) {
+                        alert(response.mensaje);
+                        table.ajax.reload();
+                    } else {
+                        alert("Error: " + response.mensaje);
+                    }
+                },
+                error: function () {
+                    alert("Ocurrió un error al actualizar el estado.");
+                }
+            });
+        }
+    });
+    
 });
 
 
