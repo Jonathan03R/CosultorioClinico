@@ -17,6 +17,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Capa4_Persistencia", "Capa4_Persistencia", "{28843E49-2B51-408E-81D1-61A44FADBA9E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SqlServer", "SqlServer", "{B18D9919-1423-4B81-9BC5-8D530C2C626D}"
+	ProjectSection(SolutionItems) = preProject
+		..\ProcedimientosAlmacenadosCompleto.sql = ..\ProcedimientosAlmacenadosCompleto.sql
+		..\TablasCompletas.sql = ..\TablasCompletas.sql
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Capa4_Persistencia.SqlServer.ModuloBase", "Capa4_Persistencia.SqlServer.ModuloBase\Capa4_Persistencia.SqlServer.ModuloBase.csproj", "{89B50410-4744-4A48-9CA7-614ACD9888BB}"
 EndProject
