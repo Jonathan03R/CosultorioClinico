@@ -177,6 +177,55 @@ create table Gestion.cita
     )
 go
 
+--tablas de gestión de consultas 
+create table Gestion.Consulta (
+    consultaCodigo nchar(10),
+    consultaFechaHora datetime not null,
+    consultaMedicoCodigo nchar(10),
+    consultaPacienteCodigo nchar(10),
+    consultaMotivo nvarchar(255),
+    consultaEstado nchar(1) default 'P', 
+    constraint ConsultaPK primary key (consultaCodigo),
+    constraint ConsultaMedicoFK foreign key (consultaMedicoCodigo) references Administracion.Medico(medicoCodigo),
+    constraint ConsultaPacienteFK foreign key (consultaPacienteCodigo) references Salud.Pacientes(pacienteCodigo),
+    constraint ConsultaEstadoCK check (consultaEstado in ('P', 'C', 'X'))
+) on gestionConsultas
+go
+
+create table Salud.Diagnostico (
+    diagnosticoCodigo nchar(10),
+    diagnosticoconsultaCodigo nchar(10),
+    diagnosticoDescripcion nvarchar(255) not null,
+    diagnosticoFecha date not null,
+    constraint DiagnosticoPK primary key (diagnosticoCodigo),
+    constraint DiagnosticoConsultaFK foreign key (diagnosticoconsultaCodigo) references Gestion.Consulta(consultaCodigo)
+) on gestionConsultas
+go 
+
+create table Salud.RecetaMedica (
+    recetaCodigo nchar(10),
+    recetaConsultaCodigo nchar(10),
+    recetaDescripcion nvarchar(255) not null,
+    recetaFecha date not null,
+	recetaTratamiento nvarchar(100) not null,
+	recetaRecomendaciones nvarchar(100) not null,
+    constraint RecetaMedicaPK primary key (recetaCodigo),
+    constraint RecetaConsultaFK foreign key (recetaConsultaCodigo) references Gestion.Consulta(consultaCodigo)
+) on gestionConsultas
+go
+
+CREATE TABLE Salud.RegistroCambios (
+    cambioCodigo nchar(10),
+    cambioHistorialClinicoCodigo nchar(10),
+    cambioDescripcion nchar(255) not null,
+    cambioFecha datetime not null,
+    cambiomedicoCodigo nchar(10), 
+    constraint RegistroCambiosPK primary key (cambioCodigo),
+    constraint RegistroCambiosHistorialFK foreign key (cambioHistorialClinicoCodigo) references Salud.HistoriaClinica(historialClinicoCodigo),
+	constraint RegistroCambiosMedicoFK foreign key (cambiomedicoCodigo) references Administracion.Medico(medicoCodigo)
+) on gestionConsultas
+go
+
 
 
 --insert para hacer pruebas
