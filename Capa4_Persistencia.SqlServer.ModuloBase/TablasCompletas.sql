@@ -225,7 +225,7 @@ CREATE TABLE Salud.RegistroCambios (
 	constraint RegistroCambiosMedicoFK foreign key (cambiomedicoCodigo) references Administracion.Medico(medicoCodigo)
 ) on gestionConsultas
 go
-
+--Como estan muchachos
 
 
 --insert para hacer pruebas
