@@ -57,6 +57,24 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             }
         }
 
+        public void RecuperarPaciente(Paciente pacienteCodigo)
+        {
+            string procedimientoSQL = "pro_Recuperar_Paciente";
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+                comandoSQL.Parameters.Add(new SqlParameter("@pacienteCodigo", pacienteCodigo.PacienteCodigo));
+                comandoSQL.ExecuteNonQuery();
+            }
+            catch (SqlException)
+            {
+                throw new ExcepcionPacienteInvalido(ExcepcionPacienteInvalido.ERROR_DE_ELIMINACION);
+            }
+        }
+
+
+
+
 
         public Paciente MostrarPacientePorCodigo (Paciente pacienteCodigo)
         {

@@ -407,7 +407,13 @@
     <Content Include="Scripts\DataTables\responsive.semanticui.js" />
     <Content Include="Scripts\DataTables\responsive.semanticui.min.js" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
+    <Content Include="Scripts\GestionasPacientesScripts\buscadorPacientes.js" />
+    <Content Include="Scripts\GestionasPacientesScripts\contactosEmergencia.js" />
+    <Content Include="Scripts\GestionasPacientesScripts\estadoPacientes.js" />
+    <Content Include="Scripts\GestionasPacientesScripts\formPacientes.js" />
     <Content Include="Scripts\GestionasPacientesScripts\ListaPacientes.js" />
+    <Content Include="Scripts\GestionasPacientesScripts\tablaPacientes.js" />
+    <Content Include="Scripts\GestionasPacientesScripts\utils.js" />
     <Content Include="Scripts\jquery-3.7.1.js" />
     <Content Include="Scripts\jquery-3.7.1.min.js" />
     <Content Include="Scripts\jquery-3.7.1.slim.js" />
