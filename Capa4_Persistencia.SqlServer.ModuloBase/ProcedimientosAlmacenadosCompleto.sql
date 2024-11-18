@@ -217,6 +217,43 @@ create or alter procedure pro_Mostrar_MedicosConEspecialidad
 	inner join Administracion.Especialidad e on m.especialidadCodigo = e.especialidadCodigo;
 go
 
+/*********************************************************************************************
+Procedimiento: pro_Listar_TipoConsulta
+Descripcion: Lista los tipo de consulta que tiene la clinica
+*********************************************************************************************/
+create or alter procedure Pro_Listar_TipoConsulta
+    as
+    begin
+        set nocount on
+        select 
+            tipoConsultaCodigo,  
+            tipoConsultaDescripcion 
+        from 
+            Gestion.tipoConsulta
+        order by 
+            tipoConsultaDescripcion
+end
+go
+
+/*********************************************************************************************
+Procedimiento: pro_Listar_Especialidad
+Descripcion: Lista los tipo de consulta que tiene la clinica
+*********************************************************************************************/
+create or alter procedure Pro_Listar_Especialidad
+     as
+    begin
+        set nocount on
+        select 
+            especialidadCodigo,  
+            especialidadNombre,  
+            especialidadDescripcion
+        from 
+            Administracion.Especialidad
+        order by 
+            especialidadNombre
+end
+go
+
 
 
 --PROCEDIMIENTO ALMACENADOS PARA GESTIONAR CITAS == Responsabloe Daniel Asmat

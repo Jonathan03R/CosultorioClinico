@@ -101,5 +101,36 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             };
             return cita;
         }
+
+        public List<TipoConsulta> ListarTiposDeConsulta()
+        {
+            List<TipoConsulta> listaTiposConsulta = new List<TipoConsulta>();
+            string procedimientoSQL = "Pro_Listar_TipoConsulta";
+
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+                SqlDataReader resultadoSQL = comandoSQL.ExecuteReader();
+
+                while (resultadoSQL.Read())
+                {
+                    TipoConsulta tipoConsulta = new TipoConsulta
+                    {
+                        TipoConsultaCodigo = resultadoSQL.GetString(0), 
+                        TipoConsultaDescripcion = resultadoSQL.GetString(1) 
+                    };
+                    listaTiposConsulta.Add(tipoConsulta);
+                }
+                resultadoSQL.Close();
+            }
+            catch (SqlException)
+            {
+                throw new Exception("Error al listar los tipos de consulta.");
+            }
+
+            return listaTiposConsulta;
+        }
+
+
     }
 }
