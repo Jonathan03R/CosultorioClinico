@@ -62,14 +62,19 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
 
         // Registrar un nuevo paciente
         [HttpPost]
-        public JsonResult RegistrarPaciente(Paciente paciente)
+        public JsonResult RegistrarPaciente(Paciente paciente, List<ContactoEmergencia> contactoEmergencia)
         {
             bool accionExitosa;
             string mensajeRetorno;
 
             try
             {
-                gestionarPacienteServicio.RegistrarPacienteConHistoria(paciente);
+                System.Diagnostics.Debug.WriteLine("Paciente:");
+                System.Diagnostics.Debug.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(paciente));
+                System.Diagnostics.Debug.WriteLine("Contactos de Emergencia:");
+                System.Diagnostics.Debug.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(contactoEmergencia));
+
+                gestionarPacienteServicio.RegistrarPacienteConHistoria(paciente, contactoEmergencia);
                 accionExitosa = true;
                 mensajeRetorno = "Paciente registrado exitosamente.";
             }
@@ -133,5 +138,33 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
 
             return Json(new { transaccionExitosa = accionExitosa, mensaje = mensajeRetorno });
         }
+
+        [HttpPost]
+        public JsonResult RecuperarPaciente(string PacienteCodigo)
+        {
+            bool accionExitosa;
+            string mensajeRetorno;
+
+            try
+            {
+                var paciente = new Paciente
+                {
+                    PacienteCodigo = PacienteCodigo
+                };
+
+                gestionarPacienteServicio.cambiarEstadoActivosPaciente(paciente);
+
+                accionExitosa = true;
+                mensajeRetorno = "Paciente marcado como Activo exitosamente.";
+            }
+            catch (Exception ex)
+            {
+                accionExitosa = false;
+                mensajeRetorno = ex.Message;
+            }
+
+            return Json(new { transaccionExitosa = accionExitosa, mensaje = mensajeRetorno });
+        }
+
     }
 }

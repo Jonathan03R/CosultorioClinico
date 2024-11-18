@@ -13,6 +13,7 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
         private readonly PacienteSQL pacienteSQL;
         private readonly CodigoSQL codigoSQL;
         private readonly HistoriaClinicaSQL historiaClinicaSQL;
+        private readonly ContactoEmergenciaSQL contactoEmergenciaSQL;
 
         public GestionarPacienteServicio()
         {
@@ -20,10 +21,17 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
             pacienteSQL = new PacienteSQL(accesoSQLServer);
             codigoSQL = new CodigoSQL(accesoSQLServer);
             historiaClinicaSQL = new HistoriaClinicaSQL(accesoSQLServer);
+            contactoEmergenciaSQL = new ContactoEmergenciaSQL(accesoSQLServer);
         }
 
-        public void RegistrarPacienteConHistoria(Paciente paciente)
+        public void RegistrarPacienteConHistoria(Paciente paciente, List<ContactoEmergencia> contactosEmergencia)
         {
+
+            if (contactosEmergencia == null || !contactosEmergencia.Any())
+            {
+                throw new ArgumentException("Debe agregar al menos un contacto de emergencia.");
+            }
+
             accesoSQLServer.IniciarTransaccion();
             paciente.PacienteCodigo = codigoSQL.GenerarCodigoUnico("PA", "Salud.Pacientes", "pacienteCodigo");
             try
@@ -39,6 +47,12 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
                     AntecedentesMedicos = null,
                     Alergias = null
                 };
+
+                foreach (var contacto in contactosEmergencia)
+                {
+                    contacto.ContactoEmergenciaCodigo = codigoSQL.GenerarCodigoUnico("CE", "Salud.ContactosEmergencia", "contactoEmergenciaCodigo");
+                    contactoEmergenciaSQL.AgregarContactoEmergencia(contacto, paciente.PacienteCodigo);
+                }
 
                 historiaClinicaSQL.AgregarHistoriaClinica(nuevaHistoriaClinica);
                 accesoSQLServer.TerminarTransaccion();
@@ -102,6 +116,31 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
 
         }
 
+        public void cambiarEstadoActivosPaciente(Paciente paciente)
+        {
+            //if (!paciente.esPacienteActivo()) 
+            //{
+            //    throw new ArgumentException("Este paciente ya esta incativo");
+            //}
+            if (paciente.PacienteCodigo == null)
+            {
+                throw new ArgumentException("erro al selecionar el paciente");
+            }
+
+            accesoSQLServer.IniciarTransaccion();
+            try
+            {
+                pacienteSQL.RecuperarPaciente(paciente);
+                accesoSQLServer.TerminarTransaccion();
+            }
+            catch (Exception ex)
+            {
+                accesoSQLServer.CancelarTransaccion();
+                throw ex;
+            }
+
+        }
+
 
         public List<Paciente> ObtenerHistorialPacientes()
         {
@@ -124,29 +163,6 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
             List<Paciente> pacientesActivos = result.Where(p => p.esPacienteActivo()).ToList();
             return pacientesActivos;
         }
-
-        
-
-
-        //public List<Paciente> listarPacientesActivos()
-        //{
-        //    try
-        //    {
-        //        accesoSQLServer.IniciarTransaccion();
-
-        //        List<Paciente> listaPacientes = pacienteSQL.ListarPacientes();
-        //        List<Paciente> listaPacientesActivos = listaPacientes.Where(p => p.esPacienteActivo()).ToList();
-
-        //        accesoSQLServer.TerminarTransaccion();
-
-        //        return listaPacientesActivos;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        accesoSQLServer.CancelarTransaccion();
-        //        throw ex;
-        //    }
-        //}
 
         public List<HistoriaClinica> listarPacientes()
         {
