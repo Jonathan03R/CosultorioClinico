@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using Capa2_Aplicacion.ModuloPrincipal.Servicio;
 using Capa3_Dominio.ModuloPrincipal.Entidad;
@@ -134,6 +135,71 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
 
             return Json(new { transaccionExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
         }
+
+        // Listar Especialidades
+        [HttpGet]
+        public JsonResult ListarEspecialidades()
+        {
+            bool accionExitosa;
+            string mensajeRetorno;
+            List<object> listaEspecialidadesFormatada;
+
+            try
+            {
+                var listaEspecialidades = gestionarCitaServicio.ListarEspecialidades();
+
+                listaEspecialidadesFormatada = listaEspecialidades.Select(e => new
+                {
+                    EspecialidadCodigo = e.EspecialidadCodigo ?? "null",
+                    EspecialidadNombre = e.EspecialidadNombre ?? "null",
+                    EspecialidadDescripcion = string.IsNullOrEmpty(e.EspecialidadDescripcion) ? "Sin descripción" : e.EspecialidadDescripcion
+                }).ToList<object>();
+
+                accionExitosa = true;
+                mensajeRetorno = "Consulta exitosa.";
+            }
+            catch (Exception ex)
+            {
+                listaEspecialidadesFormatada = new List<object>();
+                accionExitosa = false;
+                mensajeRetorno = $"Error: {ex.Message}";
+            }
+
+            return Json(new { data = listaEspecialidadesFormatada, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+        }
+
+        // Listar Tipos de Consulta
+        [HttpGet]
+        public JsonResult ListarTiposDeConsulta()
+        {
+            bool accionExitosa;
+            string mensajeRetorno;
+            List<object> listaTiposConsultaFormatada;
+
+            try
+            {
+                var listaTiposConsulta = gestionarCitaServicio.TipoConsulta();
+
+                listaTiposConsultaFormatada = listaTiposConsulta.Select(tc => new
+                {
+                    TipoConsultaCodigo = tc.TipoConsultaCodigo ?? "null",
+                    TipoConsultaDescripcion = string.IsNullOrEmpty(tc.TipoConsultaDescripcion) ? "Sin nombre" : tc.TipoConsultaDescripcion
+                }).ToList<object>();
+
+                accionExitosa = true;
+                mensajeRetorno = "Consulta exitosa.";
+            }
+            catch (Exception ex)
+            {
+                listaTiposConsultaFormatada = new List<object>();
+                accionExitosa = false;
+                mensajeRetorno = $"Error: {ex.Message}";
+            }
+
+            return Json(new { data = listaTiposConsultaFormatada, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+        }
+
+
     }
 }
 

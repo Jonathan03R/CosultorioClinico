@@ -17,33 +17,70 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
         {
             this.accesoSQLServer = accesoSQLServer;
         }
-        public List<Especialidad> MostrarEspecialidadesConMedicos()
+        public List<Medico> MostrarMedicosConEspecialidad()
         {
-            List<Especialidad> listaEspecialidades = new List<Especialidad>();
+            List<Medico> listaMedicos = new List<Medico>();
             string procedimientoSQL = "pro_Mostrar_MedicosConEspecialidad";
             try
             {
                 SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
                 SqlDataReader resultadoSQL = comandoSQL.ExecuteReader();
+
                 while (resultadoSQL.Read())
                 {
-                    Especialidad especialidad = ObtenerEspecialidad(resultadoSQL);
-                    listaEspecialidades.Add(especialidad);
+                    // Crear el objeto Medico y asignar sus propiedades
+                    Medico medico = new Medico
+                    {
+                        MedicoCodigo = resultadoSQL.GetString(0),
+                        MedicoNombre = resultadoSQL.GetString(1), 
+                        MedicoApellido = resultadoSQL.GetString(2),
+                        Especialidad = new Especialidad
+                        {
+                            EspecialidadNombre = resultadoSQL.GetString(3) 
+                        }
+                    };
+
+                    listaMedicos.Add(medico);
                 }
+                resultadoSQL.Close();
             }
             catch (SqlException)
             {
-                throw new ExcepcionEspecialidadInvalido(ExcepcionEspecialidadInvalido.ERROR_DE_CONSULTA);
+                throw new ExcepcionMedicoInvalido(ExcepcionMedicoInvalido.ERROR_DE_CONSULTA);
+            }
+            return listaMedicos;
+        }
+
+        public List<Especialidad> Pro_Listar_Especialidad()
+        {
+            List<Especialidad> listaEspecialidades = new List<Especialidad>();
+            string procedimientoSQL = "Pro_Listar_Especialidad";
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+                SqlDataReader resultadoSQL = comandoSQL.ExecuteReader();
+               
+                while (resultadoSQL.Read())
+                {
+
+                    Especialidad especialidad = new Especialidad
+                    {
+                        EspecialidadCodigo = resultadoSQL.GetString(0),
+                        EspecialidadNombre = resultadoSQL.GetString(1),
+                        EspecialidadDescripcion = resultadoSQL.GetString(2)
+                    };
+                    listaEspecialidades.Add(especialidad);
+                }
+                resultadoSQL.Close ();
+            }
+            catch (SqlException ex)
+            {
+                //throw new ExcepcionMedicoInvalido(ExcepcionMedicoInvalido.ERROR_DE_CONSULTA);
+                throw ex;
             }
             return listaEspecialidades;
-        }
-        private Especialidad ObtenerEspecialidad(SqlDataReader resultadoSQL)
-        {
-            Especialidad especialidad = new Especialidad
-            {
-                EspecialidadNombre = resultadoSQL.GetString(3) 
-            };
-            return especialidad;
+
+
         }
     }
 }
