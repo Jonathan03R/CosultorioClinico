@@ -50,5 +50,33 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             };
             return contactoEmergencia;
         }
+
+
+        public void AgregarContactoEmergencia(ContactoEmergencia contactoEmergencia, string pacienteCodigo)
+        {
+            string procedimientoSQL = "pro_ContactosEmergencia_Agregar";
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+
+                comandoSQL.Parameters.Add(new SqlParameter("@contactoEmergenciaCodigo", contactoEmergencia.ContactoEmergenciaCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@contactoEmergenciaNombre", contactoEmergencia.ContactoEmergenciaNombre));
+                comandoSQL.Parameters.Add(new SqlParameter("@contactoEmergenciaRelacion", contactoEmergencia.ContactoEmergenciaRelacion));
+                comandoSQL.Parameters.Add(new SqlParameter("@contactoEmergenciaTelefono", contactoEmergencia.ContactoEmergenciaTelefono));
+                comandoSQL.Parameters.Add(new SqlParameter("@pacienteCodigo", pacienteCodigo));
+
+                comandoSQL.ExecuteNonQuery();
+            }
+            catch (SqlException ex)
+            {
+                //throw new ExcepcionContactoEmergenciaInvalido(ExcepcionContactoEmergenciaInvalido.ERROR_DE_CONSULTA);
+
+                throw ex;
+            }
+            
+        }
+
     }
+
+
 }

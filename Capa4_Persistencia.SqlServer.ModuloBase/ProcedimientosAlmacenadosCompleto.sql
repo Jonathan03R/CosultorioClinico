@@ -74,6 +74,24 @@ create or alter procedure pro_Eliminar_Paciente
 go
 
 /******************************************************************************************
+Procedimiento: pro_Eliminar_Paciente
+Descripción: Cambia el estado de un paciente a 'A' (Activo) en lugar de eliminar el registro
+de la base de datos.
+Parámetros:
+    - @pacienteCodigo: Código único del paciente que se desea marcar como activo.
+******************************************************************************************/
+
+create or alter procedure pro_Recuperar_Paciente
+		@pacienteCodigo nchar(10)
+	as
+	set nocount on;
+
+	update Salud.Pacientes
+	set pacienteEstado = 'A'
+	where pacienteCodigo = @pacienteCodigo;
+go
+
+/******************************************************************************************
 Procedimiento: pro_Mostrar_Paciente_por_codigo
 Descripción: Retorna la información de un paciente específico utilizando su código único.
 Parámetros:
@@ -164,6 +182,43 @@ create or alter procedure pro_Mostrar_ContactosEmergencia
 	from Salud.ContactosEmergencia ce
 	where ce.pacienteCodigo = @pacienteCodigo;
 go
+
+/******************************************************************************************
+Descripción de procedimiento almacenado:
+---------------------------------------------------------------------------------------------
+Procedimiento almacenado para agregar un contacto de emergencia en la tabla `ContactosEmergencia`.
+
+**********************************************************************************************/
+create procedure pro_ContactosEmergencia_Agregar 
+    @contactoEmergenciaCodigo nchar(10),
+    @contactoEmergenciaNombre nvarchar(100),
+    @contactoEmergenciaRelacion nvarchar(50),
+    @contactoEmergenciaTelefono nvarchar(15),
+    @pacienteCodigo nchar(10)
+as
+begin
+    set nocount on;
+
+    insert into Salud.ContactosEmergencia (
+        contactoEmergenciaCodigo,
+        contactoEmergenciaNombre,
+        contactoEmergenciaRelacion,
+        contactoEmergenciaTelefono,
+        pacienteCodigo
+    )
+    values (
+        @contactoEmergenciaCodigo,
+        @contactoEmergenciaNombre,
+        @contactoEmergenciaRelacion,
+        @contactoEmergenciaTelefono,
+        @pacienteCodigo
+    );
+
+    set nocount off;
+end;
+go
+
+
 
 /******************************************************************************************
 Procedimiento: pro_Agregar_ContactosEmergencia

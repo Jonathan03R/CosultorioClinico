@@ -124,8 +124,27 @@
                             </div>
                         </div>
                         @*<hr>*@
-                        <div class="modal-header">
+                        <div class="modal-header mb-4">
                             <h5 class="modal-title" id="modalAgregarPacienteLabel">Contactos de Emergencia</h5>
+                        </div>
+                        <div id="contactosEmergenciaLista" class="mb-4">
+                            <!-- Aquí se agregarán los contactos dinámicamente -->
+                        </div>
+
+                        <div class="d-flex align-items-center mb-4 px-3">
+
+                            <div class="d-flex justify-content-center align-items-center">
+                                <p class="m-0">Agregar Nuevo Contacto</p>
+                                <div class="mx-2 justify-content-center align-items-center" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Obligatorio agregar contacto de emergencia">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M14 8C14 11.3138 11.3138 14 8 14C4.68616 14 2 11.3138 2 8C2 4.68625 4.68616 2 8 2C11.3138 2 14 4.68625 14 8ZM6.70239 6.65747H8.82398V11.1769C8.82398 11.6144 8.46933 11.969 8.03186 11.969C7.59439 11.969 7.23975 11.6144 7.23975 11.1769V8.06226H6.70239C6.31447 8.06226 6 7.74778 6 7.35986C6 6.97194 6.31447 6.65747 6.70239 6.65747ZM7.00977 4.93247C7.00977 4.80778 7.03192 4.69149 7.07587 4.58359C7.12345 4.47236 7.18773 4.37629 7.26909 4.29539C7.35044 4.21449 7.44524 4.15048 7.55383 4.10326C7.60323 4.0824 7.65408 4.06615 7.70674 4.0545C7.77357 4.03987 7.84294 4.03247 7.91485 4.03247C8.03688 4.03247 8.15202 4.05604 8.26061 4.10326C8.29003 4.11599 8.31836 4.12998 8.3456 4.14515C8.41933 4.18623 8.4858 4.23634 8.54536 4.29539C8.62671 4.37629 8.691 4.47236 8.73858 4.58359C8.76328 4.63984 8.7818 4.69835 8.79342 4.75912C8.80432 4.815 8.80977 4.87279 8.80977 4.93247C8.80977 4.99965 8.80287 5.06492 8.78906 5.12822C8.77744 5.18239 8.76037 5.23512 8.73858 5.2864C8.691 5.3943 8.62671 5.48865 8.54536 5.56955C8.50359 5.61099 8.45856 5.64801 8.40989 5.6806C8.3634 5.71157 8.31364 5.73866 8.26061 5.76168C8.15202 5.80891 8.03688 5.83247 7.91485 5.83247C7.85129 5.83247 7.78991 5.82678 7.73071 5.81532C7.66933 5.80358 7.61049 5.7857 7.55383 5.76168C7.44524 5.71446 7.35044 5.65045 7.26909 5.56955C7.18773 5.48865 7.12345 5.3943 7.07587 5.2864C7.03192 5.17517 7.00977 5.05716 7.00977 4.93247Z" fill="#868FA0" />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <a class="text-primary ms-3 px-4 m-0" style="text-decoration: none; cursor: pointer;" id="btnAgregarContacto">
+                                <i class="fas fa-plus-circle"></i> Agregar
+                            </a>
                         </div>
 
                     </div>
@@ -139,10 +158,59 @@
         </div>
     </div>
 
+
+
+    <!-- Modal para agregar contacto de emergencia -->
+    <div class="modal fade" id="modalAgregarContacto" tabindex="-1" aria-labelledby="modalAgregarContactoLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="formAgregarContacto">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalAgregarContactoLabel">Agregar Contacto de Emergencia</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="contactoNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="contactoNombre" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contactoRelacion" class="form-label">Relación</label>
+                            <input type="text" class="form-control" id="contactoRelacion" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contactoTelefono" class="form-label">Teléfono</label>
+                            <input type="text" class="form-control" id="contactoTelefono" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btnCerrarModalContacto">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Agregar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 @section scripts {
     <script>
         var urlRegistrarPaciente = '@Url.Action("RegistrarPaciente", "GestionarPacientes")';
+        var urlListarPacientes = '@Url.Action("ListarPacientes", "GestionarPacientes")';
     </script>
-    <script src="~/Scripts/GestionasPacientesScripts/ListaPacientes.js"></script>
+
+    <script src="~/Scripts/GestionasPacientesScripts/utils.js"></script>
+    <script src="~/Scripts/GestionasPacientesScripts/tablaPacientes.js"></script>
+    <script src="~/Scripts/GestionasPacientesScripts/estadoPacientes.js"></script>
+    <script src="~/Scripts/GestionasPacientesScripts/contactosEmergencia.js"></script>
+    <script src="~/Scripts/GestionasPacientesScripts/formPacientes.js"></script>
+    <script src="~/Scripts/GestionasPacientesScripts/buscadorPacientes.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+                new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
 }
