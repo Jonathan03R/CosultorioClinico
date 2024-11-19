@@ -16,7 +16,7 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "GestionarCitas", action = "GestionCita", id = UrlParameter.Optional }
             );
         }
     }

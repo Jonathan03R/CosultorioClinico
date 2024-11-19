@@ -95,7 +95,7 @@
     }
     <nav class="navbar">
         <div class="container ">
-            <a class="navbar-brand position-absolute" href="@Url.Action("Index", "Home")">
+            <a class="navbar-brand position-absolute" href="@Url.Action("GestionCita", "GestionarCitas")">
                 <svg width="162" height="44" viewBox="0 0 162 44" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                     <rect width="162" height="44" fill="url(#pattern0_303_367)" />
                     <defs>
@@ -108,29 +108,19 @@
             </a>
             <ul class="navbar-nav d-flex flex-row">
                 <li>
-                    @Html.ActionLink("Inicio", "Index", "Home", null, new
-                    {
-                        @class = "nav-link " + (currentController == "Home" && currentAction == "Index" ? "active" : "")
-                    })
+                    @Html.ActionLink("Citas", "GestionCita", "GestionarCitas", null, new
+                   {
+                       @class = "nav-link " + (currentController == "GestionarCitas" && currentAction == "GestionCita" ? "active" : "")
+                   })
                 </li>
+
                 <li>
                     @Html.ActionLink("Pacientes", "ListaPacientes", "GestionarPacientes", null, new
                     {
                         @class = "nav-link " + (currentController == "GestionarPacientes" && currentAction == "ListaPacientes" ? "active" : "")
                     })
                 </li>
-                <li>
-                    @Html.ActionLink("Citas", "GestionCita", "GestionarCitas", null, new
-                   {
-                       @class = "nav-link " + (currentController == "GestionarCitas" && currentAction == "GestionCita" ? "active" : "")
-                   })
-                </li>
-                <li>
-                    @Html.ActionLink("Acerca de", "About", "Home", null, new
-                    {
-                        @class = "nav-link " + (currentController == "Home" && currentAction == "About" ? "active" : "")
-                    })
-                </li>
+
                 <li>
                     @Html.ActionLink("Consultas", "Contact", "Home", null, new
                     {

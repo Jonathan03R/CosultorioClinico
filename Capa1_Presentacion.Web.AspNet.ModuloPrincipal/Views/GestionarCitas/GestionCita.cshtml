@@ -37,7 +37,7 @@
     <div class="row mt-3">
         <div class="col-md-6">
             <label for="codigoPacienteBuscar" class="font-weight-bold">Buscar por Código de Paciente:</label>
-            <input type="text" id="codigoPacienteBuscar" class="form-control" placeholder="Ingrese el código del paciente (ej. PAC001)" />
+            <input type="text" id="codigoPacienteBuscar" class="form-control" placeholder="Ingrese el código del paciente" />
         </div>
         <div class="col-md-2 align-self-end">
             <button class="btn btn-primary w-100" id="btnBuscarCitas">Buscar</button>
@@ -130,7 +130,6 @@
 
     <script>
         $(document).ready(function () {
-            // Inicializar la tabla
             const tablaCitas = $('#tablaCitas').DataTable({
                 ajax: {
                     url: '@Url.Action("ObtenerCitasPorPaciente", "GestionarCitas")',
@@ -171,7 +170,7 @@
                         }
                     }
                 ],
-                dom: 'rtip', // Se elimina el campo de búsqueda global (f) del DOM
+                dom: 'rtip', 
             });
 
             // Evento para buscar citas con filtros
