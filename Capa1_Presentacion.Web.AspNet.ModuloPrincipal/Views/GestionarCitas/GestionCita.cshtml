@@ -37,16 +37,19 @@
     <div class="row mt-3">
         <div class="col-md-6">
             <label for="codigoPacienteBuscar" class="font-weight-bold">Buscar por Código de Paciente:</label>
-            <input type="text" id="codigoPacienteBuscar" class="form-control" placeholder="Ingrese el código del paciente (ej. PAC001)" />
+            <input type="text" id="codigoPacienteBuscar" class="form-control" placeholder="Ingrese el código del paciente" />
         </div>
-        <div class="col-md-2 align-self-end">
-            <button class="btn btn-primary w-100" id="btnBuscarCitas">Buscar</button>
+        <div class="col-md-2 align-self-end d-flex justify-content-center align-items-center "  >
+            <button class="btn btn-primary " id="btnBuscarCitas">Buscar</button>
+            <button class="btn btn-success " data-bs-toggle="modal" data-bs-target="#ModalNuevaCita" >Nueva Cita</button>
         </div>
+       
     </div>
+
 </div>
 
 <!-- Tabla -->
-<div class="card p-4 shadow-sm">
+<div  class="card p-4 shadow-sm">
     <h5 class="font-weight-bold">Listado de Citas</h5>
     <table id="tablaCitas" class="display table table-bordered table-hover" style="width:100%">
         <thead class="thead-dark">
@@ -61,20 +64,16 @@
             </tr>
         </thead>
     </table>
-    <div class="text-center mt-3">
-        <button class="btn btn-success btn-sm" id="btnNuevaCita">Nueva Cita</button>
-    </div>
+
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="modalCita" tabindex="-1" role="dialog" aria-labelledby="modalCitaLabel">
-    <div class="modal-dialog modal-lg" role="document">
+<div class="modal fade" id="ModalNuevaCita" tabindex="-1" aria-labelledby="ModalNuevaCitaLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="modalCitaLabel">Registrar Cita</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar Cita</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="formCita">
@@ -110,105 +109,26 @@
                         <label for="fechaHora" class="font-weight-bold">Fecha y Hora <span class="text-danger">*</span></label>
                         <input type="datetime-local" id="fechaHora" class="form-control" />
                     </div>
-                    <div class="d-flex justify-content-end mt-4">
-                        <button type="submit" class="btn btn-success mr-2">Guardar</button>
-                        <button type="button" class="btn btn-secondary" id="btnCancelarModal" data-dismiss="modal">Cancelar</button>
-                    </div>
                 </form>
+            </div>
+            <div class="modal-footer">
+                @*<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>*@
+                <button type="button" class="btn btn-primary">Guardar cita</button>
             </div>
         </div>
     </div>
 </div>
+
 
 <!-- CSS de DataTables -->
 <link rel="stylesheet" href="~/Scripts/DataTables/dataTables.bootstrap4.min.css">
 
 @section Scripts {
     <!-- Scripts de DataTables -->
-    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
-    <script src="~/Scripts/DataTables/dataTables.bootstrap4.min.js"></script>
+    @*<script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+        <script src="~/Scripts/DataTables/dataTables.bootstrap4.min.js"></script>*@
 
-    <script>
-        $(document).ready(function () {
-            // Inicializar la tabla
-            const tablaCitas = $('#tablaCitas').DataTable({
-                ajax: {
-                    url: '@Url.Action("ObtenerCitasPorPaciente", "GestionarCitas")',
-                    data: function (d) {
-                        d.pacienteCodigo = $('#codigoPacienteBuscar').val(); // Enviar parámetro de búsqueda
-                        d.medico = $('#filtroMedico').val(); // Filtro por médico
-                        d.estado = $('#filtroEstado').val(); // Filtro por estado
-                        d.fecha = $('#filtroFecha').val(); // Filtro por fecha
-                        d.especialidad = $('#filtroEspecialidad').val(); // Filtro por especialidad
-                    },
-                    dataSrc: 'data',
-                    error: function (xhr, error, thrown) {
-                        console.log(xhr.responseText); // Log para depuración
-                    }
-                },
-                columns: [
-                    { data: 'citaCodigo' },
-                    { data: 'citaPaciente.nombre' },
-                    { data: 'citaMedico.nombre' },
-                    { data: 'citaMedico.especialidad' },
-                    { data: 'citaFechaHora', render: function (data) { return new Date(data).toLocaleString(); } },
-                    {
-                        data: 'citaEstado',
-                        render: function (data) {
-                            switch (data) {
-                                case 'P': return 'Pendiente';
-                                case 'C': return 'Confirmada';
-                                case 'X': return 'Cancelada';
-                                default: return 'Desconocido';
-                            }
-                        }
-                    },
-                    {
-                        data: null,
-                        render: function (data, type, row) {
-                            return `<button class="btn btn-warning btn-sm btnEditar" data-id="${row.citaCodigo}">Editar</button>
-                                    <button class="btn btn-danger btn-sm btnCancelar" data-id="${row.citaCodigo}">Cancelar</button>`;
-                        }
-                    }
-                ],
-                dom: 'rtip', // Se elimina el campo de búsqueda global (f) del DOM
-            });
 
-            // Evento para buscar citas con filtros
-            $('#btnBuscarCitas').on('click', function () {
-                tablaCitas.ajax.reload(); // Recargar tabla con los filtros aplicados
-            });
-
-            // Evento para actualizar la especialidad según el médico seleccionado
-            $('#medico').on('change', function () {
-                const medicoId = $(this).val();
-                if (medicoId) {
-                    $.ajax({
-                        url: '@Url.Action("ObtenerEspecialidadPorMedico", "GestionarCitas")',
-                        type: 'GET',
-                        data: { medicoId },
-                        success: function (data) {
-                            if (data.consultaExitosa) {
-                                $('#especialidad').val(data.especialidad);
-                            } else {
-                                alert('No se pudo obtener la especialidad del médico.');
-                            }
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('Error al obtener la especialidad:', error);
-                        }
-                    });
-                } else {
-                    $('#especialidad').val('');
-                }
-            });
-
-            // Evento para abrir el modal de "Nueva Cita"
-            $('#btnNuevaCita').on('click', function () {
-                $('#formCita')[0].reset();
-                $('#pacienteInfo').text('');
-                $('#modalCita').modal('show');
-            });
-        });
-    </script>
+    @*buscame :D*@
+    <script src="~/Scripts/GestionarCitasScripts/tablaCitas.js"></script>
 }

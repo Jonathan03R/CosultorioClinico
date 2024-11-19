@@ -407,7 +407,14 @@
     <Content Include="Scripts\DataTables\responsive.semanticui.js" />
     <Content Include="Scripts\DataTables\responsive.semanticui.min.js" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
+    <Content Include="Scripts\GestionarCitasScripts\tablaCitas.js" />
+    <Content Include="Scripts\GestionasPacientesScripts\buscadorPacientes.js" />
+    <Content Include="Scripts\GestionasPacientesScripts\contactosEmergencia.js" />
+    <Content Include="Scripts\GestionasPacientesScripts\estadoPacientes.js" />
+    <Content Include="Scripts\GestionasPacientesScripts\formPacientes.js" />
     <Content Include="Scripts\GestionasPacientesScripts\ListaPacientes.js" />
+    <Content Include="Scripts\GestionasPacientesScripts\tablaPacientes.js" />
+    <Content Include="Scripts\GestionasPacientesScripts\utils.js" />
     <Content Include="Scripts\jquery-3.7.1.js" />
     <Content Include="Scripts\jquery-3.7.1.min.js" />
     <Content Include="Scripts\jquery-3.7.1.slim.js" />
@@ -432,9 +439,6 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\GestionarPacientes\ListaPacientes.cshtml" />
     <Content Include="Views\GestionarCitas\GestionCita.cshtml" />
   </ItemGroup>

@@ -74,6 +74,24 @@ create or alter procedure pro_Eliminar_Paciente
 go
 
 /******************************************************************************************
+Procedimiento: pro_Eliminar_Paciente
+Descripción: Cambia el estado de un paciente a 'A' (Activo) en lugar de eliminar el registro
+de la base de datos.
+Parámetros:
+    - @pacienteCodigo: Código único del paciente que se desea marcar como activo.
+******************************************************************************************/
+
+create or alter procedure pro_Recuperar_Paciente
+		@pacienteCodigo nchar(10)
+	as
+	set nocount on;
+
+	update Salud.Pacientes
+	set pacienteEstado = 'A'
+	where pacienteCodigo = @pacienteCodigo;
+go
+
+/******************************************************************************************
 Procedimiento: pro_Mostrar_Paciente_por_codigo
 Descripción: Retorna la información de un paciente específico utilizando su código único.
 Parámetros:
@@ -166,6 +184,43 @@ create or alter procedure pro_Mostrar_ContactosEmergencia
 go
 
 /******************************************************************************************
+Descripción de procedimiento almacenado:
+---------------------------------------------------------------------------------------------
+Procedimiento almacenado para agregar un contacto de emergencia en la tabla `ContactosEmergencia`.
+
+**********************************************************************************************/
+create or alter procedure pro_ContactosEmergencia_Agregar 
+    @contactoEmergenciaCodigo nchar(10),
+    @contactoEmergenciaNombre nvarchar(100),
+    @contactoEmergenciaRelacion nvarchar(50),
+    @contactoEmergenciaTelefono nvarchar(15),
+    @pacienteCodigo nchar(10)
+as
+begin
+    set nocount on;
+
+    insert into Salud.ContactosEmergencia (
+        contactoEmergenciaCodigo,
+        contactoEmergenciaNombre,
+        contactoEmergenciaRelacion,
+        contactoEmergenciaTelefono,
+        pacienteCodigo
+    )
+    values (
+        @contactoEmergenciaCodigo,
+        @contactoEmergenciaNombre,
+        @contactoEmergenciaRelacion,
+        @contactoEmergenciaTelefono,
+        @pacienteCodigo
+    );
+
+    set nocount off;
+end;
+go
+
+
+
+/******************************************************************************************
 Procedimiento: pro_Agregar_ContactosEmergencia
 Descripción: agrega contasto de emergencia para un paciente en especifico
 Parámetros:
@@ -197,9 +252,6 @@ create or alter procedure pro_AgregarContactosEmergencia
 	);
 	
 go
-
-
-
 
 /******************************************************************************************
 Procedimiento: pro_Mostrar_MedicosConEspecialidad
@@ -352,7 +404,6 @@ BEGIN
 END
 GO
 
-
 --------------------------------------
 /*************************************************************************************************************************
 Procedimiento: pro_Cancelar_Cita
@@ -423,6 +474,40 @@ BEGIN
         c.citaPacienteCodigo = @pacienteCodigo;
 END
 GO
+
+/*************************************************************************************************************************
+Procedimiento: pro_Mostrar_Citas
+Descripción: Procedimiento para visualizar todas las citas del Dia
+Parámetros: 
+ -@pacienteCodigo: Código del paciente para el que se desean visualizar las citas.
+
+***************************************************************************************************************************/
+
+create or alter procedure pro_Mostrar_Citas
+as
+begin
+    set nocount on;
+
+    select 
+        c.citaCodigo as CodigoCita,
+        c.citaEstado as EstadoCita,
+        c.citaFechaHora as FechaHoraCita,
+        c.citaTipoConsultaCodigo as TipoConsultaCodigo,
+        c.citaNotificacionCodigo as NotificacionCodigo,
+        m.medicoNombre as NombreMedico,
+        m.medicoApellido as ApellidoMedico,
+		p.pacienteCodigo,
+		p.pacienteNombreCompleto As NombrePaciente
+    from 
+        Gestion.cita as c
+    join 
+        Administracion.medico as m on c.citaMedicoCodigo = m.medicoCodigo
+	join
+		Salud.Pacientes as p on c.citaPacienteCodigo = p.pacienteCodigo;
+
+    set nocount off;
+end
+go
 
 
 /******************************************************************************************

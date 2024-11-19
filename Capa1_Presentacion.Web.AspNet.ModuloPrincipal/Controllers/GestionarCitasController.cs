@@ -15,12 +15,37 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
         {
             gestionarCitaServicio = new GestionarCitaServicio();
         }
-
+        
         // Página principal de gestión de citas
         public ActionResult GestionCita()
         {
             return View();
         }
+
+        // Obtener todas las citas
+        [HttpGet]
+        public JsonResult ObtenerTodasCitas()
+        {
+            bool accionExitosa;
+            string mensajeRetorno;
+            List<Cita> listaCitas;
+
+            try
+            {
+                listaCitas = gestionarCitaServicio.ObtenerTodasCitas();
+                accionExitosa = true;
+                mensajeRetorno = "Consulta exitosa.";
+            }
+            catch (Exception ex)
+            {
+                listaCitas = null;
+                accionExitosa = false;
+                mensajeRetorno = ex.Message;
+            }
+
+            return Json(new { data = listaCitas, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+        }
+
 
         // Listar citas de un paciente específico
         [HttpGet]
