@@ -132,5 +132,56 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
         }
 
 
+        public List<Cita> MostrarCitas()
+        {
+            List<Cita> listaCitas = new List<Cita>();
+            string procedimientoSQL = "pro_Mostrar_Citas";
+
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+                SqlDataReader resultadoSQL = comandoSQL.ExecuteReader();
+
+                while (resultadoSQL.Read())
+                {
+                    Cita cita = new Cita(
+                        resultadoSQL.GetString(0),  // CodigoCita
+                        resultadoSQL.GetString(1),  // EstadoCita
+                        resultadoSQL.GetDateTime(2) // FechaHoraCita
+                    )
+                    {
+                        CitaTipoConsulta = new TipoConsulta
+                        {
+                            TipoConsultaCodigo = resultadoSQL.GetString(3) // TipoConsultaCodigo
+                        },
+                        CitaNotificacion = resultadoSQL.IsDBNull(4) ? null : new Notificacion
+                        {
+                            NotificacionCodigo = resultadoSQL.GetString(4) // NotificacionCodigo
+                        },
+                        CitaMedico = new Medico
+                        {
+                            MedicoNombre = resultadoSQL.GetString(5),  // NombreMedico
+                            MedicoApellido = resultadoSQL.GetString(6) // ApellidoMedico
+                        },
+                        CitaPaciente = new Paciente
+                        {
+                            PacienteCodigo = resultadoSQL.GetString(7),           // PacienteCodigo
+                            PacienteNombreCompleto = resultadoSQL.GetString(8)   // NombrePaciente
+                        }
+                    };
+
+                    listaCitas.Add(cita);
+                }
+                resultadoSQL.Close();
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("Error al obtener las citas: " + ex.Message);
+            }
+
+            return listaCitas;
+        }
+
+
     }
 }

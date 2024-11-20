@@ -153,6 +153,25 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
         }
 
 
+        //Segun las reglas solo debo obtener las citas de dia de hoy como indico el profesor ,
+        //no nos sirve de nada conocer las citas de ayer o de mañana, nos interesa saber pero este metodo retorna todas las citas 
+        public List<Cita> ObtenerTodasCitas()
+        {
+            try
+            {
+                accesoSQLServer.IniciarTransaccion();
+                List<Cita> todasLasCitas = citaSQL.MostrarCitas();
+                accesoSQLServer.TerminarTransaccion();
+                return todasLasCitas;   
+            }
+            catch (Exception ex)
+            {
+                accesoSQLServer.CancelarTransaccion();
+                throw ex;
+            }
+        }
+
+
     }
 }
 
