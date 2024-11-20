@@ -1,4 +1,19 @@
-﻿$(document).ready(function () {
+﻿/*este script actualmente no se usando , 300 lineas aprox no es recomendado ,malas practicas xd, por eso cree mas archivos js para 
+mejorar la legibilidad escalabilidad etc etc. 
+
+    -- tablaPacientes.js: Configuración y manejo de la tabla de pacientes.
+    -- formPacientes.js: Manejo del formulario para agregar y actualizar pacientes.
+    -- contactosEmergencia.js: Gestión de contactos de emergencia.
+    -- estadoPacientes.js: Control del cambio de estado de los pacientes.
+    -- buscadorPacientes.js: Lógica del buscador personalizado y filtrado.
+    -- utilidades.js: Funciones utilitarias que pueden ser reutilizadas.
+
+
+este script lo deje por secaso no funcione algo , regreso aqui para ver que esta mal.
+*/
+
+
+$(document).ready(function () {
     var table = $('#tabla_pacientes').DataTable({
         "dom": "lrtip",
         "ajax": {
@@ -57,7 +72,6 @@
                 "data": "PacienteEstado",
                 "render": function (data, type, row) {
                     if (type === 'display') {
-                        // Aquí retornas el HTML personalizado para mostrar en la tabla
                         let estadoActual = data === "Activo" ? "Desactivar" : "Activar";
                         let estadoClase = data === "Activo" ? "badge bg-success" : "badge bg-danger";
 
@@ -76,7 +90,6 @@
                             </div>
                         `;
                     } else {
-                        // Para filtrado y ordenamiento, retornas el valor original de los datos
                         return data;
                     }
                 }
@@ -186,9 +199,66 @@
         }
     });
 
-    $('#formAgregarPaciente').on('submit', function (e) {
+    const contactosEmergencia = [];
+
+    // Evitar cerrar el modal principal al abrir el secundario
+    $('#btnAgregarContacto').on('click', function (e) {
+        e.preventDefault();
+        $('#modalAgregarContacto').modal('show');
+    });
+
+    // Cerrar solo el modal secundario
+    $('.btnCerrarModalContacto').on('click', function () {
+        $('#modalAgregarContacto').modal('hide');
+    });
+
+    // Manejo de datos del formulario de contacto
+    $('#formAgregarContacto').on('submit', function (e) {
         e.preventDefault();
 
+        const contacto = {
+            ContactoEmergenciaNombre: $('#contactoNombre').val().trim(),
+            ContactoEmergenciaRelacion: $('#contactoRelacion').val().trim(),
+            ContactoEmergenciaTelefono: $('#contactoTelefono').val().trim()
+        };
+
+        if (contacto.ContactoEmergenciaNombre && contacto.ContactoEmergenciaRelacion && contacto.ContactoEmergenciaTelefono) {
+            contactosEmergencia.push(contacto);
+            actualizarListaContactos();
+            $('#formAgregarContacto')[0].reset();
+            $('#modalAgregarContacto').modal('hide');
+        } else {
+            alert('Completa todos los campos del contacto.');
+        }
+    });
+
+    $('#contactosEmergenciaLista').on('click', '.btnEliminarContacto', function () {
+        const index = $(this).data('index');
+        contactosEmergencia.splice(index, 1);
+        actualizarListaContactos();
+    });
+
+    function actualizarListaContactos() {
+        $('#contactosEmergenciaLista').empty();
+        contactosEmergencia.forEach((contacto, index) => {
+            $('#contactosEmergenciaLista').append(`
+                <div class="contacto-item d-flex justify-content-between align-items-center">
+                    <p><strong>${contacto.ContactoEmergenciaRelacion}</strong>: ${contacto.ContactoEmergenciaTelefono}</p>
+                    <button type="button" class="btn btn-danger btn-sm btnEliminarContacto" data-index="${index}">
+                        Eliminar
+                    </button>
+                </div>
+            `);
+        });
+    }
+
+
+    $('#formAgregarPaciente').on('submit', function (e) {
+        e.preventDefault();
+        if (contactosEmergencia.length === 0) {
+            alert('Debe agregar al menos un contacto de emergencia.');
+            return; 
+        }
         var pacienteNombreCompleto = ($('#PacienteApellidos').val().trim() + " " + $('#PacienteNombres').val().trim()).toUpperCase();
         var paciente = {
             PacienteDNI: $('#PacienteDNI').val(),
@@ -204,19 +274,22 @@
             url: urlRegistrarPaciente,
             type: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify(paciente),
+            data: JSON.stringify({ Paciente: paciente, ContactoEmergencia: contactosEmergencia }),
             success: function (response) {
                 if (response.transaccionExitosa) {
                     alert(response.mensaje);
-                    $('#modalAgregarPaciente').modal('hide'); 
-                    $('#formAgregarPaciente')[0].reset(); 
-                    table.ajax.reload(); 
+                    // Cerrar el modal y resetear el formulario
+                    $('#modalAgregarPaciente').modal('hide');
+                    $('#formAgregarPaciente')[0].reset();
+                    $('#contactosEmergenciaLista').empty();
+                    contactosEmergencia.length = 0; // Limpiar el arreglo de contactos
+                    table.ajax.reload();
                 } else {
-                    alert("Error: " + response.mensaje);
+                    alert('Error: ' + response.mensaje);
                 }
             },
             error: function () {
-                alert("Ocurrió un error al registrar el paciente.");
+                alert('Ocurrió un error al registrar el paciente y los contactos de emergencia.');
             }
         });
     });
@@ -226,11 +299,17 @@
         e.preventDefault();
 
         let pacienteId = $(this).data('id');
-        let nuevoEstado = $(this).data('estado') === "Activar" ? "Activo" : "Inactivo";
+        let accion = $(this).data('estado'); // "Activar" o "Desactivar"
+        let accionNormalizada = accion.trim().toLowerCase();
+        console.log("Valor de accion:", accionNormalizada);
 
-        if (confirm(`¿Estás seguro de que deseas ${nuevoEstado === "Activo" ? "activar" : "desactivar"} este paciente?`)) {
+        let url = accionNormalizada === "activar"
+            ? '/GestionarPacientes/RecuperarPaciente'
+            : '/GestionarPacientes/EliminarPaciente';
+
+        if (confirm(`¿Estás seguro de que deseas ${accionNormalizada} este paciente?`)) {
             $.ajax({
-                url: '/GestionarPacientes/EliminarPaciente',
+                url: url,
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({ PacienteCodigo: pacienteId }),
@@ -248,9 +327,9 @@
             });
         }
     });
+
+
     
 });
-
-
 
 

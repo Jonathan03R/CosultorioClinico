@@ -214,17 +214,6 @@ create table Salud.RecetaMedica (
 ) on gestionConsultas
 go
 
-CREATE TABLE Salud.RegistroCambios (
-    cambioCodigo nchar(10),
-    cambioHistorialClinicoCodigo nchar(10),
-    cambioDescripcion nchar(255) not null,
-    cambioFecha datetime not null,
-    cambiomedicoCodigo nchar(10), 
-    constraint RegistroCambiosPK primary key (cambioCodigo),
-    constraint RegistroCambiosHistorialFK foreign key (cambioHistorialClinicoCodigo) references Salud.HistoriaClinica(historialClinicoCodigo),
-	constraint RegistroCambiosMedicoFK foreign key (cambiomedicoCodigo) references Administracion.Medico(medicoCodigo)
-) on gestionConsultas
-go
 
 
 

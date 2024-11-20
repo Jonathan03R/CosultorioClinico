@@ -101,5 +101,87 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             };
             return cita;
         }
+
+        public List<TipoConsulta> ListarTiposDeConsulta()
+        {
+            List<TipoConsulta> listaTiposConsulta = new List<TipoConsulta>();
+            string procedimientoSQL = "Pro_Listar_TipoConsulta";
+
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+                SqlDataReader resultadoSQL = comandoSQL.ExecuteReader();
+
+                while (resultadoSQL.Read())
+                {
+                    TipoConsulta tipoConsulta = new TipoConsulta
+                    {
+                        TipoConsultaCodigo = resultadoSQL.GetString(0), 
+                        TipoConsultaDescripcion = resultadoSQL.GetString(1) 
+                    };
+                    listaTiposConsulta.Add(tipoConsulta);
+                }
+                resultadoSQL.Close();
+            }
+            catch (SqlException)
+            {
+                throw new Exception("Error al listar los tipos de consulta.");
+            }
+
+            return listaTiposConsulta;
+        }
+
+
+        public List<Cita> MostrarCitas()
+        {
+            List<Cita> listaCitas = new List<Cita>();
+            string procedimientoSQL = "pro_Mostrar_Citas";
+
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+                SqlDataReader resultadoSQL = comandoSQL.ExecuteReader();
+
+                while (resultadoSQL.Read())
+                {
+                    Cita cita = new Cita(
+                        resultadoSQL.GetString(0),  // CodigoCita
+                        resultadoSQL.GetString(1),  // EstadoCita
+                        resultadoSQL.GetDateTime(2) // FechaHoraCita
+                    )
+                    {
+                        CitaTipoConsulta = new TipoConsulta
+                        {
+                            TipoConsultaCodigo = resultadoSQL.GetString(3) // TipoConsultaCodigo
+                        },
+                        CitaNotificacion = resultadoSQL.IsDBNull(4) ? null : new Notificacion
+                        {
+                            NotificacionCodigo = resultadoSQL.GetString(4) // NotificacionCodigo
+                        },
+                        CitaMedico = new Medico
+                        {
+                            MedicoNombre = resultadoSQL.GetString(5),  // NombreMedico
+                            MedicoApellido = resultadoSQL.GetString(6) // ApellidoMedico
+                        },
+                        CitaPaciente = new Paciente
+                        {
+                            PacienteCodigo = resultadoSQL.GetString(7),           // PacienteCodigo
+                            PacienteNombreCompleto = resultadoSQL.GetString(8)   // NombrePaciente
+                        }
+                    };
+
+                    listaCitas.Add(cita);
+                }
+                resultadoSQL.Close();
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("Error al obtener las citas: " + ex.Message);
+            }
+
+            return listaCitas;
+        }
+
+
     }
 }

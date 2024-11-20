@@ -2,250 +2,133 @@
     ViewBag.Title = "Gestión de Citas";
 }
 
-<div class="container">
-    <h2>Gestión de Citas</h2>
+<h2 class="text-center mb-4">Gestión de Citas</h2>
 
-    <!-- Formulario de búsqueda de citas -->
-    <div class="search-section">
-        <label for="pacienteCodigo">Código del Paciente:</label>
-        <input type="text" id="pacienteCodigo" placeholder="Ingrese el código del paciente" />
-        <button class="btn btn-search" id="buscarCitas">Buscar Citas</button>
+<!-- Filtros -->
+<div class="card p-4 mb-4 shadow-sm">
+    <h5 class="font-weight-bold">Filtros de Búsqueda</h5>
+    <div class="row">
+        <div class="col-md-3">
+            <label for="filtroMedico" class="font-weight-bold">Filtrar por Médico:</label>
+            <select id="filtroMedico" class="form-control">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="filtroEstado" class="font-weight-bold">Filtrar por Estado:</label>
+            <select id="filtroEstado" class="form-control">
+                <option value="">Todos</option>
+                <option value="P">Pendiente</option>
+                <option value="C">Confirmada</option>
+                <option value="X">Cancelada</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="filtroFecha" class="font-weight-bold">Filtrar por Fecha:</label>
+            <input type="date" id="filtroFecha" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label for="filtroEspecialidad" class="font-weight-bold">Filtrar por Especialidad:</label>
+            <select id="filtroEspecialidad" class="form-control">
+                <option value="">Todas</option>
+            </select>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <label for="codigoPacienteBuscar" class="font-weight-bold">Buscar por Código de Paciente:</label>
+            <input type="text" id="codigoPacienteBuscar" class="form-control" placeholder="Ingrese el código del paciente" />
+        </div>
+        <div class="col-md-2 align-self-end d-flex justify-content-center align-items-center "  >
+            <button class="btn btn-primary " id="btnBuscarCitas">Buscar</button>
+            <button class="btn btn-success " data-bs-toggle="modal" data-bs-target="#ModalNuevaCita" >Nueva Cita</button>
+        </div>
+       
     </div>
 
-    <!-- Tabla de citas -->
-    <table id="tablaCitas" class="citas-table">
-        <thead>
+</div>
+
+<!-- Tabla -->
+<div  class="card p-4 shadow-sm">
+    <h5 class="font-weight-bold">Listado de Citas</h5>
+    <table id="tablaCitas" class="display table table-bordered table-hover" style="width:100%">
+        <thead class="thead-dark">
             <tr>
                 <th>Código</th>
                 <th>Paciente</th>
-                <th>Doctor (Especialidad)</th>
-                <th>Tipo de Consulta</th>
+                <th>Médico</th>
+                <th>Especialidad</th>
                 <th>Fecha y Hora</th>
+                <th>Estado</th>
                 <th>Acciones</th>
             </tr>
         </thead>
-        <tbody>
-            <!-- Filas de citas se llenarán con JavaScript -->
-        </tbody>
     </table>
 
-    <!-- Botón para abrir el formulario de registro de nueva cita -->
-    <button class="btn btn-register" id="abrirRegistrarCita">Registrar Nueva Cita</button>
+</div>
 
-    <!-- Modal de registro de nueva cita -->
-    <div id="modalRegistrarCita" class="modal">
+<!-- Modal -->
+<div class="modal fade" id="ModalNuevaCita" tabindex="-1" aria-labelledby="ModalNuevaCitaLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
-            <h3>Registrar Nueva Cita</h3>
-            <label for="nuevoCodigo">Código del Paciente:</label>
-            <input type="text" id="nuevoCodigo" /><br />
-
-            <label for="nuevoNombre">Nombre del Paciente:</label>
-            <input type="text" id="nuevoNombre" /><br />
-
-            <label for="nuevoDoctor">Doctor (Especialidad):</label>
-            <input type="text" id="nuevoDoctor" /><br />
-
-            <label for="nuevoTipoConsulta">Tipo de Consulta:</label>
-            <input type="text" id="nuevoTipoConsulta" /><br />
-
-            <label for="nuevoFechaHora">Fecha y Hora:</label>
-            <input type="datetime-local" id="nuevoFechaHora" /><br />
-
-            <button class="btn btn-submit" id="registrarCita">Registrar Cita</button>
-            <button class="btn btn-cancel" id="cerrarModal">Cerrar</button>
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar Cita</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formCita">
+                    <div class="form-group">
+                        <label for="dniPaciente" class="font-weight-bold">DNI del Paciente <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input type="text" id="dniPaciente" class="form-control" placeholder="Ingrese DNI" />
+                            <div class="input-group-append">
+                                <button class="btn btn-info" type="button" id="btnBuscarPaciente">
+                                    <i class="fas fa-search"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+                        <small id="pacienteInfo" class="form-text text-muted"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="medico" class="font-weight-bold">Médico <span class="text-danger">*</span></label>
+                        <select id="medico" class="form-control">
+                            <option value="">Seleccione un médico</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="especialidad" class="font-weight-bold">Especialidad <span class="text-danger">*</span></label>
+                        <input type="text" id="especialidad" class="form-control" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="tipoConsulta" class="font-weight-bold">Tipo de Consulta <span class="text-danger">*</span></label>
+                        <select id="tipoConsulta" class="form-control">
+                            <option value="">Seleccione el tipo de consulta</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="fechaHora" class="font-weight-bold">Fecha y Hora <span class="text-danger">*</span></label>
+                        <input type="datetime-local" id="fechaHora" class="form-control" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                @*<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>*@
+                <button type="button" class="btn btn-primary">Guardar cita</button>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Estilos CSS para una mejor apariencia -->
-<style>
-    .container {
-        width: 80%;
-        margin: 0 auto;
-        font-family: Arial, sans-serif;
-    }
 
-    h2 {
-        text-align: center;
-        color: #333;
-        font-size: 24px;
-        margin-bottom: 20px;
-    }
+<!-- CSS de DataTables -->
+<link rel="stylesheet" href="~/Scripts/DataTables/dataTables.bootstrap4.min.css">
 
-    .search-section {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 20px;
-    }
+@section Scripts {
+    <!-- Scripts de DataTables -->
+    @*<script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+        <script src="~/Scripts/DataTables/dataTables.bootstrap4.min.js"></script>*@
 
-        .search-section label {
-            margin-right: 10px;
-            font-weight: bold;
-            font-size: 16px;
-        }
 
-        .search-section input {
-            width: 300px;
-            padding: 8px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-    .btn {
-        cursor: pointer;
-        padding: 10px 20px;
-        font-size: 16px;
-        border-radius: 4px;
-        border: none;
-        color: white;
-    }
-
-    .btn-search {
-        background-color: #4CAF50;
-        margin-left: 10px;
-    }
-
-    .btn-register {
-        background-color: #007BFF;
-        display: block;
-        margin: 20px auto;
-    }
-
-    .citas-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-    }
-
-        .citas-table th, .citas-table td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: center;
-        }
-
-        .citas-table th {
-            background-color: #f2f2f2;
-            color: #333;
-            font-weight: bold;
-        }
-
-    /* Estilos para el modal */
-    .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.6);
-        justify-content: center;
-        align-items: center;
-    }
-
-    .modal-content {
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 5px;
-        width: 400px;
-        text-align: center;
-    }
-
-    .btn-submit {
-        background-color: #4CAF50;
-        margin-top: 10px;
-    }
-
-    .btn-cancel {
-        background-color: #f44336;
-        margin-top: 10px;
-    }
-</style>
-
-<!-- JavaScript para la funcionalidad -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script>
-    // Función para cargar citas por código de paciente
-    function cargarCitas() {
-        const pacienteCodigo = $('#pacienteCodigo').val();
-
-        if (!pacienteCodigo) {
-            alert("Por favor, ingrese el código del paciente.");
-            return;
-        }
-
-        $.getJSON('/GestionarCitas/ObtenerCitasPorPaciente', { pacienteCodigo: pacienteCodigo }, function (response) {
-            if (response.consultaExitosa) {
-                const citas = response.data;
-                const tbody = $('#tablaCitas tbody');
-                tbody.empty();
-
-                if (citas && citas.length > 0) {
-                    citas.forEach(cita => {
-                        tbody.append(`
-                            <tr>
-                                <td>${cita.Codigo}</td>
-                                <td>${cita.PacienteNombre}</td>
-                                <td>${cita.DoctorNombre} (${cita.DoctorEspecialidad})</td>
-                                <td>${cita.TipoConsulta}</td>
-                                <td>${cita.FechaHora}</td>
-                                <td>
-                                    <button class="btn btn-edit" onclick="editarCita('${cita.Codigo}')">Modificar</button>
-                                </td>
-                            </tr>
-                        `);
-                    });
-                } else {
-                    tbody.append('<tr><td colspan="6">No se encontraron citas para el paciente.</td></tr>');
-                }
-            } else {
-                alert("Error: " + response.mensaje);
-            }
-        }).fail(function () {
-            alert("Error al cargar citas.");
-        });
-    }
-
-    // Evento de clic para buscar citas
-    $('#buscarCitas').on('click', cargarCitas);
-
-    // Evento para abrir el modal de registro de cita
-    $('#abrirRegistrarCita').on('click', function () {
-        $('#modalRegistrarCita').fadeIn();
-    });
-
-    // Evento para cerrar el modal de registro de cita
-    $('#cerrarModal').on('click', function () {
-        $('#modalRegistrarCita').fadeOut();
-    });
-
-    // Evento de clic para registrar una nueva cita
-    $('#registrarCita').on('click', function () {
-        const cita = {
-            Codigo: $('#nuevoCodigo').val(),
-            PacienteNombre: $('#nuevoNombre').val(),
-            DoctorNombre: $('#nuevoDoctor').val(),
-            TipoConsulta: $('#nuevoTipoConsulta').val(),
-            FechaHora: $('#nuevoFechaHora').val()
-        };
-
-        $.ajax({
-            url: '/GestionarCitas/RegistrarCita',
-            method: 'POST',
-            data: cita,
-            success: function (response) {
-                if (response.consultaExitosa) {
-                    alert("Cita registrada correctamente.");
-                    $('#modalRegistrarCita').fadeOut();
-                    cargarCitas();
-                } else {
-                    alert("Error: " + response.mensaje);
-                }
-            },
-            error: function () {
-                alert("Error al registrar la cita.");
-            }
-        });
-    });
-</script>
-
+    @*buscame :D*@
+    <script src="~/Scripts/GestionarCitasScripts/tablaCitas.js"></script>
+}
