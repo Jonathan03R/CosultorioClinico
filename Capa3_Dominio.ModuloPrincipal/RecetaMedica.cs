@@ -21,5 +21,17 @@ namespace Capa3_Dominio.ModuloPrincipal
         public DateTime RecetaFecha { get => recetaFecha; set => recetaFecha = value; }
         public string RecetaTratamiento { get => recetaTratamiento; set => recetaTratamiento = value; }
         public string RecetaRecomendaciones { get => recetaRecomendaciones; set => recetaRecomendaciones = value; }
+
+        public bool EsDatosValidosReceta()
+        {
+            bool esDescripcionValida = !string.IsNullOrEmpty(recetaDescripcion);
+            bool esFechaValida = RecetaFecha != DateTime.MinValue;
+            bool esTratamientoValido = !string.IsNullOrEmpty(recetaTratamiento);
+            bool esRecomendacionesValidas = !string.IsNullOrEmpty(recetaRecomendaciones);
+
+            return esDescripcionValida && esTratamientoValido && esRecomendacionesValidas;
+        }
+
+       
     }
 }
