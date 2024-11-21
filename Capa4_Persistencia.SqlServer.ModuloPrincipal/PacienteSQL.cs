@@ -2,6 +2,7 @@
 using Capa4_Persistencia.SqlServer.ModuloBase;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -100,6 +101,52 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             }
             return paciente;
         }
+
+        public Paciente MostarPacienteDni(Paciente paciente)
+        {
+            Paciente pacienteResultado = null;
+            string procedimientoSQL = "pro_Buscar_Paciente_dni";
+
+            try
+            {
+                using (SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL))
+                {
+                    string pacienteDniTrimmed = paciente.PacienteDNI.Trim();
+                    comandoSQL.Parameters.Add(new SqlParameter("@pacienteDNI", SqlDbType.NChar, 8) { Value = pacienteDniTrimmed });
+
+                    using (SqlDataReader resultadoSQL = comandoSQL.ExecuteReader())
+                    {
+                        pacienteResultado = new Paciente
+                        {
+                            PacienteCodigo = resultadoSQL["pacienteCodigo"].ToString().Trim(),
+                            PacienteDNI = resultadoSQL["pacienteDNI"].ToString().Trim(),
+                            PacienteNombreCompleto = resultadoSQL["pacienteNombreCompleto"].ToString().Trim(),
+                            PacienteFechaNacimiento = resultadoSQL["pacienteFechaNacimiento"] != DBNull.Value
+                                ? Convert.ToDateTime(resultadoSQL["pacienteFechaNacimiento"])
+                                : DateTime.MinValue, 
+                            PacienteDireccion = resultadoSQL["pacienteDireccion"] != DBNull.Value
+                                ? resultadoSQL["pacienteDireccion"].ToString().Trim()
+                                : null,
+                            PacienteTelefono = resultadoSQL["pacienteTelefono"] != DBNull.Value
+                                ? resultadoSQL["pacienteTelefono"].ToString().Trim()
+                                : null,
+                            PacienteCorreoElectronico = resultadoSQL["pacienteCorreoElectronico"] != DBNull.Value
+                                ? resultadoSQL["pacienteCorreoElectronico"].ToString().Trim()
+                                : null,
+                            PacienteEstado = resultadoSQL["pacienteEstado"].ToString().Trim()
+                        };
+                       
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                throw ex;
+            }
+
+            return pacienteResultado;
+        }
+
 
         private Paciente ObtenerPaciente(SqlDataReader resultadoSQL)
         {

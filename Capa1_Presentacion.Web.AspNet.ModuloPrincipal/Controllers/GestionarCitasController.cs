@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using Capa2_Aplicacion.ModuloPrincipal.Servicio;
+using Capa3_Dominio.ModuloPrincipal;
 using Capa3_Dominio.ModuloPrincipal.Entidad;
 
 namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
@@ -137,6 +138,29 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
             }
 
             return Json(new { data = cita, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public JsonResult ObtenerPacientePorDni(string dni)
+        {
+            bool accionExitosa;
+            string mensajeRetorno;
+            Paciente paciente = new Paciente { PacienteDNI = dni };
+
+            try
+            {
+                paciente = gestionarCitaServicio.obtenerPacientePorDni(paciente);
+                accionExitosa = true;
+                mensajeRetorno = "";
+            }
+            catch (Exception ex)
+            {
+                paciente = null;
+                accionExitosa = false;
+                mensajeRetorno = ex.Message;
+            }
+
+            return Json(new { data = paciente, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
         }
 
         // Cancelar una cita

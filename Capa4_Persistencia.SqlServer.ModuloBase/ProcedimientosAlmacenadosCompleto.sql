@@ -396,7 +396,7 @@ BEGIN
         pacienteFechaNacimiento,
         pacienteEstado
     FROM 
-        Salud.paciente
+        Salud.pacientes
     WHERE 
         (@pacienteDNI IS NOT NULL AND pacienteDNI = @pacienteDNI) OR
         (@pacienteNombreCompleto IS NOT NULL AND pacienteNombreCompleto LIKE '%' + @pacienteNombreCompleto + '%') OR
@@ -404,6 +404,29 @@ BEGIN
 END
 GO
 
+
+CREATE OR ALTER PROCEDURE pro_Buscar_Paciente_dni
+    @pacienteDNI nchar(8) 
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT 
+        pacienteCodigo,
+		pacienteDNI,
+        pacienteNombreCompleto,
+        pacienteCorreoElectronico,
+        pacienteDireccion,
+        pacienteTelefono,
+        pacienteFechaNacimiento,
+        pacienteEstado
+    FROM 
+        Salud.pacientes
+    WHERE 
+        pacienteDNI = @pacienteDNI;
+END
+GO
+select * from Salud.Pacientes
+go
 --------------------------------------
 /*************************************************************************************************************************
 Procedimiento: pro_Cancelar_Cita
@@ -556,14 +579,25 @@ create or alter procedure pro_AgregarHistoriaClinica
 go
 
 
+CREATE or alter PROCEDURE pro_Listar_Medicos
+AS
+BEGIN
+    SELECT 
+        medicoCodigo,
+        medicoApellido,
+        medicoNombre,
+        medicoCorreo,
+        medicoDNI,
+        medicoTelefono,
+        medicoEstado,
+        especialidadCodigo
+    FROM 
+        Administracion.Medico
+    ORDER BY 
+        medicoApellido, medicoNombre;
+END;
+GO
 
-/*************************************************************************************************************************
-Procedimiento: pro_VisualizarCitasPaciente
-Descripción: Procedimiento para visualizar las citas que tiene un cliente.
-Parámetros: 
- -@pacienteCodigo: Código del paciente para el que se desean visualizar las citas.
-
-***************************************************************************************************************************/
 
 /******************************************************************************************
 Descripción de procedimiento almacenado: Genera un código único basado en un prefijo y la secuencia en una columna específica.

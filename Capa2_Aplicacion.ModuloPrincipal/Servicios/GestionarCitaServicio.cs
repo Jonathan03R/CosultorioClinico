@@ -13,12 +13,14 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
         private readonly AccesoSQLServer accesoSQLServer;
         private readonly CitaSQL citaSQL;
         private readonly EspecialidadSQL especialidadSQL;
+        private readonly PacienteSQL pacienteSQL;   
 
         public GestionarCitaServicio()
         {
             accesoSQLServer = new AccesoSQLServer();
             citaSQL = new CitaSQL(accesoSQLServer);
             especialidadSQL = new EspecialidadSQL(accesoSQLServer);
+            pacienteSQL = new PacienteSQL(accesoSQLServer); 
         }
 
         public void RegistrarCita(Cita cita)
@@ -144,6 +146,23 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
                 List<TipoConsulta> tipoConsultas = citaSQL.ListarTiposDeConsulta();
                 accesoSQLServer.TerminarTransaccion();
                 return tipoConsultas;
+            }
+            catch (Exception ex)
+            {
+                accesoSQLServer.CancelarTransaccion();
+                throw ex;
+            }
+        }
+
+
+        public Paciente obtenerPacientePorDni( Paciente paciente)
+        {
+            try
+            {
+                accesoSQLServer.IniciarTransaccion();
+                Paciente pacienteObtenido = pacienteSQL.MostarPacienteDni(paciente);
+                accesoSQLServer.TerminarTransaccion();
+                return pacienteObtenido;
             }
             catch (Exception ex)
             {
