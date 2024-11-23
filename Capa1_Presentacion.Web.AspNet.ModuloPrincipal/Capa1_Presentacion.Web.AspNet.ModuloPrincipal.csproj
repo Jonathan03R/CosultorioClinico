@@ -296,6 +296,7 @@
     <Content Include="Content\DataTables\images\sort_desc.png" />
     <Content Include="Content\DataTables\images\sort_desc_disabled.png" />
     <Content Include="Content\DataTables\swf\flashExport.swf" />
+    <Content Include="Content\Estilos-GestionarPacientes\ModalActualizarPacientes.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -442,6 +443,8 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\GestionarPacientes\ListaPacientes.cshtml" />
     <Content Include="Views\GestionarCitas\GestionCita.cshtml" />
+    <Content Include="Views\Shared\Modals\_ModalActualizarPaciente.cshtml" />
+    <Content Include="Views\Shared\Modals\_ModalAgregarPaciente.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

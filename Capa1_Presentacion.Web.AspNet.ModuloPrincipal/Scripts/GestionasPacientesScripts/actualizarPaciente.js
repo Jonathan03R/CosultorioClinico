@@ -1,24 +1,43 @@
 ﻿$(document).ready(function () {
-    // Inicializar el manejo del formulario de actualización al cargar la página
     inicializarFormularioActualizarPaciente();
+
+    $('#tabla_pacientes').on('click', '.btn-editar', function () {
+        const paciente = $('#tabla_pacientes').DataTable().row($(this).closest('tr')).data(); 
+        abrirFormModalPaciente(paciente); 
+    });
 });
 
 /**
- * Inicializa el evento submit del formulario de actualización.
+ * Abre el modal y llena los datos del paciente seleccionado.
+ * @param {Object} paciente - Datos del paciente.
  */
+function abrirFormModalPaciente(paciente) {
+    $('#mostrarPacienteCodigo').text(paciente.PacienteCodigo);
+    $('#mostrarPacienteEstado').text(paciente.PacienteEstado);
+    const estadoSpan = $('#mostrarPacienteEstado');
+    if (paciente.PacienteEstado === "Activo") {
+        estadoSpan.removeClass('bg-danger').addClass('bg-success');
+    } else {
+        estadoSpan.removeClass('bg-success').addClass('bg-danger');
+    }
+    $('#mostrarPacienteFechaNacimiento').text(paciente.PacienteFechaNacimiento || 'No disponible');
+    $('#mostrarPacienteSeguro').text(paciente.PacienteSeguro || 'Sin seguro');
+    $('#mostrarPacienteDNI').text(paciente.PacienteDNI || 'No disponible');
+    $('#actualizarPacienteNombreCompleto').val(paciente.PacienteNombreCompleto);
+    $('#actualizarPacienteDireccion').val(paciente.PacienteDireccion || '');
+    $('#actualizarPacienteTelefono').val(paciente.PacienteTelefono || '');
+    $('#actualizarPacienteCorreo').val(paciente.PacienteCorreoElectronico || '');
+    $('#modalActualizarPaciente').modal('show');
+}
+
 function inicializarFormularioActualizarPaciente() {
     $('#formActualizarPaciente').on('submit', function (event) {
-        event.preventDefault(); // Evitar el envío por defecto del formulario
+        event.preventDefault(); 
 
-        // Capturar los datos del formulario
         const paciente = obtenerDatosFormularioActualizar();
-
-        // Validar los datos antes de enviar
         if (!validarDatosActualizarPaciente(paciente)) {
-            return; // Detener el proceso si los datos no son válidos
+            return;
         }
-
-        // Enviar los datos al servidor mediante AJAX
         enviarDatosActualizarPaciente(paciente);
     });
 }
@@ -70,7 +89,7 @@ function validarDatosActualizarPaciente(paciente) {
  */
 function enviarDatosActualizarPaciente(paciente) {
     $.ajax({
-        url: actualizarPacienteUrl, // URL generada desde Razor
+        url: actualizarPacienteUrl, 
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify(paciente),

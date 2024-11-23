@@ -23,13 +23,20 @@ function toggleDetallesFila(table, elemento) {
 }
 
 function formatearDetalles(data) {
+    const estadoClase = data.PacienteEstado === "Activo" ? "bg-success" : "bg-danger";
+    const fechaActivacion = data.PacienteFechaActivacion || "Fecha no disponible";
+    const notasAdicionales = data.PacienteNotas || "No hay notas adicionales";
+
     return `
         <div class="expansion-content">
             <div class="contenido">
-                <p><b>${data.PacienteNombreCompleto}</b> se activó el día ${data.PacienteFechaActivacion}.</p>
-                <p>Estado actual: <span class="badge bg-success">${data.PacienteEstado}</span></p>
-                <p>Notas adicionales: ${data.PacienteNotas}</p>
-                <p>¿Quieres actualizar al paciente? <a href="#" onclick='abrirFormModalPaciente(${JSON.stringify(data)})'>Actualizar</a></p>
+                <p><b>${data.PacienteNombreCompleto}</b> se activó el día ${fechaActivacion}.</p>
+                <p>Estado actual: <span class="badge ${estadoClase}">${data.PacienteEstado}</span></p>
+                <p>Notas adicionales: ${notasAdicionales}</p>
+                <p>
+                    ¿Quieres actualizar al paciente? 
+                    <button class="btn btn-link p-0" onclick='abrirFormModalPaciente(${JSON.stringify(data)})'>Actualizar</button>
+                </p>
             </div>
         </div>`;
 }
