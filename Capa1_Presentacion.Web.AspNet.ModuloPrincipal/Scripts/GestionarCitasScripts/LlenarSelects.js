@@ -1,9 +1,57 @@
 ﻿$(document).ready(function () {
-    cargarEspecialidades();
+    cargarEspecialidades(); 
     cargarEstados();
     cargarTipoConsulta();
+
+    $('#inputSelectEspecialidadModal').on('change', function () {
+        const especialidadSeleccionada = $(this).find('option:selected').text();
+
+        if (especialidadSeleccionada) {
+            cargarMedicosPorEspecialidad(especialidadSeleccionada); 
+        } else {
+            limpiarSelectMedico();
+        }
+    });
 });
 
+
+function cargarMedicosPorEspecialidad(especialidadSeleccionada) {
+    $.ajax({
+        url: '/GestionarCitas/ListarMedicosConEspecialidad',
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            if (response.consultaExitosa) {
+                const selectMedico = $('#inputSelectMedicoModal');
+                selectMedico.empty(); // Limpia el select antes de llenarlo
+                selectMedico.append('<option value="">Seleccione un médico</option>');
+
+                // Filtra los médicos por el nombre de la especialidad seleccionada
+                const medicosFiltrados = response.data.filter(medico => medico.EspecialidadNombre.trim() === especialidadSeleccionada.trim());
+
+                medicosFiltrados.forEach(medico => {
+                    const optionHtml = `<option value="${medico.MedicoCodigo.trim()}">${medico.MedicoNombre}</option>`;
+                    selectMedico.append(optionHtml);
+                });
+
+                if (medicosFiltrados.length === 0) {
+                    alert("No hay médicos disponibles para esta especialidad.");
+                }
+            } else {
+                alert(`Error al cargar médicos: ${response.mensaje}`);
+            }
+        },
+        error: function (xhr, status, error) {
+            alert(`Error al realizar la solicitud: ${error}`);
+        }
+    });
+}
+
+function limpiarSelectMedico() {
+    const selectMedico = $('#inputSelectMedicoModal');
+    selectMedico.empty();
+    selectMedico.append('<option value="">Seleccione un médico</option>');
+}
 function cargarEspecialidades() {
     $.ajax({
         url: '/GestionarCitas/ListarEspecialidades',

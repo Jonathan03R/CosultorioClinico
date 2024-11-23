@@ -15,12 +15,7 @@ namespace Capa3_Dominio.ModuloPrincipal.Entidad
         private Medico citaMedico;
         private TipoConsulta citaTipoConsulta;
 
-        public Cita(string citaCodigo, string citaEstado, DateTime citaFechaHora)
-        {
-            this.citaCodigo = citaCodigo;
-            this.citaEstado = citaEstado;
-            this.citaFechaHora = citaFechaHora;
-        }
+
 
         public string CitaCodigo { get => citaCodigo; set => citaCodigo = value; }
         public string CitaEstado { get => citaEstado; set => citaEstado = value; }
