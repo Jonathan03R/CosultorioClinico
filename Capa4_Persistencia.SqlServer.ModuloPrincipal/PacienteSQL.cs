@@ -42,6 +42,24 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             }
         }
 
+        public void ActualizarPaciente(Paciente paciente)
+        {
+            string procedimientoSQL = "pro_Actualizar_Paciente";
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+                comandoSQL.Parameters.Add(new SqlParameter("@pacienteCodigo", paciente.PacienteCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@pacienteNombreCompleto", (object)paciente.PacienteNombreCompleto ?? DBNull.Value));
+                comandoSQL.Parameters.Add(new SqlParameter("@pacienteDireccion", (object)paciente.PacienteDireccion ?? DBNull.Value));
+                comandoSQL.Parameters.Add(new SqlParameter("@pacienteTelefono", (object)paciente.PacienteTelefono ?? DBNull.Value));
+                comandoSQL.Parameters.Add(new SqlParameter("@pacienteCorreoElectronico", (object)paciente.PacienteCorreoElectronico ?? DBNull.Value));
+                comandoSQL.ExecuteNonQuery();
+            }
+            catch (SqlException ex)
+            {
+                throw ex;
+            }
+        }
 
         public void EliminarPaciente(Paciente pacienteCodigo)
         {
@@ -72,10 +90,6 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                 throw new ExcepcionPacienteInvalido(ExcepcionPacienteInvalido.ERROR_DE_ELIMINACION);
             }
         }
-
-
-
-
 
         public Paciente MostrarPacientePorCodigo (Paciente pacienteCodigo)
         {
@@ -116,7 +130,9 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
 
                     using (SqlDataReader resultadoSQL = comandoSQL.ExecuteReader())
                     {
-                        pacienteResultado = new Paciente
+                        if (resultadoSQL.Read()) // Verifica si hay una fila disponible
+                        {
+                            pacienteResultado = new Paciente
                         {
                             PacienteCodigo = resultadoSQL["pacienteCodigo"].ToString().Trim(),
                             PacienteDNI = resultadoSQL["pacienteDNI"].ToString().Trim(),
@@ -134,8 +150,9 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                                 ? resultadoSQL["pacienteCorreoElectronico"].ToString().Trim()
                                 : null,
                             PacienteEstado = resultadoSQL["pacienteEstado"].ToString().Trim()
-                        };
-                       
+                            };
+                        }
+
                     }
                 }
             }
@@ -148,6 +165,7 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
         }
 
 
+       
         private Paciente ObtenerPaciente(SqlDataReader resultadoSQL)
         {
             Paciente paciente = new Paciente
@@ -190,13 +208,6 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             }
             return listaPacientes;
         }
-
-        public void ActualizarPaciente(Paciente paciente)
-        {
-            throw new NotImplementedException();
-        }
-
-
         public List<HistoriaClinica> ListarPacientes()
         {
             List<HistoriaClinica> listaHistoriasClinicas = new List<HistoriaClinica>();

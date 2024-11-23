@@ -14,6 +14,8 @@ function toggleDetallesFila(table, elemento) {
     } else {
         // Expandir
         row.child(formatearDetalles(row.data())).show();
+
+
         row.child().find('.expansion-content').hide().slideDown(400);
         tr.addClass('shown');
         icon.removeClass('fa-plus-circle text-success').addClass('fa-minus-circle text-danger');
@@ -30,4 +32,26 @@ function formatearDetalles(data) {
                 <p>¿Quieres actualizar al paciente? <a href="#" onclick='abrirFormModalPaciente(${JSON.stringify(data)})'>Actualizar</a></p>
             </div>
         </div>`;
+}
+
+
+
+function abrirFormModalPaciente(paciente) {
+
+    console.log('Paciente seleccionado:', paciente); 
+    // Datos de solo lectura
+    $('#mostrarPacienteCodigo').text(paciente.PacienteCodigo);
+    $('#mostrarPacienteEstado').text(paciente.PacienteEstado);
+    $('#mostrarPacienteFechaNacimiento').text(paciente.PacienteFechaNacimiento || 'No disponible');
+    $('#mostrarPacienteDNI').text(paciente.PacienteDNI || 'No disponible');
+    $('#mostrarPacienteSeguro').text(paciente.PacienteSeguro || 'Sin seguro');
+
+    // Datos editables
+    $('#actualizarPacienteNombreCompleto').val(paciente.PacienteNombreCompleto);
+    $('#actualizarPacienteDireccion').val(paciente.PacienteDireccion || '');
+    $('#actualizarPacienteTelefono').val(paciente.PacienteTelefono || '');
+    $('#actualizarPacienteCorreo').val(paciente.PacienteCorreoElectronico || '');
+
+    // Abrir el modal
+    $('#modalActualizarPaciente').modal('show');
 }

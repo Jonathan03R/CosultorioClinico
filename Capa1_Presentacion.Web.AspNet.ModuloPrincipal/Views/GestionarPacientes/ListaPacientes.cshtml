@@ -192,10 +192,68 @@
         </div>
     </div>
 </div>
+
+
+<!-- Modal para actualizar paciente -->
+<div class="modal fade" id="modalActualizarPaciente" tabindex="-1" aria-labelledby="modalActualizarPacienteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form id="formActualizarPaciente">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalActualizarPacienteLabel">Actualizar Paciente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Datos de solo lectura -->
+                    <div class="mb-3">
+                        <h6>Información General</h6>
+                        <p><strong>Código del Paciente:</strong> <span id="mostrarPacienteCodigo"></span></p>
+                        <p><strong>Estado:</strong> <span id="mostrarPacienteEstado"></span></p>
+                        <p><strong>Fecha de Nacimiento:</strong> <span id="mostrarPacienteFechaNacimiento"></span></p>
+                        <p><strong>Seguro:</strong> <span id="mostrarPacienteSeguro"></span></p>
+                        <p><strong>DNI:</strong> <span id="mostrarPacienteDNI"></span></p>
+
+                    </div>
+
+                    <hr />
+
+                    <!-- Datos editables -->
+                    <div class="mb-3">
+                        <h6>Actualizar Información</h6>
+                        <div class="mb-3">
+                            <label for="actualizarPacienteNombreCompleto" class="form-label">Nombre Completo</label>
+                            <input type="text" class="form-control" id="actualizarPacienteNombreCompleto" name="PacienteNombreCompleto" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="actualizarPacienteDireccion" class="form-label">Dirección</label>
+                            <input type="text" class="form-control" id="actualizarPacienteDireccion" name="PacienteDireccion">
+                        </div>
+                        <div class="mb-3">
+                            <label for="actualizarPacienteTelefono" class="form-label">Teléfono</label>
+                            <input type="text" class="form-control" id="actualizarPacienteTelefono" name="PacienteTelefono">
+                        </div>
+                        <div class="mb-3">
+                            <label for="actualizarPacienteCorreo" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="actualizarPacienteCorreo" name="PacienteCorreoElectronico">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
 @section scripts {
     <script>
         var urlRegistrarPaciente = '@Url.Action("RegistrarPaciente", "GestionarPacientes")';
         var urlListarPacientes = '@Url.Action("ListarPacientes", "GestionarPacientes")';
+        var actualizarPacienteUrl = '@Url.Action("ActualizarPaciente", "GestionarPacientes")';
     </script>
 
     <script src="~/Scripts/GestionasPacientesScripts/utils.js"></script>
@@ -204,6 +262,8 @@
     <script src="~/Scripts/GestionasPacientesScripts/contactosEmergencia.js"></script>
     <script src="~/Scripts/GestionasPacientesScripts/formPacientes.js"></script>
     <script src="~/Scripts/GestionasPacientesScripts/buscadorPacientes.js"></script>
+    <script src="~/Scripts/GestionasPacientesScripts/actualizarPaciente.js"></script>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

@@ -56,6 +56,35 @@ create or alter procedure pro_Crear_Paciente
 	);
 go
 
+
+/******************************************************************************************
+Procedimiento: pro_Eliminar_Paciente
+Descripción: Se actualizara los datos necesarios del paciente
+Parámetros:
+    - son muchos pero alli revisalen ps :)
+******************************************************************************************/
+
+create or alter procedure pro_Actualizar_Paciente
+    @pacienteCodigo nchar(10),
+    @pacienteNombreCompleto nvarchar(100) = null,
+    @pacienteDireccion nvarchar(255) = null,
+    @pacienteTelefono nvarchar(15) = null,
+    @pacienteCorreoElectronico nvarchar(100) = null
+	as
+	begin
+		set nocount on;
+
+		update Salud.Pacientes
+		set 
+			pacienteNombreCompleto = coalesce(@pacienteNombreCompleto, pacienteNombreCompleto),
+			pacienteDireccion = coalesce(@pacienteDireccion, pacienteDireccion),
+			pacienteTelefono = coalesce(@pacienteTelefono, pacienteTelefono),
+			pacienteCorreoElectronico = coalesce(@pacienteCorreoElectronico, pacienteCorreoElectronico)
+		where pacienteCodigo = @pacienteCodigo;
+		set nocount off;
+	end;
+go
+
 /******************************************************************************************
 Procedimiento: pro_Eliminar_Paciente
 Descripción: Cambia el estado de un paciente a 'I' (Inactivo) en lugar de eliminar el registro
@@ -425,8 +454,7 @@ BEGIN
         pacienteDNI = @pacienteDNI;
 END
 GO
-select * from Salud.Pacientes
-go
+
 --------------------------------------
 /*************************************************************************************************************************
 Procedimiento: pro_Cancelar_Cita
