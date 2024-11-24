@@ -13,34 +13,44 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
         private readonly AccesoSQLServer accesoSQLServer;
         private readonly CitaSQL citaSQL;
         private readonly EspecialidadSQL especialidadSQL;
+        private readonly PacienteSQL pacienteSQL;
+        private readonly MedicoSQL medicoSQL;
+        private readonly CodigoSQL codigoSQL;   
 
         public GestionarCitaServicio()
         {
             accesoSQLServer = new AccesoSQLServer();
             citaSQL = new CitaSQL(accesoSQLServer);
             especialidadSQL = new EspecialidadSQL(accesoSQLServer);
+            pacienteSQL = new PacienteSQL(accesoSQLServer);
+            medicoSQL = new MedicoSQL(accesoSQLServer);
+            codigoSQL = new CodigoSQL(accesoSQLServer);
         }
+
+        public List<Medico> ObtenerMedicosConEspecialidad()
+        {
+            try
+            {
+                accesoSQLServer.IniciarTransaccion();
+                List<Medico> listaMedicos = medicoSQL.MostrarMedicosConEspecialidad();
+                accesoSQLServer.TerminarTransaccion();
+
+                return listaMedicos;
+            }
+            catch (Exception ex)
+            {
+                accesoSQLServer.CancelarTransaccion();
+                throw ex;
+            }
+        }
+
 
         public void RegistrarCita(Cita cita)
         {
-            if (!cita.EsValida())
-            {
-                throw new Exception("Datos no son validos");
-            }
-
-            if (string.IsNullOrEmpty(cita.CitaCodigo) ||
-                string.IsNullOrEmpty(cita.CitaEstado) ||
-                cita.CitaFechaHora == default ||
-                cita.CitaPaciente == null ||
-                cita.CitaTipoConsulta == null ||
-                cita.CitaMedico == null)
-            {
-                throw new ArgumentException("Los datos de la cita no son válidos");
-            }
-
             accesoSQLServer.IniciarTransaccion();
             try
             {
+                cita.CitaCodigo = codigoSQL.GenerarCodigoUnico("CA", "Gestion.cita", "citaCodigo");
                 citaSQL.CrearCita(cita);
                 accesoSQLServer.TerminarTransaccion();
             }
@@ -49,7 +59,6 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
                 accesoSQLServer.CancelarTransaccion();
                 throw ex;
             }
-            cita.EnviarConfirmacion();
         }
 
         public void ActualizarCita(Cita cita)
@@ -144,6 +153,23 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
                 List<TipoConsulta> tipoConsultas = citaSQL.ListarTiposDeConsulta();
                 accesoSQLServer.TerminarTransaccion();
                 return tipoConsultas;
+            }
+            catch (Exception ex)
+            {
+                accesoSQLServer.CancelarTransaccion();
+                throw ex;
+            }
+        }
+
+
+        public Paciente obtenerPacientePorDni( Paciente paciente)
+        {
+            try
+            {
+                accesoSQLServer.IniciarTransaccion();
+                Paciente pacienteObtenido = pacienteSQL.MostarPacienteDni(paciente);
+                accesoSQLServer.TerminarTransaccion();
+                return pacienteObtenido;
             }
             catch (Exception ex)
             {

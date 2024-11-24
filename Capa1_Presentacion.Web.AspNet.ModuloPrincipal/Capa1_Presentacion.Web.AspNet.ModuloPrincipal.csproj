@@ -296,6 +296,7 @@
     <Content Include="Content\DataTables\images\sort_desc.png" />
     <Content Include="Content\DataTables\images\sort_desc_disabled.png" />
     <Content Include="Content\DataTables\swf\flashExport.swf" />
+    <Content Include="Content\Estilos-GestionarPacientes\ModalActualizarPacientes.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -407,12 +408,15 @@
     <Content Include="Scripts\DataTables\responsive.semanticui.js" />
     <Content Include="Scripts\DataTables\responsive.semanticui.min.js" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
+    <Content Include="Scripts\GestionarCitasScripts\AgregarCita.js" />
+    <Content Include="Scripts\GestionarCitasScripts\BuscarEmpleado.js" />
+    <Content Include="Scripts\GestionarCitasScripts\LlenarSelects.js" />
     <Content Include="Scripts\GestionarCitasScripts\tablaCitas.js" />
+    <Content Include="Scripts\GestionasPacientesScripts\actualizarPaciente.js" />
     <Content Include="Scripts\GestionasPacientesScripts\buscadorPacientes.js" />
     <Content Include="Scripts\GestionasPacientesScripts\contactosEmergencia.js" />
     <Content Include="Scripts\GestionasPacientesScripts\estadoPacientes.js" />
     <Content Include="Scripts\GestionasPacientesScripts\formPacientes.js" />
-    <Content Include="Scripts\GestionasPacientesScripts\ListaPacientes.js" />
     <Content Include="Scripts\GestionasPacientesScripts\tablaPacientes.js" />
     <Content Include="Scripts\GestionasPacientesScripts\utils.js" />
     <Content Include="Scripts\jquery-3.7.1.js" />
@@ -441,6 +445,8 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\GestionarPacientes\ListaPacientes.cshtml" />
     <Content Include="Views\GestionarCitas\GestionCita.cshtml" />
+    <Content Include="Views\Shared\Modals\_ModalActualizarPaciente.cshtml" />
+    <Content Include="Views\Shared\Modals\_ModalAgregarPaciente.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

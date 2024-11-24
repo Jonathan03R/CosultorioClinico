@@ -161,7 +161,7 @@ go
 -- Crear tabla cita
 create table Gestion.cita
     (
-    citaCodigo nchar(8),
+    citaCodigo nchar(10),
     citaEstado nchar(1) default 'P',
     citaFechaHora datetime not null,
     citaNotificacionCodigo nchar(8),
@@ -176,6 +176,7 @@ create table Gestion.cita
     constraint CitaEstadoCK check (citaEstado in ('P', 'C', 'X')) -- P: pendiente, C: confirmada, X: cancelada
     )
 go
+
 
 --tablas de gestión de consultas 
 create table Gestion.Consulta (
@@ -261,4 +262,7 @@ values
 ('CITA003', '2024-11-22 09:00:00', 'PAC003', 'TC001', 'MED001'),
 ('CITA004', '2024-11-23 11:00:00', 'PAC004', 'TC002', 'MED002');
 go
+
+
+
 
