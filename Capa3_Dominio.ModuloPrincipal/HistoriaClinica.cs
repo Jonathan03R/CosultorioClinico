@@ -52,5 +52,15 @@ namespace Capa3_Dominio.ModuloPrincipal
 
             paciente = nuevoPaciente;
         }
+
+        public bool RegistrarCambioHistorialClinico()
+        {
+            // Actualizar la fecha de última modificación
+            FechaActualizacion = DateTime.Now;
+
+            // Retornar true para indicar que se actualizó correctamente
+            return true;
+        }
+
     }
 }

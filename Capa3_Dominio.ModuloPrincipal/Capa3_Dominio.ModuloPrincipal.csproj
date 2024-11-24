@@ -43,7 +43,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Citas.cs" />
+    <Compile Include="Consulta.cs" />
     <Compile Include="ContactoEmergencia.cs" />
+    <Compile Include="Diagnostico.cs" />
     <Compile Include="Especialidad.cs" />
     <Compile Include="HistoriaClinica.cs" />
     <Compile Include="Horario.cs" />
@@ -51,6 +53,7 @@
     <Compile Include="Notificacion.cs" />
     <Compile Include="Paciente.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RecetaMedica.cs" />
     <Compile Include="TipoConsulta.cs" />
     <Compile Include="TransferenciaDatos\CitaDTO.cs" />
   </ItemGroup>
