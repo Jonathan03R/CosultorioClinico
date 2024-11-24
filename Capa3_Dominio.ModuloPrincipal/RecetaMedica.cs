@@ -32,6 +32,17 @@ namespace Capa3_Dominio.ModuloPrincipal
             return esDescripcionValida && esTratamientoValido && esRecomendacionesValidas;
         }
 
-       
+        /*Regla 6:*/
+        public bool ValidarEmisionRecetaMedica()
+        {
+            // Validar si la receta corresponde a la consulta realizada
+            if (RecetaCodigo == RecetaConsultaCodigo)
+            {
+                return true;
+            }
+            return false;
+        }
+
+
     }
 }

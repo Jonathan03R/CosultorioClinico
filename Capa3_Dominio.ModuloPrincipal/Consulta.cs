@@ -74,40 +74,9 @@ namespace Capa3_Dominio.ModuloPrincipal
             return true;
         }
 
-        /*Regla 6:*/
-        public bool ValidarEmisionRecetaMedica(RecetaMedica receta)
-        {
-            // Validar si la receta corresponde a la consulta realizada
-            if (this.ConsultaCodigo == receta.RecetaConsultaCodigo)
-            {
-                return true; 
-            }
-            return false; 
-        }
+        /*Regla 6 en RecetaMedica: ValidarEmisionRecetaMedica*/
 
-        /*Regla 7:*/
-        public bool RegistrarCambioHistorialClinico(HistoriaClinica historiaClinica)
-        {
-            // Validación simple para verificar si el objeto historiaClinica es válido
-            if (historiaClinica != null && historiaClinica.FechaActualizacion != default(DateTime))
-            {
-                return true;
-            }
-
-            // Si la fecha no es correcta, no se realiza el cambio
-            return false;
-        }
-
-
-        // Regla 09: Filtra consultas programadas para un médico en un día específico
-        public static List<Consulta> ObtenerConsultasDelDia(List<Consulta> consultas, string medicoCodigo, DateTime fecha)
-        {
-            return consultas.Where(c =>
-                c.ConsultaMedicoCodigo == medicoCodigo &&
-                c.ConsultaFechaHora.Date == fecha.Date &&
-                c.ConsultaEstado != "Cancelada"
-            ).ToList();
-        }
+        /*Regla 7 en Historia Clinica: RegistrarCambioHistorialClinico:*/
     }
     
 }
