@@ -14,6 +14,8 @@ function toggleDetallesFila(table, elemento) {
     } else {
         // Expandir
         row.child(formatearDetalles(row.data())).show();
+
+
         row.child().find('.expansion-content').hide().slideDown(400);
         tr.addClass('shown');
         icon.removeClass('fa-plus-circle text-success').addClass('fa-minus-circle text-danger');
@@ -21,13 +23,42 @@ function toggleDetallesFila(table, elemento) {
 }
 
 function formatearDetalles(data) {
+    const estadoClase = data.PacienteEstado === "Activo" ? "bg-success" : "bg-danger";
+    const fechaActivacion = data.PacienteFechaActivacion || "Fecha no disponible";
+    const notasAdicionales = data.PacienteNotas || "No hay notas adicionales";
+
     return `
         <div class="expansion-content">
             <div class="contenido">
-                <p><b>${data.PacienteNombreCompleto}</b> se activó el día ${data.PacienteFechaActivacion}.</p>
-                <p>Estado actual: <span class="badge bg-success">${data.PacienteEstado}</span></p>
-                <p>Notas adicionales: ${data.PacienteNotas}</p>
-                <p>¿Quieres actualizar al paciente? <a href="#" onclick='abrirFormModalPaciente(${JSON.stringify(data)})'>Actualizar</a></p>
+                <p><b>${data.PacienteNombreCompleto}</b> se activó el día ${fechaActivacion}.</p>
+                <p>Estado actual: <span class="badge ${estadoClase}">${data.PacienteEstado}</span></p>
+                <p>Notas adicionales: ${notasAdicionales}</p>
+                <p>
+                    ¿Quieres actualizar al paciente? 
+                    <button class="btn btn-link p-0" onclick='abrirFormModalPaciente(${JSON.stringify(data)})'>Actualizar</button>
+                </p>
             </div>
         </div>`;
+}
+
+
+
+function abrirFormModalPaciente(paciente) {
+
+    console.log('Paciente seleccionado:', paciente); 
+    // Datos de solo lectura
+    $('#mostrarPacienteCodigo').text(paciente.PacienteCodigo);
+    $('#mostrarPacienteEstado').text(paciente.PacienteEstado);
+    $('#mostrarPacienteFechaNacimiento').text(paciente.PacienteFechaNacimiento || 'No disponible');
+    $('#mostrarPacienteDNI').text(paciente.PacienteDNI || 'No disponible');
+    $('#mostrarPacienteSeguro').text(paciente.PacienteSeguro || 'Sin seguro');
+
+    // Datos editables
+    $('#actualizarPacienteNombreCompleto').val(paciente.PacienteNombreCompleto);
+    $('#actualizarPacienteDireccion').val(paciente.PacienteDireccion || '');
+    $('#actualizarPacienteTelefono').val(paciente.PacienteTelefono || '');
+    $('#actualizarPacienteCorreo').val(paciente.PacienteCorreoElectronico || '');
+
+    // Abrir el modal
+    $('#modalActualizarPaciente').modal('show');
 }

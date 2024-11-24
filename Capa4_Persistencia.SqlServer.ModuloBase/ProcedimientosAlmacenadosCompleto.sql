@@ -56,6 +56,35 @@ create or alter procedure pro_Crear_Paciente
 	);
 go
 
+
+/******************************************************************************************
+Procedimiento: pro_Eliminar_Paciente
+Descripción: Se actualizara los datos necesarios del paciente
+Parámetros:
+    - son muchos pero alli revisalen ps :)
+******************************************************************************************/
+
+create or alter procedure pro_Actualizar_Paciente
+    @pacienteCodigo nchar(10),
+    @pacienteNombreCompleto nvarchar(100) = null,
+    @pacienteDireccion nvarchar(255) = null,
+    @pacienteTelefono nvarchar(15) = null,
+    @pacienteCorreoElectronico nvarchar(100) = null
+	as
+	begin
+		set nocount on;
+
+		update Salud.Pacientes
+		set 
+			pacienteNombreCompleto = coalesce(@pacienteNombreCompleto, pacienteNombreCompleto),
+			pacienteDireccion = coalesce(@pacienteDireccion, pacienteDireccion),
+			pacienteTelefono = coalesce(@pacienteTelefono, pacienteTelefono),
+			pacienteCorreoElectronico = coalesce(@pacienteCorreoElectronico, pacienteCorreoElectronico)
+		where pacienteCodigo = @pacienteCodigo;
+		set nocount off;
+	end;
+go
+
 /******************************************************************************************
 Procedimiento: pro_Eliminar_Paciente
 Descripción: Cambia el estado de un paciente a 'I' (Inactivo) en lugar de eliminar el registro
@@ -396,11 +425,33 @@ BEGIN
         pacienteFechaNacimiento,
         pacienteEstado
     FROM 
-        Salud.paciente
+        Salud.pacientes
     WHERE 
         (@pacienteDNI IS NOT NULL AND pacienteDNI = @pacienteDNI) OR
         (@pacienteNombreCompleto IS NOT NULL AND pacienteNombreCompleto LIKE '%' + @pacienteNombreCompleto + '%') OR
         (@pacienteTelefono IS NOT NULL AND pacienteTelefono = @pacienteTelefono);
+END
+GO
+
+
+CREATE OR ALTER PROCEDURE pro_Buscar_Paciente_dni
+    @pacienteDNI nchar(8) 
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT 
+        pacienteCodigo,
+		pacienteDNI,
+        pacienteNombreCompleto,
+        pacienteCorreoElectronico,
+        pacienteDireccion,
+        pacienteTelefono,
+        pacienteFechaNacimiento,
+        pacienteEstado
+    FROM 
+        Salud.pacientes
+    WHERE 
+        pacienteDNI = @pacienteDNI;
 END
 GO
 
@@ -556,14 +607,25 @@ create or alter procedure pro_AgregarHistoriaClinica
 go
 
 
+CREATE or alter PROCEDURE pro_Listar_Medicos
+AS
+BEGIN
+    SELECT 
+        medicoCodigo,
+        medicoApellido,
+        medicoNombre,
+        medicoCorreo,
+        medicoDNI,
+        medicoTelefono,
+        medicoEstado,
+        especialidadCodigo
+    FROM 
+        Administracion.Medico
+    ORDER BY 
+        medicoApellido, medicoNombre;
+END;
+GO
 
-/*************************************************************************************************************************
-Procedimiento: pro_VisualizarCitasPaciente
-Descripción: Procedimiento para visualizar las citas que tiene un cliente.
-Parámetros: 
- -@pacienteCodigo: Código del paciente para el que se desean visualizar las citas.
-
-***************************************************************************************************************************/
 
 /******************************************************************************************
 Descripción de procedimiento almacenado: Genera un código único basado en un prefijo y la secuencia en una columna específica.
@@ -594,4 +656,3 @@ as
 
 set nocount off;
 go
-

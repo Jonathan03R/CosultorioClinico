@@ -29,7 +29,8 @@ function inicializarTablaPacientes() {
         "responsive": false,
         "ordering": false,
         "columnDefs": [
-            { "targets": 0, "orderable": false, "className": "dt-center" }
+            { "targets": 0, "orderable": false, "className": "dt-center" },
+            { "targets": [7, 8, 9, 10], "visible": true } 
         ]
     });
 }
@@ -38,10 +39,14 @@ function procesarDatosPacientes(data) {
     return data.map(function (item) {
         return {
             PacienteCodigo: item.PacienteCodigo,
+            PacienteDNI: item.PacienteDNI,
             PacienteNombreCompleto: item.PacienteNombreCompleto,
+            PacienteFechaNacimiento: item.PacienteFechaNacimiento,
+            PacienteDireccion: item.PacienteDireccion,
+            PacienteTelefono: item.PacienteTelefono,
+            PacienteCorreoElectronico: item.PacienteCorreoElectronico,
             PacienteEstado: item.PacienteEstado,
             PacienteHistorialClinicoCodigo: item.PacienteHistorialClinicoCodigo,
-            PacienteTelefono: item.PacienteTelefono,
             PacienteSeguro: item.PacienteSeguro || 'Sin seguro',
             PacienteFechaActivacion: item.PacienteFechaActivacion || 'Fecha no disponible',
             PacienteNotas: item.PacienteNotas || 'No hay notas adicionales'
@@ -92,7 +97,13 @@ function obtenerColumnasTabla() {
             }
         },
         { "data": "PacienteTelefono" },
-        { "data": "PacienteSeguro" }
+        { "data": "PacienteSeguro" },
+
+        // Columnas adicionales (ocultas)
+        { "data": "PacienteDNI", "visible": false },
+        { "data": "PacienteFechaNacimiento", "visible": false },
+        { "data": "PacienteDireccion", "visible": false },
+        { "data": "PacienteCorreoElectronico", "visible": false }
     ];
 }
 

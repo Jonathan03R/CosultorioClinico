@@ -2,54 +2,76 @@
     ViewBag.Title = "Gestión de Citas";
 }
 
-<h2 class="text-center mb-4">Gestión de Citas</h2>
+@section customStyles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+}
 
-<!-- Filtros -->
-<div class="card p-4 mb-4 shadow-sm">
-    <h5 class="font-weight-bold">Filtros de Búsqueda</h5>
-    <div class="row">
-        <div class="col-md-3">
-            <label for="filtroMedico" class="font-weight-bold">Filtrar por Médico:</label>
-            <select id="filtroMedico" class="form-control">
-                <option value="">Todos</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <label for="filtroEstado" class="font-weight-bold">Filtrar por Estado:</label>
-            <select id="filtroEstado" class="form-control">
-                <option value="">Todos</option>
-                <option value="P">Pendiente</option>
-                <option value="C">Confirmada</option>
-                <option value="X">Cancelada</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <label for="filtroFecha" class="font-weight-bold">Filtrar por Fecha:</label>
-            <input type="date" id="filtroFecha" class="form-control" />
-        </div>
-        <div class="col-md-3">
-            <label for="filtroEspecialidad" class="font-weight-bold">Filtrar por Especialidad:</label>
-            <select id="filtroEspecialidad" class="form-control">
-                <option value="">Todas</option>
-            </select>
-        </div>
+<h2 class="text-center mb-4">Gestión de Citas</h2>
+<div class="d-flex align-items-center justify-content-center ">
+    <div class="input-group rounded mb-3">
+        <span class="input-group-text border-0" id="search-addon">
+            <i class="fas fa-search"></i>
+        </span>
+        <input type="search" id="buscador-personalizado" class="form-control rounded-end " placeholder="buscar" aria-label="Search" aria-describedby="search-addon" />
+        <button type="button" class="btn btn-secondary"
+                data-bs-toggle="collapse"
+                href="#multiCollapseExample1"
+                role="button" aria-expanded="false"
+                aria-controls="multiCollapseExample1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-funnel" viewBox="0 0 16 16">
+                <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 3.308V2z"></path>
+            </svg>
+        </button>
     </div>
-    <div class="row mt-3">
-        <div class="col-md-6">
-            <label for="codigoPacienteBuscar" class="font-weight-bold">Buscar por Código de Paciente:</label>
-            <input type="text" id="codigoPacienteBuscar" class="form-control" placeholder="Ingrese el código del paciente" />
-        </div>
-        <div class="col-md-2 align-self-end d-flex justify-content-center align-items-center "  >
-            <button class="btn btn-primary " id="btnBuscarCitas">Buscar</button>
-            <button class="btn btn-success " data-bs-toggle="modal" data-bs-target="#ModalNuevaCita" >Nueva Cita</button>
-        </div>
-       
+    <div style="width:150px;">
+        <button class="btn btn-success " data-bs-toggle="modal" data-bs-target="#ModalNuevaCita">Nueva Cita</button>
     </div>
 
 </div>
 
+
+<!-- Filtros -->
+<div class="collapse multi-collapse" id="multiCollapseExample1">
+
+    <div class="card p-4 mb-4 shadow-sm">
+        <h5 class="font-weight-bold">Filtros de Búsqueda</h5>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="input-group mb-3">
+                    <label class="input-group-text" for="inputSelectMedico">Médico:</label>
+                    <select class="form-select" id="inputSelectMedico">
+                        @*aqui habra datos desde el js*@
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="input-group mb-3">
+                    <label class="input-group-text" for="inputSelectEstado">Estado:</label>
+                    <select class="form-select" id="inputSelectEstado">
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="input-group mb-3">
+                    <label class="input-group-text" for="inputSelectEspecialidad">Especialidad:</label>
+                    <select class="form-select" id="inputSelectEspecialidad">
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="input-group mb-3">
+                    <label class="input-group-text" for="inputFecha">Fecha:</label>
+                    <input type="date" class="form-control" id="inputFecha">
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
 <!-- Tabla -->
-<div  class="card p-4 shadow-sm">
+<div class="card p-4 shadow-sm">
     <h5 class="font-weight-bold">Listado de Citas</h5>
     <table id="tablaCitas" class="display table table-bordered table-hover" style="width:100%">
         <thead class="thead-dark">
@@ -77,58 +99,82 @@
             </div>
             <div class="modal-body">
                 <form id="formCita">
-                    <div class="form-group">
-                        <label for="dniPaciente" class="font-weight-bold">DNI del Paciente <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <input type="text" id="dniPaciente" class="form-control" placeholder="Ingrese DNI" />
-                            <div class="input-group-append">
-                                <button class="btn btn-info" type="button" id="btnBuscarPaciente">
-                                    <i class="fas fa-search"></i> Buscar
-                                </button>
-                            </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="dni-paciente">Dni Paciente</span>
+                        <input type="text" class="form-control" id="inputDniPaciente" placeholder="Ingrese DNI" aria-label="dni" aria-describedby="dni-paciente">
+
+                        <button class="btn btn-outline-secondary" type="button" id="button-addon2"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="collapse" id="datosPaciente">
+                        <div class="card card-body">
+                            <p><strong>Nombre:</strong> <span id="pacienteNombre"></span></p>
+                            <p><strong>Estado:</strong> <span id="pacienteEstado"></span></p>
+                            <p><strong>codigo:</strong> <span id="pacienteCodigo"></span></p>
+
+                            @*<input type="text" id="inputPacienteCodigo" />*@
+
                         </div>
-                        <small id="pacienteInfo" class="form-text text-muted"></small>
                     </div>
-                    <div class="form-group">
-                        <label for="medico" class="font-weight-bold">Médico <span class="text-danger">*</span></label>
-                        <select id="medico" class="form-control">
-                            <option value="">Seleccione un médico</option>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text" for="inputSelectEspecialidadModal">Especialidad</label>
+                        <select class="form-select" id="inputSelectEspecialidadModal">
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="especialidad" class="font-weight-bold">Especialidad <span class="text-danger">*</span></label>
-                        <input type="text" id="especialidad" class="form-control" readonly />
-                    </div>
-                    <div class="form-group">
-                        <label for="tipoConsulta" class="font-weight-bold">Tipo de Consulta <span class="text-danger">*</span></label>
-                        <select id="tipoConsulta" class="form-control">
-                            <option value="">Seleccione el tipo de consulta</option>
+
+                    <div class="input-group mb-3">
+                        <label class="input-group-text" for="inputSelectMedicoModal">Médico</label>
+                        <select class="form-select" id="inputSelectMedicoModal">
+                            @*aqui habra datos desde el js*@
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="fechaHora" class="font-weight-bold">Fecha y Hora <span class="text-danger">*</span></label>
-                        <input type="datetime-local" id="fechaHora" class="form-control" />
+                    <div class="input-group mb-3">
+                        <label class="input-group-text" for="inputSelectTipoConsulta">Tipo de Consulta</label>
+                        <select class="form-select" id="inputSelectTipoConsulta">
+                        </select>
+                    </div>
+                    <div class="input-group mb-3">
+                        <label class="input-group-text" for="inputFechaHora">Fecha y hora:</label>
+                        <input type="datetime-local" class="form-control" id="inputFechaHora">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                @*<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>*@
-                <button type="button" class="btn btn-primary">Guardar cita</button>
+                <button type="button" id="btnGuardarCita" class="btn btn-primary">Guardar cita</button>
             </div>
         </div>
     </div>
 </div>
 
 
-<!-- CSS de DataTables -->
-<link rel="stylesheet" href="~/Scripts/DataTables/dataTables.bootstrap4.min.css">
+<!-- Modal para Agregar Paciente -->
+<div class="modal fade" id="modalAgregarPaciente" tabindex="-1" aria-labelledby="modalAgregarPacienteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalAgregarPacienteLabel">Paciente no encontrado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p>No se encontró el paciente con el DNI ingresado. ¿Deseas agregar un nuevo paciente?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnAgregarPaciente">Agregar Paciente</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 @section Scripts {
-    <!-- Scripts de DataTables -->
-    @*<script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
-        <script src="~/Scripts/DataTables/dataTables.bootstrap4.min.js"></script>*@
+    <script>
+        var urlRegistrarCita = '@Url.Action("RegistrarCita", "GestionarCitas")';
+    </script>
 
 
-    @*buscame :D*@
     <script src="~/Scripts/GestionarCitasScripts/tablaCitas.js"></script>
+    <script src="~/Scripts/GestionarCitasScripts/LlenarSelects.js"></script>
+    <script src="~/Scripts/GestionarCitasScripts/BuscarEmpleado.js"></script>
+    <script src="~/Scripts/GestionarCitasScripts/AgregarCita.js"></script>
 }

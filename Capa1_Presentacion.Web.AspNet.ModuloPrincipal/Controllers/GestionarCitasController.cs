@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using Capa2_Aplicacion.ModuloPrincipal.Servicio;
+using Capa3_Dominio.ModuloPrincipal;
 using Capa3_Dominio.ModuloPrincipal.Entidad;
+using Capa3_Dominio.ModuloPrincipal.TransferenciaDatos;
 
 namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
 {
@@ -20,6 +22,40 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
         public ActionResult GestionCita()
         {
             return View();
+        }
+
+
+        [HttpGet]
+        public JsonResult ListarMedicosConEspecialidad()
+        {
+            bool accionExitosa;
+            string mensajeRetorno;
+            List<object> listaMedicosFormatada;
+
+            try
+            {
+                // Llama al método del servicio
+                var listaMedicos = gestionarCitaServicio.ObtenerMedicosConEspecialidad();
+
+                // Formatea los datos para el frontend
+                listaMedicosFormatada = listaMedicos.Select(m => new
+                {
+                    MedicoCodigo = m.MedicoCodigo,
+                    MedicoNombre = $"{m.MedicoNombre} {m.MedicoApellido}",
+                    EspecialidadNombre = m.Especialidad.EspecialidadNombre,
+                }).ToList<object>();
+
+                accionExitosa = true;
+                mensajeRetorno = "Consulta exitosa.";
+            }
+            catch (Exception ex)
+            {
+                listaMedicosFormatada = new List<object>();
+                accionExitosa = false;
+                mensajeRetorno = $"Error: {ex.Message}";
+            }
+
+            return Json(new { data = listaMedicosFormatada, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
         }
 
         // Obtener todas las citas
@@ -73,13 +109,26 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
 
         // Registrar una nueva cita
         [HttpPost]
-        public JsonResult RegistrarCita(Cita cita)
+        public JsonResult RegistrarCita( CitaDTO citaDTO)
         {
             bool accionExitosa;
             string mensajeRetorno;
 
             try
             {
+                var cita = new Cita
+                {
+                    //CitaCodigo = citaDTO.CitaCodigo,
+                    CitaFechaHora = citaDTO.CitaFechaHora,
+                    CitaEstado = "P" 
+                };
+
+                // Crear las instancias de los objetos relacionados
+                cita.CitaPaciente = new Paciente { PacienteCodigo = citaDTO.PacienteCodigo };
+                cita.CitaMedico = new Medico { MedicoCodigo = citaDTO.MedicoCodigo };
+                cita.CitaTipoConsulta = new TipoConsulta { TipoConsultaCodigo = citaDTO.TipoConsultaCodigo };
+
+
                 gestionarCitaServicio.RegistrarCita(cita);
                 accionExitosa = true;
                 mensajeRetorno = "Cita registrada exitosamente.";
@@ -137,6 +186,29 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
             }
 
             return Json(new { data = cita, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public JsonResult ObtenerPacientePorDni(string dni)
+        {
+            bool accionExitosa;
+            string mensajeRetorno;
+            Paciente paciente = new Paciente { PacienteDNI = dni };
+
+            try
+            {
+                paciente = gestionarCitaServicio.obtenerPacientePorDni(paciente);
+                accionExitosa = true;
+                mensajeRetorno = "";
+            }
+            catch (Exception ex)
+            {
+                paciente = null;
+                accionExitosa = false;
+                mensajeRetorno = ex.Message;
+            }
+
+            return Json(new { data = paciente, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
         }
 
         // Cancelar una cita

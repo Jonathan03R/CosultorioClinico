@@ -66,16 +66,6 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
 
         public void ActualizarPaciente(Paciente paciente)
         {
-            // Validación inicial del paciente
-            if (paciente == null)
-            {
-                throw new ArgumentNullException(nameof(paciente), "Llene todo los campos.");
-            }
-
-            if (!paciente.EsDatosValidos())
-            {
-                throw new ArgumentException("Los datos del paciente son incompletos o inválidos.");
-            }
 
             accesoSQLServer.IniciarTransaccion();
             try

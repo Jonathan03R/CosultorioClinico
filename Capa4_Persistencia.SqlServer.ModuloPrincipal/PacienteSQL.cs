@@ -2,6 +2,7 @@
 using Capa4_Persistencia.SqlServer.ModuloBase;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -41,6 +42,24 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             }
         }
 
+        public void ActualizarPaciente(Paciente paciente)
+        {
+            string procedimientoSQL = "pro_Actualizar_Paciente";
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+                comandoSQL.Parameters.Add(new SqlParameter("@pacienteCodigo", paciente.PacienteCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@pacienteNombreCompleto", (object)paciente.PacienteNombreCompleto ?? DBNull.Value));
+                comandoSQL.Parameters.Add(new SqlParameter("@pacienteDireccion", (object)paciente.PacienteDireccion ?? DBNull.Value));
+                comandoSQL.Parameters.Add(new SqlParameter("@pacienteTelefono", (object)paciente.PacienteTelefono ?? DBNull.Value));
+                comandoSQL.Parameters.Add(new SqlParameter("@pacienteCorreoElectronico", (object)paciente.PacienteCorreoElectronico ?? DBNull.Value));
+                comandoSQL.ExecuteNonQuery();
+            }
+            catch (SqlException ex)
+            {
+                throw ex;
+            }
+        }
 
         public void EliminarPaciente(Paciente pacienteCodigo)
         {
@@ -72,10 +91,6 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             }
         }
 
-
-
-
-
         public Paciente MostrarPacientePorCodigo (Paciente pacienteCodigo)
         {
             Paciente paciente = null;
@@ -101,6 +116,56 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             return paciente;
         }
 
+        public Paciente MostarPacienteDni(Paciente paciente)
+        {
+            Paciente pacienteResultado = null;
+            string procedimientoSQL = "pro_Buscar_Paciente_dni";
+
+            try
+            {
+                using (SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL))
+                {
+                    string pacienteDniTrimmed = paciente.PacienteDNI.Trim();
+                    comandoSQL.Parameters.Add(new SqlParameter("@pacienteDNI", SqlDbType.NChar, 8) { Value = pacienteDniTrimmed });
+
+                    using (SqlDataReader resultadoSQL = comandoSQL.ExecuteReader())
+                    {
+                        if (resultadoSQL.Read()) // Verifica si hay una fila disponible
+                        {
+                            pacienteResultado = new Paciente
+                        {
+                            PacienteCodigo = resultadoSQL["pacienteCodigo"].ToString().Trim(),
+                            PacienteDNI = resultadoSQL["pacienteDNI"].ToString().Trim(),
+                            PacienteNombreCompleto = resultadoSQL["pacienteNombreCompleto"].ToString().Trim(),
+                            PacienteFechaNacimiento = resultadoSQL["pacienteFechaNacimiento"] != DBNull.Value
+                                ? Convert.ToDateTime(resultadoSQL["pacienteFechaNacimiento"])
+                                : DateTime.MinValue, 
+                            PacienteDireccion = resultadoSQL["pacienteDireccion"] != DBNull.Value
+                                ? resultadoSQL["pacienteDireccion"].ToString().Trim()
+                                : null,
+                            PacienteTelefono = resultadoSQL["pacienteTelefono"] != DBNull.Value
+                                ? resultadoSQL["pacienteTelefono"].ToString().Trim()
+                                : null,
+                            PacienteCorreoElectronico = resultadoSQL["pacienteCorreoElectronico"] != DBNull.Value
+                                ? resultadoSQL["pacienteCorreoElectronico"].ToString().Trim()
+                                : null,
+                            PacienteEstado = resultadoSQL["pacienteEstado"].ToString().Trim()
+                            };
+                        }
+
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                throw ex;
+            }
+
+            return pacienteResultado;
+        }
+
+
+       
         private Paciente ObtenerPaciente(SqlDataReader resultadoSQL)
         {
             Paciente paciente = new Paciente
@@ -143,13 +208,6 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             }
             return listaPacientes;
         }
-
-        public void ActualizarPaciente(Paciente paciente)
-        {
-            throw new NotImplementedException();
-        }
-
-
         public List<HistoriaClinica> ListarPacientes()
         {
             List<HistoriaClinica> listaHistoriasClinicas = new List<HistoriaClinica>();
