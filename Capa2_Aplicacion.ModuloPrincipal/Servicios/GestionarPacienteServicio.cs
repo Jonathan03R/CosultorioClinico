@@ -31,6 +31,18 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
             {
                 throw new ArgumentException("Debe agregar al menos un contacto de emergencia.");
             }
+            if (!paciente.EsValidoElNumeroDelPaciente()) 
+            {
+                throw new ArgumentException($"El número del paciente {paciente.PacienteTelefono} no es valido");
+
+            }
+            foreach (var contacto in contactosEmergencia)
+            {
+                if (!contacto.EsNumeroTelefonoValido())
+                {
+                    throw new ArgumentException($"El número de teléfono {contacto.ContactoEmergenciaTelefono} no es válido.");
+                }
+            }
 
             accesoSQLServer.IniciarTransaccion();
             paciente.PacienteCodigo = codigoSQL.GenerarCodigoUnico("PA", "Salud.Pacientes", "pacienteCodigo");
@@ -83,95 +95,41 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
 
         public void cambiarEstadoInactivoPaciente(Paciente paciente) 
         {
-            //if (!paciente.esPacienteActivo()) 
-            //{
-            //    throw new ArgumentException("Este paciente ya esta incativo");
-            //}
             if (paciente.PacienteCodigo == null) 
             {
                 throw new ArgumentException("erro al selecionar el paciente");
             }
-
-            accesoSQLServer.IniciarTransaccion();
-            try
-            {
-                pacienteSQL.EliminarPaciente(paciente);
-                accesoSQLServer.TerminarTransaccion();
-            }
-            catch (Exception ex)
-            {
-                accesoSQLServer.CancelarTransaccion();
-                throw ex;   
-            }
-
+            accesoSQLServer.AbrirConexion();
+            pacienteSQL.EliminarPaciente(paciente);
+            accesoSQLServer.CerrarConexion();
         }
 
         public void cambiarEstadoActivosPaciente(Paciente paciente)
         {
-            //if (!paciente.esPacienteActivo()) 
-            //{
-            //    throw new ArgumentException("Este paciente ya esta incativo");
-            //}
             if (paciente.PacienteCodigo == null)
             {
                 throw new ArgumentException("erro al selecionar el paciente");
             }
-
-            accesoSQLServer.IniciarTransaccion();
-            try
-            {
-                pacienteSQL.RecuperarPaciente(paciente);
-                accesoSQLServer.TerminarTransaccion();
-            }
-            catch (Exception ex)
-            {
-                accesoSQLServer.CancelarTransaccion();
-                throw ex;
-            }
-
-        }
-
-
-        public List<Paciente> ObtenerHistorialPacientes()
-        {
-            List<Paciente> result = new List<Paciente>();
-
-            try
-            {
-                accesoSQLServer.IniciarTransaccion();
-
-                result = pacienteSQL.BuscarPaciente(null, null, null);
-
-                accesoSQLServer.TerminarTransaccion();
-            }
-            catch (Exception ex)
-            {
-                accesoSQLServer.CancelarTransaccion();
-                throw ex;
-            }
-
-            List<Paciente> pacientesActivos = result.Where(p => p.esPacienteActivo()).ToList();
-            return pacientesActivos;
+            accesoSQLServer.AbrirConexion();
+            pacienteSQL.RecuperarPaciente(paciente);
+            accesoSQLServer.CerrarConexion();
         }
 
         public List<HistoriaClinica> listarPacientes()
         {
-            try
-            {
-                accesoSQLServer.IniciarTransaccion();
+            accesoSQLServer.AbrirConexion();
+            List<HistoriaClinica> listaPacientes = pacienteSQL.ListarPacientes();
+            accesoSQLServer.CerrarConexion();
+            return listaPacientes;
+        }
 
-                List<HistoriaClinica> listaPacientes = pacienteSQL.ListarPacientes();
-               
 
-                accesoSQLServer.TerminarTransaccion();
-
-                return listaPacientes;
-            }
-            catch (Exception ex)
-            {
-                accesoSQLServer.CancelarTransaccion();
-                throw ex;
-            }
+        public List<ContactoEmergencia> ListarContactoDeEmergencias(string pacienteCodigo)
+        {
+            accesoSQLServer.AbrirConexion();
+            List<ContactoEmergencia> contactosResult = contactoEmergenciaSQL.MostrarContactosPorPaciente(pacienteCodigo);
+            accesoSQLServer.CerrarConexion();
+            return contactosResult;
         }
     }
 }

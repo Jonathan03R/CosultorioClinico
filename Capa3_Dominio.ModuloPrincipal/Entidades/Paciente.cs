@@ -27,7 +27,21 @@ namespace Capa3_Dominio.ModuloPrincipal
         public string PacienteCorreoElectronico { get => pacienteCorreoElectronico; set => pacienteCorreoElectronico = value; }
         public string PacienteEstado { get => pacienteEstado; set => pacienteEstado = value; }
 
-        
+
+
+        public bool EsValidoElNumeroDelPaciente() 
+        {
+            if (string.IsNullOrEmpty(pacienteTelefono))
+                return false;
+
+            if (!pacienteTelefono.All(char.IsDigit))
+                return false;
+
+            if (pacienteTelefono.Length == 9 && pacienteTelefono.StartsWith("9"))
+                return true;
+
+            return false;
+        }
 
         public bool esPacienteActivo()
         {

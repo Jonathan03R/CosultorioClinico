@@ -77,7 +77,7 @@ function obtenerColumnasTabla() {
             "defaultContent": '<i class="fas fa-plus-circle text-success toggle-icon" style="cursor: pointer;"></i>',
             "width": "20px"
         },
-        { "data": "PacienteCodigo" },
+        { "data": "PacienteDNI" },
         {
             "data": "PacienteNombreCompleto",
             "render": function (data) {
@@ -100,7 +100,7 @@ function obtenerColumnasTabla() {
         { "data": "PacienteSeguro" },
 
         // Columnas adicionales (ocultas)
-        { "data": "PacienteDNI", "visible": false },
+        { "data": "PacienteCodigo", "visible": false },
         { "data": "PacienteFechaNacimiento", "visible": false },
         { "data": "PacienteDireccion", "visible": false },
         { "data": "PacienteCorreoElectronico", "visible": false }

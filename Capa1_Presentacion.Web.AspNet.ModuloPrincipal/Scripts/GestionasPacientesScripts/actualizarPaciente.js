@@ -14,6 +14,7 @@
 function abrirFormModalPaciente(paciente) {
     $('#mostrarPacienteCodigo').text(paciente.PacienteCodigo);
     $('#mostrarPacienteEstado').text(paciente.PacienteEstado);
+    $('#PacienteNombreCompleto').text(paciente.PacienteNombreCompleto);
     const estadoSpan = $('#mostrarPacienteEstado');
     if (paciente.PacienteEstado === "Activo") {
         estadoSpan.removeClass('bg-danger').addClass('bg-success');

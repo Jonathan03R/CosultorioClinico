@@ -26,15 +26,19 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <div class="input-group">
+                            <div class="input-group has-validation">
                                 <span class="input-group-text">DNI</span>
                                 <input type="text" class="form-control" id="PacienteDNI" name="PacienteDNI" maxlength="8" required>
+                                <!-- Mensaje de invalid-feedback -->
+                                <div id="dniFeedback" class="invalid-feedback">
+                                    El DNI ya está registrado.
+                                </div>
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <div class="input-group">
                                 <span class="input-group-text">Teléfono</span>
-                                <input type="text" class="form-control" id="PacienteTelefono" name="PacienteTelefono">
+                                <input type="text" class="form-control" id="PacienteTelefono" maxlength="9" name="PacienteTelefono" required>
                             </div>
                         </div>
                     </div>
@@ -43,7 +47,7 @@
                         <div class=" mb-3">
                             <div class="input-group row mx-0">
                                 <span class="input-group-text col-3">Correo Electrónico </span>
-                                <input type="email" class="form-control flex-grow-1 col-9" id="PacienteCorreoElectronico" name="PacienteCorreoElectronico">
+                                <input type="email" class="form-control flex-grow-1 col-9" id="PacienteCorreoElectronico" name="PacienteCorreoElectronico" required>
                             </div>
                         </div>
                     </div>
@@ -128,7 +132,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="contactoTelefono" class="form-label">Teléfono</label>
-                        <input type="text" class="form-control" id="contactoTelefono" required>
+                        <input type="text" class="form-control" id="contactoTelefono" maxlength="9" required>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -138,5 +142,4 @@
             </form>
         </div>
     </div>
-</div>
 </div>

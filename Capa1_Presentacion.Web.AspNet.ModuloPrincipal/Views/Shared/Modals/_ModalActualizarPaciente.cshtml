@@ -3,7 +3,6 @@
 
 
 @section customStyles {
-    <link rel="stylesheet" href="~/Content/Estilos-GestionarPacientes/ModalActualizarPacientes.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 }
 
@@ -11,52 +10,53 @@
 <div class="modal fade" id="modalActualizarPaciente" tabindex="-1" aria-labelledby="modalActualizarPacienteLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form id="formActualizarPaciente">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalActualizarPacienteLabel">Actualizar Paciente</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Datos de solo lectura -->
-                    <div class=" info">
-                        <h6 class="text-center fw-bold my-3">Información General</h6>
-                        <div class="  row">
-                            <p class="col-6 my-4 "><strong>Código del Paciente:</strong> <span  id="mostrarPacienteCodigo"></span></p>
-                            <p class="col-6 my-4" ><strong>Fecha de Nacimiento:</strong> <span id="mostrarPacienteFechaNacimiento"></span></p>
-                            <p class="col-4" ><strong>Estado:</strong> <span class="badge bg-success" id="mostrarPacienteEstado"></span></p>
-                            <p class="col-4"><strong>Seguro:</strong> <span id="mostrarPacienteSeguro"></span></p>
-                            <p class="col-4"><strong>DNI:</strong> <span id="mostrarPacienteDNI"></span></p>
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalActualizarPacienteLabel">Actualizar Paciente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="datosPersonales p-4 rounded-4">
+                    <div class="d-flex align-items-center mb-3"  >
+                        <h5 id="PacienteNombreCompleto">  </h5>
+                        <span class="mx-3  badge bg-success" id="mostrarPacienteEstado"></span>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <p>Codigo: <span id="mostrarPacienteCodigo"></span></p>
+                            <p>Fecha nacimiento: <span id="mostrarPacienteFechaNacimiento"></span> </p>
+                        </div>
+                        <div class="col-6">
+                            <p>Seguro: <span id="mostrarPacienteSeguro"></span> </p>
+                            <p>DNI: <span id="mostrarPacienteDNI"></span> </p>
                         </div>
                     </div>
 
-                    <hr />
-
-                    <!-- Datos editables -->
-                    <div class="mb-3">
-                        <h6>Actualizar Información</h6>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text"  for="actualizarPacienteNombreCompleto" >Nombre Completo</span>
-                            <input type="text" class="form-control" id="actualizarPacienteNombreCompleto" name="PacienteNombreCompleto" required>
-                        </div>
-                        <div class="input-group mb-3">
-                            <span for="actualizarPacienteDireccion" class="input-group-text">Dirección</span>
-                            <input type="text" class="form-control" id="actualizarPacienteDireccion" name="PacienteDireccion">
-                        </div>
-                        <div class="input-group mb-3">
-                            <span for="actualizarPacienteTelefono" class="input-group-text">Teléfono</span>
-                            <input type="text" class="form-control" id="actualizarPacienteTelefono" name="PacienteTelefono">
-                        </div>
-                        <div class="input-group mb-3">
-                            <span for="actualizarPacienteCorreo" class="input-group-text">Correo Electrónico</span>
-                            <input type="email" class="form-control" id="actualizarPacienteCorreo" name="PacienteCorreoElectronico">
-                        </div>
+                </div>
+                <form class="mt-3" id="formActualizarPaciente">
+                    <h6>Actualizar Información</h6>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" for="actualizarPacienteNombreCompleto">Nombre Completo</span>
+                        <input type="text" class="form-control" id="actualizarPacienteNombreCompleto" name="PacienteNombreCompleto" required>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                </div>
-            </form>
+                    <div class="input-group mb-3">
+                        <span for="actualizarPacienteDireccion" class="input-group-text">Dirección</span>
+                        <input type="text" class="form-control" id="actualizarPacienteDireccion" name="PacienteDireccion">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span for="actualizarPacienteTelefono" class="input-group-text">Teléfono</span>
+                        <input type="text" class="form-control" id="actualizarPacienteTelefono" name="PacienteTelefono">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span for="actualizarPacienteCorreo" class="input-group-text">Correo Electrónico</span>
+                        <input type="email" class="form-control" id="actualizarPacienteCorreo" name="PacienteCorreoElectronico">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+           
         </div>
     </div>
 </div>

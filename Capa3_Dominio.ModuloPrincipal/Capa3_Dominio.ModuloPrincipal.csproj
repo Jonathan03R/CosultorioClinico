@@ -42,19 +42,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Citas.cs" />
-    <Compile Include="Consulta.cs" />
-    <Compile Include="ContactoEmergencia.cs" />
-    <Compile Include="Diagnostico.cs" />
-    <Compile Include="Especialidad.cs" />
-    <Compile Include="HistoriaClinica.cs" />
-    <Compile Include="Horario.cs" />
-    <Compile Include="Medico.cs" />
-    <Compile Include="Notificacion.cs" />
-    <Compile Include="Paciente.cs" />
+    <Compile Include="Entidades\Citas.cs" />
+    <Compile Include="Entidades\Consulta.cs" />
+    <Compile Include="Entidades\ContactoEmergencia.cs" />
+    <Compile Include="Entidades\Diagnostico.cs" />
+    <Compile Include="Entidades\Especialidad.cs" />
+    <Compile Include="Entidades\HistoriaClinica.cs" />
+    <Compile Include="Entidades\Horario.cs" />
+    <Compile Include="Entidades\Medico.cs" />
+    <Compile Include="Entidades\Notificacion.cs" />
+    <Compile Include="Entidades\Paciente.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RecetaMedica.cs" />
-    <Compile Include="TipoConsulta.cs" />
+    <Compile Include="Entidades\RecetaMedica.cs" />
+    <Compile Include="Entidades\TipoConsulta.cs" />
     <Compile Include="TransferenciaDatos\CitaDTO.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

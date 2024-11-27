@@ -48,9 +48,9 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
                     PacienteCorreoElectronico = p.Paciente?.PacienteCorreoElectronico ?? "null",
                     PacienteEstado = p.Paciente?.PacienteEstado == "A" ? "Activo" : "Inactivo",
                     PacienteHistorialClinicoCodigo = p.HistorialClinicoCodigo ?? "null",
-                    PacienteSeguro = "Sin seguro", // Por ahora no lo tienes en la base de datos
+                    PacienteSeguro = "Sin seguro", 
                     PacienteFechaActivacion = DateTime.Now.ToString("yyyy-MM-dd"),
-                    PacienteNotas = "No hay notas adicionales" // Por ahora un valor por defecto
+                    PacienteNotas = "No hay notas adicionales" 
                 }).ToList<object>();
 
                 accionExitosa = true;
@@ -66,7 +66,6 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
             return Json(new { data = listaPacientesFormatada, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
         }
 
-        // Registrar un nuevo paciente
         [HttpPost]
         public JsonResult RegistrarPaciente(Paciente paciente, List<ContactoEmergencia> contactoEmergencia)
         {
@@ -169,6 +168,20 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
             }
 
             return Json(new { transaccionExitosa = accionExitosa, mensaje = mensajeRetorno });
+        }
+
+        [HttpGet]
+        public JsonResult ListarContactosPorPaciente(string pacienteCodigo)
+        {
+            try
+            {
+                var contactos = gestionarPacienteServicio.ListarContactoDeEmergencias(pacienteCodigo);
+                return Json(new { success = true, data = contactos }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
         }
 
     }
