@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Capa3_Dominio.ModuloPrincipal
 {
-    internal class Consulta
+    public class Consulta
     {
         private string consultaCodigo;
         private DateTime consultaFechaHora;
