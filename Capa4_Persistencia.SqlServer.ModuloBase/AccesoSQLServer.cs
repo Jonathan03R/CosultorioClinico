@@ -18,7 +18,7 @@ namespace Capa4_Persistencia.SqlServer.ModuloBase
             try
             {
                 conexion = new SqlConnection();
-                conexion.ConnectionString = "Data Source=DESKTOP-D9BFG02; Initial Catalog=BdClinicaWeb;Integrated Security=true";
+                conexion.ConnectionString = "Data Source=LAPTOP-0M7KSHRE\\SQL2022; Initial Catalog=BdClinicaWeb;Integrated Security=true";
                 conexion.Open();
 
                 Console.WriteLine("Conexión con la Base de Datos establecida correctamente.");
