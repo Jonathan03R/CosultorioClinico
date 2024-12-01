@@ -357,7 +357,7 @@ CREATE or alter PROCEDURE pro_Insertar_Cita
     @citaEstado nchar(1) = 'P',
     @citaFechaHora datetime,
     @citaNotificacionCodigo nchar(10) = NULL,
-    @citaPacienteCodigo nchar(6),
+    @citaPacienteCodigo nchar(10),
     @citaTipoConsultaCodigo nchar(10),
     @citaMedicoCodigo nchar(10)
 AS
@@ -651,7 +651,7 @@ as
         where ' + @columnaCodigo + ' like @prefijo + ''%''
     ';
     exec sp_executesql @vSQL, N'@vNuevoCodigo int output, @prefijo nvarchar(3)', @vNuevoCodigo output, @prefijo;
-    set @vCodigoGenerado = @prefijo + right('000000' + cast(@vNuevoCodigo as varchar(6)), 6);
+    set @vCodigoGenerado = @prefijo + right('0000000' + cast(@vNuevoCodigo as varchar(7)), 7);
     select @vCodigoGenerado as CodigoUnico;
 
 set nocount off;

@@ -45,14 +45,14 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
             }
 
             accesoSQLServer.IniciarTransaccion();
-            paciente.PacienteCodigo = codigoSQL.GenerarCodigoUnico("PA", "Salud.Pacientes", "pacienteCodigo");
+            paciente.PacienteCodigo = codigoSQL.GenerarCodigoUnico("PAC", "Salud.Pacientes", "pacienteCodigo");
             try
             {
                 pacienteSQL.CrearPaciente(paciente);
                 
                 HistoriaClinica nuevaHistoriaClinica = new HistoriaClinica
                 {
-                    HistorialClinicoCodigo = codigoSQL.GenerarCodigoUnico("HC", "Salud.HistoriaClinica", "historialClinicoCodigo"),
+                    HistorialClinicoCodigo = codigoSQL.GenerarCodigoUnico("HIS", "Salud.HistoriaClinica", "historialClinicoCodigo"),
                     Paciente = paciente,
                     FechaCreacion = DateTime.Now,
                     FechaActualizacion = DateTime.Now,
@@ -62,7 +62,7 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
 
                 foreach (var contacto in contactosEmergencia)
                 {
-                    contacto.ContactoEmergenciaCodigo = codigoSQL.GenerarCodigoUnico("CE", "Salud.ContactosEmergencia", "contactoEmergenciaCodigo");
+                    contacto.ContactoEmergenciaCodigo = codigoSQL.GenerarCodigoUnico("CEM", "Salud.ContactosEmergencia", "contactoEmergenciaCodigo");
                     contactoEmergenciaSQL.AgregarContactoEmergencia(contacto, paciente.PacienteCodigo);
                 }
 

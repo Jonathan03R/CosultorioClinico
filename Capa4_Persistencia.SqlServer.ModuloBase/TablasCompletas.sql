@@ -222,45 +222,45 @@ go
 
 insert into Salud.Pacientes (pacienteCodigo, pacienteDNI, pacienteNombreCompleto, pacienteFechaNacimiento, pacienteDireccion, pacienteTelefono, pacienteCorreoElectronico)
 values
-('PAC001', '12345678', 'Juan Pérez', '1985-04-15', 'Av. Principal 123', '987654321', 'juan.perez@example.com'),
-('PAC002', '87654321', 'María Gómez', '1990-06-20', 'Calle Secundaria 45', '987123456', 'maria.gomez@example.com'),
-('PAC003', '23456789', 'Carlos López', '1982-11-10', 'Calle 3 de Abril 67', '987456123', 'carlos.lopez@example.com'),
-('PAC004', '34567891', 'Ana Torres', '1995-02-25', 'Pasaje Lima 8', '987789321', 'ana.torres@example.com'),
-('PAC005', '45678912', 'Luis Rojas', '1987-08-15', 'Jr. Ayacucho 342', '987963258', 'luis.rojas@example.com');
+('PAC0000001', '12345678', 'Juan Pérez', '1985-04-15', 'Av. Principal 123', '987654321', 'juan.perez@example.com'),
+('PAC0000002', '87654321', 'María Gómez', '1990-06-20', 'Calle Secundaria 45', '987123456', 'maria.gomez@example.com'),
+('PAC0000003', '23456789', 'Carlos López', '1982-11-10', 'Calle 3 de Abril 67', '987456123', 'carlos.lopez@example.com'),
+('PAC0000004', '34567891', 'Ana Torres', '1995-02-25', 'Pasaje Lima 8', '987789321', 'ana.torres@example.com'),
+('PAC0000005', '45678912', 'Luis Rojas', '1987-08-15', 'Jr. Ayacucho 342', '987963258', 'luis.rojas@example.com');
 go
 
 
 insert into Salud.ContactosEmergencia (contactoEmergenciaCodigo, contactoEmergenciaNombre, contactoEmergenciaRelacion, contactoEmergenciaTelefono, pacienteCodigo)
 values
-('CE001', 'Pedro Pérez', 'Padre', '987654111', 'PAC001'),
-('CE002', 'Lucía Gómez', 'Hermana', '987123111', 'PAC002');
+('CEM0000001', 'Pedro Pérez', 'Padre', '987654111', 'PAC0000001'),
+('CEM0000002', 'Lucía Gómez', 'Hermana', '987123111', 'PAC0000002');
 go
 
 insert into Administracion.Especialidad (especialidadCodigo, especialidadNombre, especialidadDescripcion)
 values
-('ESP001', 'Cardiología', 'Atención especializada en problemas cardíacos'),
-('ESP002', 'Pediatría', 'Cuidado médico para niños y adolescentes');
+('ESP0000001', 'Cardiología', 'Atención especializada en problemas cardíacos'),
+('ESP0000002', 'Pediatría', 'Cuidado médico para niños y adolescentes');
 
 go
 
 
 insert into Administracion.Medico (medicoCodigo, medicoApellido, medicoNombre, medicoCorreo, medicoDNI, medicoTelefono, especialidadCodigo)
 values
-('MED001', 'García', 'Roberto', 'roberto.garcia@example.com', '12345679', '987111222', 'ESP001'),
-('MED002', 'Martínez', 'Sofía', 'sofia.martinez@example.com', '98765432', '987333444', 'ESP002');
+('MED0000001', 'García', 'Roberto', 'roberto.garcia@example.com', '12345679', '987111222', 'ESP0000001'),
+('MED0000002', 'Martínez', 'Sofía', 'sofia.martinez@example.com', '98765432', '987333444', 'ESP0000002');
 go
 
 insert into Gestion.tipoConsulta (tipoConsultaCodigo, tipoConsultaDescripcion)
 values
-('TC001', 'Consulta General'),
-('TC002', 'Consulta Especializada');
+('TDC0000001', 'Consulta General'),
+('TDC0000002', 'Consulta Especializada');
 go
 insert into Gestion.cita (citaCodigo, citaFechaHora, citaPacienteCodigo, citaTipoConsultaCodigo, citaMedicoCodigo)
 values
-('CITA001', '2024-11-20 10:30:00', 'PAC001', 'TC001', 'MED001'),
-('CITA002', '2024-11-21 15:00:00', 'PAC002', 'TC002', 'MED002'),
-('CITA003', '2024-11-22 09:00:00', 'PAC003', 'TC001', 'MED001'),
-('CITA004', '2024-11-23 11:00:00', 'PAC004', 'TC002', 'MED002');
+('CIT0000001', '2024-11-20 10:30:00', 'PAC0000001', 'TDC0000001', 'MED0000001'),
+('CIT0000002', '2024-11-21 15:00:00', 'PAC0000002', 'TDC0000002', 'MED0000002'),
+('CIT0000003', '2024-11-22 09:00:00', 'PAC0000003', 'TDC0000001', 'MED0000001'),
+('CIT0000004', '2024-11-23 11:00:00', 'PAC0000004', 'TDC0000002', 'MED0000002');
 go
 
 
