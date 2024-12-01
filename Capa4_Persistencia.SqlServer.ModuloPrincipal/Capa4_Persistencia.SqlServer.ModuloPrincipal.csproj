@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="CitasSQL.cs" />
     <Compile Include="CodigoSQL.cs" />
+    <Compile Include="ConsultaSQL.cs" />
     <Compile Include="ContactoEmergenciaSQL.cs" />
     <Compile Include="EspecialidadSQL.cs" />
     <Compile Include="HistoriaClinicaSQL.cs" />
