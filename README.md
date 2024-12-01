@@ -31,7 +31,7 @@ El sistema está estructurado en las siguientes capas:
 
 1. Clona este repositorio en tu máquina local:
    ```bash
-   git clone https://github.com/tuUsuario/consultorio-clinico.git
+   git clone https://github.com/Jonathan03R/CosultorioClinico.git
    ```
 
 2. Configura la cadena de conexión en la clase `AccesoSQLServer` dentro del **ModuloBase** de la **Capa4_Persistencia**:
