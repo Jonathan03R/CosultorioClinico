@@ -20,6 +20,19 @@ namespace Capa3_Dominio.ModuloPrincipal
         public string ContactoEmergenciaTelefono { get => contactoEmergenciaTelefono; set => contactoEmergenciaTelefono = value; }
         public string ContactoEmergenciaRelacion { get => contactoEmergenciaRelacion; set => contactoEmergenciaRelacion = value; }
 
-      
+
+        public bool EsNumeroTelefonoValido()
+        {
+            if (string.IsNullOrEmpty(contactoEmergenciaTelefono))
+                return false;
+
+            if (!contactoEmergenciaTelefono.All(char.IsDigit))
+                return false;
+
+            if (contactoEmergenciaTelefono.Length == 9 && contactoEmergenciaTelefono.StartsWith("9"))
+                return true;
+
+            return false; 
+        }
     }
 }

@@ -127,19 +127,15 @@
                         @class = "nav-link " + (currentController == "Home" && currentAction == "Contact" ? "active" : "")
                     })
                 </li>
-
-                @*<svg width="56" height="33" viewBox="0 0 56 33" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M32.5475 20.5475L36.73 24.73" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M20 15.17C20 19.1299 23.2101 22.34 27.17 22.34C29.1533 22.34 30.9487 21.5347 32.2467 20.2332C33.5403 18.9363 34.34 17.1465 34.34 15.17C34.34 11.2101 31.1299 8 27.17 8C23.2101 8 20 11.2101 20 15.17Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>*@
-
             </ul>
         </div>
 
     </nav>
 
     <div class=" container body-content">
-        @RenderBody()
+        <div>
+            @RenderBody()
+        </div>
         <hr />
         <footer>
             <p>&copy; @DateTime.Now.Year - Clínica Belman</p>

@@ -15,7 +15,7 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
         private readonly EspecialidadSQL especialidadSQL;
         private readonly PacienteSQL pacienteSQL;
         private readonly MedicoSQL medicoSQL;
-        private readonly CodigoSQL codigoSQL;   
+        private readonly CodigoSQL codigoSQL;
 
         public GestionarCitaServicio()
         {
@@ -63,7 +63,7 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
 
         public void ActualizarCita(Cita cita)
         {
-           
+
 
             if (!cita.EsValida())
             {
@@ -73,7 +73,7 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
             accesoSQLServer.IniciarTransaccion();
             try
             {
-                citaSQL.CrearCita(cita); 
+                citaSQL.CrearCita(cita);
                 accesoSQLServer.TerminarTransaccion();
             }
             catch (Exception ex)
@@ -85,7 +85,7 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
 
         public Cita ObtenerCitaPorId(string citaCodigo)
         {
-           
+
             var citas = citaSQL.MostrarCitasPaciente(citaCodigo);
             return citas.FirstOrDefault(c => c.CitaCodigo == citaCodigo);
         }
@@ -97,7 +97,7 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
 
         public void CancelarCita(string citaCodigo)
         {
-            
+
             var cita = ObtenerCitaPorId(citaCodigo);
             if (cita == null)
             {
@@ -109,12 +109,12 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
             }
 
 
-            cita.CitaEstado = "Cancelada"; 
+            cita.CitaEstado = "Cancelada";
 
             accesoSQLServer.IniciarTransaccion();
             try
             {
-                citaSQL.CrearCita(cita); 
+                citaSQL.CrearCita(cita);
                 accesoSQLServer.TerminarTransaccion();
             }
             catch (Exception ex)
@@ -161,23 +161,13 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
             }
         }
 
-
-        public Paciente obtenerPacientePorDni( Paciente paciente)
+        public Paciente obtenerPacientePorDni(Paciente paciente)
         {
-            try
-            {
-                accesoSQLServer.IniciarTransaccion();
-                Paciente pacienteObtenido = pacienteSQL.MostarPacienteDni(paciente);
-                accesoSQLServer.TerminarTransaccion();
-                return pacienteObtenido;
-            }
-            catch (Exception ex)
-            {
-                accesoSQLServer.CancelarTransaccion();
-                throw ex;
-            }
+            accesoSQLServer.AbrirConexion();
+            Paciente pacienteResult = pacienteSQL.MostarPacienteDni(paciente.PacienteDNI);
+            accesoSQLServer.CerrarConexion();
+            return pacienteResult;
         }
-
 
         //Segun las reglas solo debo obtener las citas de dia de hoy como indico el profesor ,
         //no nos sirve de nada conocer las citas de ayer o de mañana, nos interesa saber pero este metodo retorna todas las citas 
