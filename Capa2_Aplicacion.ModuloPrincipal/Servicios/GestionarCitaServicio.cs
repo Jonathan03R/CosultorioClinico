@@ -50,7 +50,7 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
             accesoSQLServer.IniciarTransaccion();
             try
             {
-                cita.CitaCodigo = codigoSQL.GenerarCodigoUnico("CA", "Gestion.cita", "citaCodigo");
+                cita.CitaCodigo = codigoSQL.GenerarCodigoUnico("CIT", "Gestion.cita", "citaCodigo");
                 citaSQL.CrearCita(cita);
                 accesoSQLServer.TerminarTransaccion();
             }

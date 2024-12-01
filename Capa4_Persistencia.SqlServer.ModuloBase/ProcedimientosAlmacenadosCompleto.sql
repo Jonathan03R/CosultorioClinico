@@ -357,7 +357,7 @@ CREATE or alter PROCEDURE pro_Insertar_Cita
     @citaEstado nchar(1) = 'P',
     @citaFechaHora datetime,
     @citaNotificacionCodigo nchar(10) = NULL,
-    @citaPacienteCodigo nchar(6),
+    @citaPacienteCodigo nchar(10),
     @citaTipoConsultaCodigo nchar(10),
     @citaMedicoCodigo nchar(10)
 AS
@@ -627,6 +627,215 @@ END;
 GO
 
 
+
+--*******************************************************************************************************************************************************
+--PROCEDIMIENTOS ALMACENADOS PARA ATENDER CONSULTAS 
+/******************************************************************************************
+Procedimiento: pro_Guardar_Consulta
+Descripción: Este procedimiento se enfoca únicamente en insertar los datos proporcionados en la tabla Gestion.Consulta.
+-@consultaCodigo: Código único para la consulta.
+-@consultaFechaHora: Fecha y hora de la consulta.
+-@consultaMedicoCodigo: Código del médico asociado a la consulta.
+-@consultaPacienteCodigo: Código del paciente asociado.
+-@consultaMotivo: Motivo de la consulta.
+-@consultaEstado: Estado de la consulta (P = Pendiente, por defecto).
+******************************************************************************************/
+CREATE or alter PROCEDURE pro_Guardar_Consulta
+    @consultaCodigo nchar(10),
+    @consultaFechaHora datetime,
+    @consultaMedicoCodigo nchar(10),
+    @consultaPacienteCodigo nchar(10),
+    @consultaMotivo nvarchar(255),
+    @consultaEstado nchar(1) = 'P' 
+AS
+BEGIN
+    BEGIN TRY
+        INSERT INTO Gestion.Consulta (
+            consultaCodigo,
+            consultaFechaHora,
+            consultaMedicoCodigo,
+            consultaPacienteCodigo,
+            consultaMotivo,
+            consultaEstado
+        )
+        VALUES (
+            @consultaCodigo,
+            @consultaFechaHora,
+            @consultaMedicoCodigo,
+            @consultaPacienteCodigo,
+            @consultaMotivo,
+            @consultaEstado
+        );
+
+        PRINT 'Consulta guardada exitosamente.';
+    END TRY
+    BEGIN CATCH
+        PRINT 'Error al guardar la consulta: ' + ERROR_MESSAGE();
+    END CATCH
+END;
+GO
+
+/******************************************************************************************
+Procedimiento: pro_Listar_Consulta
+Descripción: Procedimiento almacenado que devuelve una lista de consultas ordenadas según la importancia.
+-Codigo: Código de la consulta.
+-FechaHora: Fecha y hora de la consulta.
+-Medico: Código del médico.
+-Paciente: Código del paciente.
+-Motivo: Motivo de la consulta.
+-Estado: Estado de la consulta (P, C, X).
+******************************************************************************************/
+CREATE or alter PROCEDURE pro_Listar_Consulta
+AS
+BEGIN
+    BEGIN TRY
+        SELECT 
+            consultaCodigo AS Codigo,
+            consultaFechaHora AS FechaHora,
+            consultaMedicoCodigo AS Medico,
+            consultaPacienteCodigo AS Paciente,
+            consultaMotivo AS Motivo,
+            consultaEstado AS Estado
+        FROM 
+            Gestion.Consulta
+        ORDER BY 
+            CASE 
+                WHEN consultaEstado = 'P' THEN 1 
+                WHEN consultaEstado = 'C' THEN 2
+                ELSE 3 
+            END,
+            consultaFechaHora DESC; 
+
+        PRINT 'Consultas listadas exitosamente.';
+    END TRY
+    BEGIN CATCH
+        PRINT 'Error al listar consultas: ' + ERROR_MESSAGE();
+    END CATCH
+END;
+GO
+/******************************************************************************************
+Procedimiento: pro_GuardarCambios_Consulta
+Descripción: Este procedimiento almacenado actualizará los datos de una consulta y, adicionalmente, 
+registrará el cambio en la tabla RegistroCambios para hacer un seguimiento de las modificaciones.
+-@consultaCodigo: Código de la consulta a modificar.
+-@nuevoMotivo: Nuevo motivo o descripción de la consulta.
+-@nuevoEstado: Nuevo estado de la consulta (P, C, X).
+-@cambiomedicoCodigo: El código del médico que realiza el cambio.
+-@cambioDescripcion: Descripción del cambio realizado.
+******************************************************************************************/
+CREATE or alter PROCEDURE pro_GuardarCambios_Consulta
+(
+    @consultaCodigo nchar(10),              
+    @nuevoMotivo nvarchar(255),       
+    @nuevoEstado nchar(1),                
+    @cambiomedicoCodigo nchar(10),          
+    @cambioDescripcion nvarchar(255)         
+)
+AS
+BEGIN
+    BEGIN TRANSACTION;
+
+    UPDATE Gestion.Consulta
+    SET 
+        consultaMotivo = @nuevoMotivo,
+        consultaEstado = @nuevoEstado
+    WHERE consultaCodigo = @consultaCodigo;
+
+    INSERT INTO Salud.RegistroCambios
+    (
+        cambioCodigo,
+        cambioHistorialClinicoCodigo,
+        cambioDescripcion,
+        cambioFecha,
+        cambiomedicoCodigo
+    )
+    VALUES
+    (
+        NEWID(),                                         
+        (SELECT historialClinicoCodigo FROM Salud.HistoriaClinica WHERE pacienteCodigo = (SELECT consultaPacienteCodigo FROM Gestion.Consulta WHERE consultaCodigo = @consultaCodigo)),
+        @cambioDescripcion,
+        GETDATE(),                                      
+        @cambiomedicoCodigo                               
+    );
+
+    COMMIT TRANSACTION;
+END
+GO
+
+/******************************************************************************************
+Procedimiento: pro_Mostrar_Consulta_Pacientes
+Descripción: Procedimiento almacenado para mostrar los pacientes con su motivo de consulta.
+-pacienteCodigo: El código único del paciente.
+-pacienteNombreCompleto: El nombre completo del paciente.
+-pacienteDNI: El DNI del paciente.
+-pacienteTelefono: El teléfono del paciente.
+-consultaCodigo: El código de la consulta.
+-consultaMotivo: El motivo de la consulta.
+-La condición c.consultaEstado = 'P' filtra las consultas que están en estado Pendiente. Puedes quitar o modificar este filtro según tus necesidades.
+******************************************************************************************/
+CREATE or alter PROCEDURE pro_Mostrar_Consulta_Pacientes
+AS
+BEGIN
+    SELECT 
+        p.pacienteCodigo,
+        p.pacienteNombreCompleto,
+        p.pacienteDNI,
+        p.pacienteTelefono,
+        c.consultaCodigo,
+        c.consultaMotivo
+    FROM 
+        Salud.Pacientes p
+    INNER JOIN 
+        Gestion.Consulta c ON p.pacienteCodigo = c.consultaPacienteCodigo
+    WHERE 
+        c.consultaEstado = 'P' 
+    ORDER BY 
+        p.pacienteNombreCompleto; 
+END
+GO
+/******************************************************************************************
+Procedimiento: pro_Cambiar_Estado_Consulta
+Descripción:  Procedimiento almacenado para cambiar el estado de una consulta.
+-@consultaCodigo: El código de la consulta que deseas modificar.
+-@nuevoEstado: El nuevo estado que deseas asignar a la consulta. Los posibles valores son 'P', 'C', 'X'.
+-@cambiomedicoCodigo: El código del médico que está realizando el cambio.
+-@cambioDescripcion: Una descripción que indica qué cambio se ha realizado.
+******************************************************************************************/
+CREATE or alter PROCEDURE pro_Cambiar_Estado_Consulta
+(
+    @consultaCodigo nchar(10),           
+    @nuevoEstado nchar(1),                
+    @cambiomedicoCodigo nchar(10),        
+    @cambioDescripcion nvarchar(255)     
+)
+AS
+BEGIN
+    UPDATE Gestion.Consulta
+    SET 
+        consultaEstado = @nuevoEstado
+    WHERE consultaCodigo = @consultaCodigo;
+
+    INSERT INTO Salud.RegistroCambios
+    (
+        cambioCodigo,
+        cambioHistorialClinicoCodigo,
+        cambioDescripcion,
+        cambioFecha,
+        cambiomedicoCodigo
+    )
+    VALUES
+    (
+        NEWID(),                                  
+        (SELECT historialClinicoCodigo FROM Salud.HistoriaClinica WHERE pacienteCodigo = (SELECT consultaPacienteCodigo FROM Gestion.Consulta WHERE consultaCodigo = @consultaCodigo)),
+        @cambioDescripcion,
+        GETDATE(),                                      
+        @cambiomedicoCodigo                            
+    );
+END
+GO
+
+
+
 /******************************************************************************************
 Descripción de procedimiento almacenado: Genera un código único basado en un prefijo y la secuencia en una columna específica.
 ---------------------------------------------------------------------------------------------
@@ -651,7 +860,7 @@ as
         where ' + @columnaCodigo + ' like @prefijo + ''%''
     ';
     exec sp_executesql @vSQL, N'@vNuevoCodigo int output, @prefijo nvarchar(3)', @vNuevoCodigo output, @prefijo;
-    set @vCodigoGenerado = @prefijo + right('000000' + cast(@vNuevoCodigo as varchar(6)), 6);
+    set @vCodigoGenerado = @prefijo + right('0000000' + cast(@vNuevoCodigo as varchar(7)), 7);
     select @vCodigoGenerado as CodigoUnico;
 
 set nocount off;

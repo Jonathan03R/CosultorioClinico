@@ -46,7 +46,7 @@ function guardarCita() {
 function obtenerDatosFormularioCita() {
     return {
         CitaFechaHora: $('#inputFechaHora').val(),
-        PacienteCodigo: $('#pacienteCodigo').text().trim(),
+        PacienteCodigo: $('#pacienteCodigo').text(),
         MedicoCodigo: $('#inputSelectMedicoModal').val(),
         TipoConsultaCodigo: $('#inputSelectTipoConsulta').val()
     };
