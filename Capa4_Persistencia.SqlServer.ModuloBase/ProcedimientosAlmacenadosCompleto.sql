@@ -658,49 +658,50 @@ GO
 --*******************************************************************************************************************************************************
 --PROCEDIMIENTOS ALMACENADOS PARA ATENDER CONSULTAS 
 /******************************************************************************************
-Procedimiento: pro_Guardar_Consulta
+Procedimiento: pro_Crear_Consulta
 Descripción: Este procedimiento se enfoca únicamente en insertar los datos proporcionados en la tabla Gestion.Consulta.
 -@consultaCodigo: Código único para la consulta.
--@consultaFechaHora: Fecha y hora de la consulta.
+-@consultaCitaCodigo: Codigo de la cita
+-@consultaFechaHoraFinal: Fecha y hora de la consulta.
 -@consultaMedicoCodigo: Código del médico asociado a la consulta.
 -@consultaPacienteCodigo: Código del paciente asociado.
 -@consultaMotivo: Motivo de la consulta.
 -@consultaEstado: Estado de la consulta (P = Pendiente, por defecto).
 ******************************************************************************************/
-CREATE or alter PROCEDURE pro_Guardar_Consulta
+    create or alter procedure pro_Crear_Consulta
     @consultaCodigo nchar(10),
-    @consultaFechaHora datetime,
+    @consultaCitaCodigo nchar(10),
+    @consultaFechaHoraFinal datetime = null,
     @consultaMedicoCodigo nchar(10),
     @consultaPacienteCodigo nchar(10),
-    @consultaMotivo nvarchar(255),
-    @consultaEstado nchar(1) = 'P' 
-AS
-BEGIN
-    BEGIN TRY
-        INSERT INTO Gestion.Consulta (
-            consultaCodigo,
-            consultaFechaHora,
-            consultaMedicoCodigo,
-            consultaPacienteCodigo,
-            consultaMotivo,
-            consultaEstado
-        )
-        VALUES (
-            @consultaCodigo,
-            @consultaFechaHora,
-            @consultaMedicoCodigo,
-            @consultaPacienteCodigo,
-            @consultaMotivo,
-            @consultaEstado
-        );
+    @consultaMotivo nvarchar(255) = null
+    as
+    begin
+        set nocount on;
 
-        PRINT 'Consulta guardada exitosamente.';
-    END TRY
-    BEGIN CATCH
-        PRINT 'Error al guardar la consulta: ' + ERROR_MESSAGE();
-    END CATCH
-END;
-GO
+    -- Inserción directa en la tabla Gestion.Consulta
+    insert into Gestion.Consulta (
+        consultaCodigo,
+        consultacitaCodigo,
+        consultaFechaHoraFinal,
+        consultaMedicoCodigo,
+        consultaPacienteCodigo,
+        consultaMotivo
+    )
+    values (
+        @consultaCodigo,
+        @consultaCitaCodigo,
+        @consultaFechaHoraFinal,
+        @consultaMedicoCodigo,
+        @consultaPacienteCodigo,
+        @consultaMotivo
+    );
+    set nocount off;
+end;
+go
+
+
+
 
 /******************************************************************************************
 Procedimiento: pro_Listar_Consulta
@@ -719,14 +720,17 @@ begin
     set nocount on;
 
     select 
-        consultaCodigo,
-        consultaFechaHora,
-        consultaMedicoCodigo,
-        consultaPacienteCodigo,
-        consultaMotivo,
-        consultaEstado
+        c.consultaCodigo,
+        ct.citaFechaHora as HoraCitaInicio,
+        c.consultaFechaHoraFinal,
+        c.consultaMedicoCodigo,
+        c.consultaPacienteCodigo,
+        c.consultaMotivo,
+        c.consultaEstado
     from 
-        Gestion.Consulta;
+        Gestion.Consulta c
+    left join 
+        Gestion.Cita ct on c.consultacitaCodigo = ct.citaCodigo; 
 
     set nocount off;
 end;

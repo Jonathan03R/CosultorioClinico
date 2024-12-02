@@ -1,4 +1,5 @@
 ﻿using Capa3_Dominio.ModuloPrincipal;
+using Capa3_Dominio.ModuloPrincipal.Entidad;
 using Capa4_Persistencia.SqlServer.ModuloBase;
 using System;
 using System.Collections.Generic;
@@ -19,18 +20,18 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             this.accesoSQLServer = accesoSQLServer;
         }
 
-        public void GuardarConsulta(Consulta consulta)
+        public void CrearConsulta(Consulta consulta)
         {
-            string procedimientoSQL = "pro_Guardar_Consulta";
+            string procedimientoSQL = "pro_Crear_Consulta";
             try
             {
                 SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
                 comandoSQL.Parameters.Add(new SqlParameter("@consultaCodigo", consulta.ConsultaCodigo));
-                comandoSQL.Parameters.Add(new SqlParameter("@consultaFechaHora", consulta.ConsultaFechaHora));
+                comandoSQL.Parameters.Add(new SqlParameter("@consultacitaCodigo", consulta.Cita.CitaCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@consultaFechaHoraFinal", consulta.ConsultaFechaHoraFinal));
                 comandoSQL.Parameters.Add(new SqlParameter("@consultaMedicoCodigo", consulta.ConsultaMedicoCodigo));
                 comandoSQL.Parameters.Add(new SqlParameter("@consultaPacienteCodigo", consulta.ConsultaPacienteCodigo));
                 comandoSQL.Parameters.Add(new SqlParameter("@consultaMotivo", consulta.ConsultaMotivo));
-                comandoSQL.Parameters.Add(new SqlParameter("@consultaEstado", consulta.ConsultaEstado));
                 comandoSQL.ExecuteNonQuery();
             }
             catch (SqlException ex)
@@ -55,11 +56,18 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                         consultas.Add(new Consulta
                         {
                             ConsultaCodigo = resultadoSQL["consultaCodigo"].ToString().Trim(),
-                            ConsultaFechaHora = Convert.ToDateTime(resultadoSQL["consultaFechaHora"]),
+                            
+                            ConsultaFechaHoraFinal = Convert.ToDateTime(resultadoSQL["consultaFechaHoraFinal"]),
                             ConsultaMedicoCodigo = resultadoSQL["consultaMedicoCodigo"].ToString().Trim(),
                             ConsultaPacienteCodigo = resultadoSQL["consultaPacienteCodigo"].ToString().Trim(),
                             ConsultaMotivo = resultadoSQL["consultaMotivo"].ToString().Trim(),
-                            ConsultaEstado = resultadoSQL["consultaEstado"].ToString().Trim()
+                            ConsultaEstado = resultadoSQL["consultaEstado"].ToString().Trim(),
+                            Cita = new Cita
+                            {
+                                CitaFechaHora = resultadoSQL["HoraCitaInicio"] != DBNull.Value
+                            ? Convert.ToDateTime(resultadoSQL["HoraCitaInicio"])
+                            : DateTime.MinValue 
+                            }
                         });
                     }
                 }

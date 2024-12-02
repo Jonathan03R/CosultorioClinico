@@ -40,7 +40,7 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
 
                 foreach (var consulta in consultas)
                 {
-                    if (consulta.ConsultaFechaHora.Date == DateTime.Today) 
+                    if (consulta.Cita.CitaFechaHora == DateTime.Today) 
                     {
                         Paciente paciente = pacienteSQL.MostrarPacientePorCodigo(consulta.ConsultaPacienteCodigo);
                         consulta.Paciente = paciente;
@@ -58,9 +58,44 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
             return consultasDeHoy; 
         }
 
-        //Cambiar estado
+
+        public void cambiarEstadoConsultaPendientree(string codigoConsulta)
+        {
+            accesoSQLServer.AbrirConexion();
+            consultaSQL.CambiarEstadoPendiente(codigoConsulta);
+            accesoSQLServer.CerrarConexion();
+        }
+
+
+
+        //Cambiar estado Pendiente, No Asistieron, Atendido, Cancelado
+        public void cambiarEstadoActivoConsultaNoAsistieron(string codigoConsulta)
+        {
+           
+            accesoSQLServer.AbrirConexion();
+            consultaSQL.CambiarEstadoNoAsistieron(codigoConsulta);
+            accesoSQLServer.CerrarConexion();
+        }
+
+        public void cambiarEstadoActivoConsultaAtendido(string codigoConsulta)
+        {
+
+            accesoSQLServer.AbrirConexion();
+            consultaSQL.CambiarEstadoAtendido(codigoConsulta);
+            accesoSQLServer.CerrarConexion();
+        }
+        public void cambiarEstadoActivoConsultaCancelada(string codigoConsulta)
+        {
+
+            accesoSQLServer.AbrirConexion();
+            consultaSQL.CambiarEstadoCancelado(codigoConsulta);
+            accesoSQLServer.CerrarConexion();
+        }
+
+        //Registrar Consulta
 
         //Registrar Diagnostico
+
         //Listar Diagnostico
 
         //Listar Recetas  medicas anteriores del paciente

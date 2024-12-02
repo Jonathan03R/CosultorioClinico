@@ -38,7 +38,8 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
                 listaConsultasFormatada = consultasDelDia.Select(c => new
                 {
                     ConsultaCodigo = c.ConsultaCodigo,
-                    ConsultaFechaHora = c.ConsultaFechaHora.ToString("yyyy-MM-dd HH:mm:ss"),
+                    ConsultaFechaCita = c.Cita.CitaFechaHora.ToString("yyyy-MM-dd HH:mm:ss"),
+                    ConsultaFechaHoraFinal = c.ConsultaFechaHoraFinal.ToString("yyyy-MM-dd HH:mm:ss"),
                     MedicoNombre = $"{c.Medicos.MedicoNombre} {c.Medicos.MedicoApellido}",
                     PacienteNombre = c.Paciente.PacienteNombreCompleto,
                     ConsultaMotivo = c.ConsultaMotivo,

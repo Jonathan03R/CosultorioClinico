@@ -10,7 +10,7 @@ namespace Capa3_Dominio.ModuloPrincipal
     public class Consulta
     {
         private string consultaCodigo;
-        private DateTime consultaFechaHora;
+        private DateTime consultaFechaHoraFinal;
         private string consultaMedicoCodigo;
         private string consultaPacienteCodigo;
         private string consultaMotivo;
@@ -18,21 +18,25 @@ namespace Capa3_Dominio.ModuloPrincipal
 
         private Paciente paciente;
         private Medico medicos;
+        private Cita cita;
 
         public string ConsultaCodigo { get => consultaCodigo; set => consultaCodigo = value; }
-        public DateTime ConsultaFechaHora { get => consultaFechaHora; set => consultaFechaHora = value; }
+        public DateTime ConsultaFechaHoraFinal { get => consultaFechaHoraFinal; set => consultaFechaHoraFinal = value; }
         public string ConsultaMedicoCodigo { get => consultaMedicoCodigo; set => consultaMedicoCodigo = value; }
         public string ConsultaPacienteCodigo { get => consultaPacienteCodigo; set => consultaPacienteCodigo = value; }
         public string ConsultaMotivo { get => consultaMotivo; set => consultaMotivo = value; }
         public string ConsultaEstado { get => consultaEstado; set => consultaEstado = value; }
         public Paciente Paciente { get => paciente; set => paciente = value; }
         public Medico Medicos { get => medicos; set => medicos = value; }
+        public Cita Cita { get => cita; set => cita = value; }
+
+
 
         /*Regla 2:*/
         public bool EsDatosValidosConsulta()
         {
             bool esCodigoValido = !string.IsNullOrEmpty(consultaCodigo);
-            bool esFechaValida = consultaFechaHora != DateTime.MinValue;
+            bool esFechaValida = consultaFechaHoraFinal != DateTime.MinValue;
             bool esMedicoCodigoValido = !string.IsNullOrEmpty(consultaMedicoCodigo);
             bool esPacienteCodigoValido = !string.IsNullOrEmpty(consultaPacienteCodigo);
             bool esMotivoValido = !string.IsNullOrEmpty(consultaMotivo);

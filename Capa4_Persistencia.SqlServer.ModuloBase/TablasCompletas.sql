@@ -168,6 +168,7 @@ create table Gestion.cita
     citaPacienteCodigo nchar(10),
     citaTipoConsultaCodigo nchar(10),
 	citaMedicoCodigo nchar(10),
+
     constraint CitaPK primary key (citaCodigo),
     constraint CitaPacienteFK foreign key (citaPacienteCodigo) references Salud.pacientes(pacienteCodigo),
     constraint CitaNotificacionFK foreign key (citaNotificacionCodigo) references Gestion.notificacion(notificacionCodigo),
@@ -181,14 +182,16 @@ go
 --tablas de gestión de consultas 
 create table Gestion.Consulta (
     consultaCodigo nchar(10),
-    consultaFechaHora datetime not null,
+    consultacitaCodigo nchar(10),
+    consultaFechaHoraFinal datetime null,
     consultaMedicoCodigo nchar(10),
     consultaPacienteCodigo nchar(10),
-    consultaMotivo nvarchar(255),
+    consultaMotivo nvarchar(255) null,
     consultaEstado nchar(1) default 'P', 
     constraint ConsultaPK primary key (consultaCodigo),
     constraint ConsultaMedicoFK foreign key (consultaMedicoCodigo) references Administracion.Medico(medicoCodigo),
     constraint ConsultaPacienteFK foreign key (consultaPacienteCodigo) references Salud.Pacientes(pacienteCodigo),
+    constraint consultacitaCodigoFK foreign key (consultacitaCodigo) references  Gestion.cita(citaCodigo),
     constraint ConsultaEstadoCK check (consultaEstado in ('P', 'N', 'A', 'C'))
 ) on gestionConsultas
 go
@@ -264,12 +267,13 @@ values
 go
 
 
-insert into Gestion.Consulta (consultaCodigo, consultaFechaHora, consultaMedicoCodigo, consultaPacienteCodigo, consultaMotivo, consultaEstado)
+insert into Gestion.Consulta (consultaCodigo,consultacitaCodigo, consultaFechaHoraFinal, consultaMedicoCodigo, consultaPacienteCodigo, consultaMotivo, consultaEstado)
 values
-('CON0000001', '2024-12-1 10:00:00', 'MED0000001', 'PAC0000001', 'Dolor en el pecho', 'P'),
-('CON0000002', '2024-12-1 11:30:00', 'MED0000002', 'PAC0000002', 'Revisión pediátrica', 'P'),
-('CON0000003', '2024-12-1 09:00:00', 'MED0000001', 'PAC0000003', 'Control de presión arterial', 'P'),
-('CON0000004', '2024-12-1 14:00:00', 'MED0000002', 'PAC0000004', 'Consulta de crecimiento', 'P');
+('CON0000001','CIT0000001', '2024-12-1 10:00:00', 'MED0000001', 'PAC0000001', 'Dolor en el pecho', 'P'),
+('CON0000002','CIT0000002', '2024-12-1 11:30:00', 'MED0000002', 'PAC0000002', 'Revisión pediátrica', 'P'),
+('CON0000003','CIT0000003', '2024-12-1 09:00:00', 'MED0000001', 'PAC0000003', 'Control de presión arterial', 'P'),
+('CON0000004','CIT0000004', '2024-12-1 14:00:00', 'MED0000002', 'PAC0000004', 'Consulta de crecimiento', 'P');
+
 
 insert into Salud.Diagnostico (diagnosticoCodigo, diagnosticoconsultaCodigo, diagnosticoDescripcion, diagnosticoFecha)
 values
@@ -284,3 +288,9 @@ values
 ('REC0000002', 'CON0000002', 'Multivitamínicos pediátricos', '2024-11-25', '1 por día', 'Mantener dieta equilibrada'),
 ('REC0000003', 'CON0000003', 'Losartán 50mg', '2024-11-26', '1 tableta al día', 'Medir presión arterial diariamente'),
 ('REC0000004', 'CON0000004', 'Suplemento de calcio', '2024-11-26', '1 tableta al día', 'Seguir dieta rica en calcio');
+
+insert into Gestion.Consulta (consultaCodigo,consultacitaCodigo, consultaFechaHoraFinal, consultaMedicoCodigo, consultaPacienteCodigo, consultaMotivo, consultaEstado)
+values
+('CON0000005','CIT0000001', '2024-11-1 09:00:00', 'MED0000001', 'PAC0000003', 'Control de presión arterial', 'P'),
+('CON0000006','CIT0000002', '2024-11-1 14:00:00', 'MED0000002', 'PAC0000004', 'Consulta de crecimiento', 'P');
+

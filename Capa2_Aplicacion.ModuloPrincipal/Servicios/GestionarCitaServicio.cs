@@ -16,6 +16,7 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
         private readonly PacienteSQL pacienteSQL;
         private readonly MedicoSQL medicoSQL;
         private readonly CodigoSQL codigoSQL;
+        private readonly ConsultaSQL consultaSQL;
 
         public GestionarCitaServicio()
         {
@@ -25,6 +26,7 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
             pacienteSQL = new PacienteSQL(accesoSQLServer);
             medicoSQL = new MedicoSQL(accesoSQLServer);
             codigoSQL = new CodigoSQL(accesoSQLServer);
+            consultaSQL = new ConsultaSQL(accesoSQLServer);
         }
 
         public List<Medico> ObtenerMedicosConEspecialidad()
@@ -51,7 +53,13 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
             try
             {
                 cita.CitaCodigo = codigoSQL.GenerarCodigoUnico("CIT", "Gestion.cita", "citaCodigo");
+                consulta.ConsultaCodigo = codigoSQL.GenerarCodigoUnico("CON", "Gestion.Consult", "consultaCodigo");
+
                 citaSQL.CrearCita(cita);
+
+                consulta.ConsultaFechaHoraFinal = null;
+
+                consultaSQL.CrearConsulta(consulta);
                 accesoSQLServer.TerminarTransaccion();
             }
             catch (Exception ex)
