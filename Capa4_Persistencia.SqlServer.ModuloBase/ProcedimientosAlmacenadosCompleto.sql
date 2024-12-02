@@ -684,16 +684,12 @@ Descripción: Este procedimiento se enfoca únicamente en insertar los datos propo
         consultaCodigo,
         consultacitaCodigo,
         consultaFechaHoraFinal,
-        consultaMedicoCodigo,
-        consultaPacienteCodigo,
         consultaMotivo
     )
     values (
         @consultaCodigo,
         @consultaCitaCodigo,
         @consultaFechaHoraFinal,
-        @consultaMedicoCodigo,
-        @consultaPacienteCodigo,
         @consultaMotivo
     );
     set nocount off;
@@ -722,9 +718,9 @@ begin
     select 
         c.consultaCodigo,
         ct.citaFechaHora as HoraCitaInicio,
+		ct.citaPacienteCodigo as PacienteCodigo,
+		ct.citaMedicoCodigo as MedicoCodigo,
         c.consultaFechaHoraFinal,
-        c.consultaMedicoCodigo,
-        c.consultaPacienteCodigo,
         c.consultaMotivo,
         c.consultaEstado
     from 
@@ -737,86 +733,7 @@ end;
 go
 
 
-/******************************************************************************************
-Procedimiento: pro_GuardarCambios_Consulta
-Descripción: Este procedimiento almacenado actualizará los datos de una consulta y, adicionalmente, 
-registrará el cambio en la tabla RegistroCambios para hacer un seguimiento de las modificaciones.
--@consultaCodigo: Código de la consulta a modificar.
--@nuevoMotivo: Nuevo motivo o descripción de la consulta.
--@nuevoEstado: Nuevo estado de la consulta (P, C, X).
--@cambiomedicoCodigo: El código del médico que realiza el cambio.
--@cambioDescripcion: Descripción del cambio realizado.
-******************************************************************************************/
-CREATE or alter PROCEDURE pro_GuardarCambios_Consulta
-(
-    @consultaCodigo nchar(10),              
-    @nuevoMotivo nvarchar(255),       
-    @nuevoEstado nchar(1),                
-    @cambiomedicoCodigo nchar(10),          
-    @cambioDescripcion nvarchar(255)         
-)
-AS
-BEGIN
-    BEGIN TRANSACTION;
 
-    UPDATE Gestion.Consulta
-    SET 
-        consultaMotivo = @nuevoMotivo,
-        consultaEstado = @nuevoEstado
-    WHERE consultaCodigo = @consultaCodigo;
-
-    INSERT INTO Salud.RegistroCambios
-    (
-        cambioCodigo,
-        cambioHistorialClinicoCodigo,
-        cambioDescripcion,
-        cambioFecha,
-        cambiomedicoCodigo
-    )
-    VALUES
-    (
-        NEWID(),                                         
-        (SELECT historialClinicoCodigo FROM Salud.HistoriaClinica WHERE pacienteCodigo = (SELECT consultaPacienteCodigo FROM Gestion.Consulta WHERE consultaCodigo = @consultaCodigo)),
-        @cambioDescripcion,
-        GETDATE(),                                      
-        @cambiomedicoCodigo                               
-    );
-
-    COMMIT TRANSACTION;
-END
-GO
-
-/******************************************************************************************
-Procedimiento: pro_Mostrar_Consulta_Pacientes
-Descripción: Procedimiento almacenado para mostrar los pacientes con su motivo de consulta.
--pacienteCodigo: El código único del paciente.
--pacienteNombreCompleto: El nombre completo del paciente.
--pacienteDNI: El DNI del paciente.
--pacienteTelefono: El teléfono del paciente.
--consultaCodigo: El código de la consulta.
--consultaMotivo: El motivo de la consulta.
--La condición c.consultaEstado = 'P' filtra las consultas que están en estado Pendiente. Puedes quitar o modificar este filtro según tus necesidades.
-******************************************************************************************/
-CREATE or alter PROCEDURE pro_Mostrar_Consulta_Pacientes
-AS
-BEGIN
-    SELECT 
-        p.pacienteCodigo,
-        p.pacienteNombreCompleto,
-        p.pacienteDNI,
-        p.pacienteTelefono,
-        c.consultaCodigo,
-        c.consultaMotivo
-    FROM 
-        Salud.Pacientes p
-    INNER JOIN 
-        Gestion.Consulta c ON p.pacienteCodigo = c.consultaPacienteCodigo
-    WHERE 
-        c.consultaEstado = 'P' 
-    ORDER BY 
-        p.pacienteNombreCompleto; 
-END
-GO
 /******************************************************************************************
 Procedimiento: pro_Cambiar_Estado_Consulta
 Descripción:  Procedimiento almacenado para cambiar el estado de una consulta.
@@ -825,39 +742,6 @@ Descripción:  Procedimiento almacenado para cambiar el estado de una consulta.
 -@cambiomedicoCodigo: El código del médico que está realizando el cambio.
 -@cambioDescripcion: Una descripción que indica qué cambio se ha realizado.
 ******************************************************************************************/
-CREATE or alter PROCEDURE pro_Cambiar_Estado_Consulta
-(
-    @consultaCodigo nchar(10),           
-    @nuevoEstado nchar(1),                
-    @cambiomedicoCodigo nchar(10),        
-    @cambioDescripcion nvarchar(255)     
-)
-AS
-BEGIN
-    UPDATE Gestion.Consulta
-    SET 
-        consultaEstado = @nuevoEstado
-    WHERE consultaCodigo = @consultaCodigo;
-
-    INSERT INTO Salud.RegistroCambios
-    (
-        cambioCodigo,
-        cambioHistorialClinicoCodigo,
-        cambioDescripcion,
-        cambioFecha,
-        cambiomedicoCodigo
-    )
-    VALUES
-    (
-        NEWID(),                                  
-        (SELECT historialClinicoCodigo FROM Salud.HistoriaClinica WHERE pacienteCodigo = (SELECT consultaPacienteCodigo FROM Gestion.Consulta WHERE consultaCodigo = @consultaCodigo)),
-        @cambioDescripcion,
-        GETDATE(),                                      
-        @cambiomedicoCodigo                            
-    );
-END
-GO
-
 
 create or alter procedure pro_Actualizar_Estado_ConsultaPendiente
     @consultaCodigo nchar(10)

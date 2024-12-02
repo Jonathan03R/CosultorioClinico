@@ -40,13 +40,13 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
 
                 foreach (var consulta in consultas)
                 {
-                    if (consulta.Cita.CitaFechaHora == DateTime.Today) 
+                    if (consulta.Cita.CitaFechaHora.Date == DateTime.Today) 
                     {
-                        Paciente paciente = pacienteSQL.MostrarPacientePorCodigo(consulta.ConsultaPacienteCodigo);
-                        consulta.Paciente = paciente;
+                        Paciente paciente = pacienteSQL.MostrarPacientePorCodigo(consulta.Cita.CitaPaciente.PacienteCodigo);
+                        consulta.Cita.CitaPaciente = paciente;
 
-                        Medico medico = medicoSQL.ObtenerMedicoPorCodigo(consulta.ConsultaMedicoCodigo);
-                        consulta.Medicos = medico;
+                        Medico medico = medicoSQL.ObtenerMedicoPorCodigo(consulta.Cita.CitaMedico.MedicoCodigo);
+                        consulta.Cita.CitaMedico = medico;
 
                         consultasDeHoy.Add(consulta); 
                     }

@@ -52,20 +52,24 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
             accesoSQLServer.IniciarTransaccion();
             try
             {
+                // Generar códigos únicos para la cita y la consulta
                 cita.CitaCodigo = codigoSQL.GenerarCodigoUnico("CIT", "Gestion.cita", "citaCodigo");
-                consulta.ConsultaCodigo = codigoSQL.GenerarCodigoUnico("CON", "Gestion.Consult", "consultaCodigo");
-
+                Consulta consulta = new Consulta
+                {
+                    ConsultaCodigo = codigoSQL.GenerarCodigoUnico("CON", "Gestion.Consulta", "consultaCodigo"),
+                    Cita = cita,
+                    ConsultaFechaHoraFinal = null, 
+                    ConsultaMotivo = null, 
+                };
                 citaSQL.CrearCita(cita);
-
-                consulta.ConsultaFechaHoraFinal = null;
-
                 consultaSQL.CrearConsulta(consulta);
+
                 accesoSQLServer.TerminarTransaccion();
             }
             catch (Exception ex)
             {
                 accesoSQLServer.CancelarTransaccion();
-                throw ex;
+                throw new Exception($"Error al registrar la cita y la consulta: {ex.Message}", ex);
             }
         }
 
