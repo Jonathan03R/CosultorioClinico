@@ -316,6 +316,33 @@ create or alter procedure Pro_Listar_TipoConsulta
 end
 go
 
+
+/*********************************************************************************************
+Procedimiento: pro_Mostrar_Medico_por_codigo
+Descripcion: Lista un medico dependiendo del medico
+*********************************************************************************************/
+
+create or alter procedure pro_Mostrar_Medico_por_codigo
+    @medicoCodigo nchar(10)
+as
+begin
+    set nocount on;
+
+    select 
+        medicoCodigo,
+        medicoApellido,
+        medicoNombre,
+        medicoCorreo,
+        medicoDNI,
+        medicoTelefono,
+        medicoEstado,
+        especialidadCodigo
+    from Administracion.Medico
+    where medicoCodigo = @medicoCodigo;
+end;
+go
+
+
 /*********************************************************************************************
 Procedimiento: pro_Listar_Especialidad
 Descripcion: Lista los tipo de consulta que tiene la clinica
@@ -685,34 +712,27 @@ Descripción: Procedimiento almacenado que devuelve una lista de consultas ordena
 -Motivo: Motivo de la consulta.
 -Estado: Estado de la consulta (P, C, X).
 ******************************************************************************************/
-CREATE or alter PROCEDURE pro_Listar_Consulta
-AS
-BEGIN
-    BEGIN TRY
-        SELECT 
-            consultaCodigo AS Codigo,
-            consultaFechaHora AS FechaHora,
-            consultaMedicoCodigo AS Medico,
-            consultaPacienteCodigo AS Paciente,
-            consultaMotivo AS Motivo,
-            consultaEstado AS Estado
-        FROM 
-            Gestion.Consulta
-        ORDER BY 
-            CASE 
-                WHEN consultaEstado = 'P' THEN 1 
-                WHEN consultaEstado = 'C' THEN 2
-                ELSE 3 
-            END,
-            consultaFechaHora DESC; 
 
-        PRINT 'Consultas listadas exitosamente.';
-    END TRY
-    BEGIN CATCH
-        PRINT 'Error al listar consultas: ' + ERROR_MESSAGE();
-    END CATCH
-END;
-GO
+create or alter procedure pro_Listar_Consulta
+as
+begin
+    set nocount on;
+
+    select 
+        consultaCodigo,
+        consultaFechaHora,
+        consultaMedicoCodigo,
+        consultaPacienteCodigo,
+        consultaMotivo,
+        consultaEstado
+    from 
+        Gestion.Consulta;
+
+    set nocount off;
+end;
+go
+
+
 /******************************************************************************************
 Procedimiento: pro_GuardarCambios_Consulta
 Descripción: Este procedimiento almacenado actualizará los datos de una consulta y, adicionalmente, 
@@ -833,6 +853,67 @@ BEGIN
     );
 END
 GO
+
+
+create or alter procedure pro_Actualizar_Estado_ConsultaPendiente
+    @consultaCodigo nchar(10)
+as
+begin
+    set nocount on;
+
+    update Gestion.Consulta
+    set consultaEstado = 'P'
+    where consultaCodigo = @consultaCodigo;
+
+    set nocount off;
+end;
+go
+
+create or alter procedure pro_Actualizar_Estado_ConsultaCancelado
+    @consultaCodigo nchar(10)
+as
+begin
+    set nocount on;
+
+    update Gestion.Consulta
+    set consultaEstado = 'C'
+    where consultaCodigo = @consultaCodigo;
+
+    set nocount off;
+end;
+go
+
+create or alter procedure pro_Actualizar_Estado_ConsultaNoAsistio
+    @consultaCodigo nchar(10)
+as
+begin
+    set nocount on;
+
+    update Gestion.Consulta
+    set consultaEstado = 'N'
+    where consultaCodigo = @consultaCodigo;
+
+    set nocount off;
+end;
+go
+
+create or alter procedure pro_Actualizar_Estado_ConsultaAtendido
+    @consultaCodigo nchar(10)
+as
+begin
+    set nocount on;
+
+    update Gestion.Consulta
+    set consultaEstado = 'A'
+    where consultaCodigo = @consultaCodigo;
+
+    set nocount off;
+end;
+go
+
+
+
+
 
 
 

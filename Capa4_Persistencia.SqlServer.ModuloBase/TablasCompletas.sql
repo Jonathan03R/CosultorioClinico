@@ -189,7 +189,7 @@ create table Gestion.Consulta (
     constraint ConsultaPK primary key (consultaCodigo),
     constraint ConsultaMedicoFK foreign key (consultaMedicoCodigo) references Administracion.Medico(medicoCodigo),
     constraint ConsultaPacienteFK foreign key (consultaPacienteCodigo) references Salud.Pacientes(pacienteCodigo),
-    constraint ConsultaEstadoCK check (consultaEstado in ('P', 'C', 'X'))
+    constraint ConsultaEstadoCK check (consultaEstado in ('P', 'N', 'A', 'C'))
 ) on gestionConsultas
 go
 
@@ -264,5 +264,23 @@ values
 go
 
 
+insert into Gestion.Consulta (consultaCodigo, consultaFechaHora, consultaMedicoCodigo, consultaPacienteCodigo, consultaMotivo, consultaEstado)
+values
+('CON0000001', '2024-12-1 10:00:00', 'MED0000001', 'PAC0000001', 'Dolor en el pecho', 'P'),
+('CON0000002', '2024-12-1 11:30:00', 'MED0000002', 'PAC0000002', 'Revisión pediátrica', 'P'),
+('CON0000003', '2024-12-1 09:00:00', 'MED0000001', 'PAC0000003', 'Control de presión arterial', 'P'),
+('CON0000004', '2024-12-1 14:00:00', 'MED0000002', 'PAC0000004', 'Consulta de crecimiento', 'P');
 
+insert into Salud.Diagnostico (diagnosticoCodigo, diagnosticoconsultaCodigo, diagnosticoDescripcion, diagnosticoFecha)
+values
+('DIA0000001', 'CON0000001', 'Angina de pecho', '2024-11-25'),
+('DIA0000002', 'CON0000002', 'Peso dentro del rango normal', '2024-11-25'),
+('DIA0000003', 'CON0000003', 'Hipertensión controlada', '2024-11-26'),
+('DIA0000004', 'CON0000004', 'Crecimiento adecuado', '2024-11-26');
 
+insert into Salud.RecetaMedica (recetaCodigo, recetaConsultaCodigo, recetaDescripcion, recetaFecha, recetaTratamiento, recetaRecomendaciones)
+values
+('REC0000001', 'CON0000001', 'Nitroglicerina sublingual', '2024-11-25', '1 tableta al día', 'Evitar esfuerzos físicos'),
+('REC0000002', 'CON0000002', 'Multivitamínicos pediátricos', '2024-11-25', '1 por día', 'Mantener dieta equilibrada'),
+('REC0000003', 'CON0000003', 'Losartán 50mg', '2024-11-26', '1 tableta al día', 'Medir presión arterial diariamente'),
+('REC0000004', 'CON0000004', 'Suplemento de calcio', '2024-11-26', '1 tableta al día', 'Seguir dieta rica en calcio');

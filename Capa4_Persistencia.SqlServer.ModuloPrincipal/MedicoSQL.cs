@@ -61,6 +61,56 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
         }
 
 
+        public Medico ObtenerMedicoPorCodigo(string codigoMedico)
+        {
+            Medico medico = null;
+            string procedimientoSQL = "pro_Mostrar_Medico_por_codigo";
+
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+                comandoSQL.Parameters.Add(new SqlParameter("@medicoCodigo", codigoMedico));
+
+                using (SqlDataReader resultadoSQL = comandoSQL.ExecuteReader())
+                {
+                    if (resultadoSQL.Read())
+                    {
+                        medico = new Medico
+                        {
+                            MedicoCodigo = resultadoSQL["medicoCodigo"].ToString().Trim(),
+                            MedicoApellido = resultadoSQL["medicoApellido"].ToString().Trim(),
+                            MedicoNombre = resultadoSQL["medicoNombre"].ToString().Trim(),
+                            MedicoCorreo = resultadoSQL["medicoCorreo"].ToString().Trim(),
+                            MedicoDNI = resultadoSQL["medicoDNI"].ToString().Trim(),
+                            MedicoTelefono = resultadoSQL["medicoTelefono"] != DBNull.Value
+                                ? resultadoSQL["medicoTelefono"].ToString().Trim()
+                                : null,
+                            MedicoEstado = resultadoSQL["medicoEstado"].ToString().Trim(),
+                            Especialidad = new Especialidad
+                            {
+                                EspecialidadCodigo = resultadoSQL["especialidadCodigo"].ToString().Trim()
+                            }
+                        };
+                    }
+                    else
+                    {
+                        throw new Exception($"No se encontró un médico con el código: {codigoMedico}");
+                    }
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new Exception($"Error al obtener el médico por código: {sqlEx.Message}", sqlEx);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error inesperado: {ex.Message}", ex);
+            }
+
+            return medico;
+        }
+
+
         private Medico ObtenerMedicoConEspecialidad(SqlDataReader resultadoSQL)
         {
             Medico medico = new Medico

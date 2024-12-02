@@ -19,7 +19,6 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             this.accesoSQLServer = accesoSQLServer;
         }
 
-
         public void GuardarConsulta(Consulta consulta)
         {
             string procedimientoSQL = "pro_Guardar_Consulta";
@@ -40,36 +39,38 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             }
         }
 
-
         public List<Consulta> ListarConsultas()
         {
             List<Consulta> consultas = new List<Consulta>();
             string procedimientoSQL = "pro_Listar_Consulta";
+
             try
             {
                 SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
-                SqlDataReader resultadoSQL = comandoSQL.ExecuteReader();
-                while (resultadoSQL.Read())
+
+                using (SqlDataReader resultadoSQL = comandoSQL.ExecuteReader())
                 {
-                    Consulta consulta = new Consulta
+                    while (resultadoSQL.Read())
                     {
-                        ConsultaCodigo = resultadoSQL["Codigo"].ToString().Trim(),
-                        ConsultaFechaHora = Convert.ToDateTime(resultadoSQL["FechaHora"]),
-                        ConsultaMedicoCodigo = resultadoSQL["Medico"].ToString().Trim(),
-                        ConsultaPacienteCodigo = resultadoSQL["Paciente"].ToString().Trim(),
-                        ConsultaMotivo = resultadoSQL["Motivo"].ToString().Trim(),
-                        ConsultaEstado = resultadoSQL["Estado"].ToString().Trim()
-                    };
-                    consultas.Add(consulta);
+                        consultas.Add(new Consulta
+                        {
+                            ConsultaCodigo = resultadoSQL["consultaCodigo"].ToString().Trim(),
+                            ConsultaFechaHora = Convert.ToDateTime(resultadoSQL["consultaFechaHora"]),
+                            ConsultaMedicoCodigo = resultadoSQL["consultaMedicoCodigo"].ToString().Trim(),
+                            ConsultaPacienteCodigo = resultadoSQL["consultaPacienteCodigo"].ToString().Trim(),
+                            ConsultaMotivo = resultadoSQL["consultaMotivo"].ToString().Trim(),
+                            ConsultaEstado = resultadoSQL["consultaEstado"].ToString().Trim()
+                        });
+                    }
                 }
             }
-            catch (SqlException ex)
+            catch (Exception ex)
             {
-                throw new Exception($"Error al listar consultas: {ex.Message}");
+                throw new Exception($"Error al listar consultas: {ex.Message}", ex);
             }
+
             return consultas;
         }
-
 
         public void GuardarCambiosConsulta(Consulta consulta, string cambioDescripcion, string medicoCodigo)
         {
@@ -91,7 +92,6 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
         }
 
 
-
         public void CambiarEstadoConsulta(string consultaCodigo, string nuevoEstado, string medicoCodigo, string descripcionCambio)
         {
             string procedimientoSQL = "pro_Cambiar_Estado_Consulta";
@@ -109,6 +109,91 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                 throw new Exception($"Error al cambiar el estado de la consulta: {ex.Message}");
             }
         }
+
+        //los verdaderos cambios de estados 
+
+        // Cambio de estado Pendiente
+
+        public void CambiarEstadoPendiente(string consultaCodigo) 
+        {
+            string procedimientoSQL = "pro_Actualizar_Estado_ConsultaPendiente";
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+                comandoSQL.Parameters.Add(new SqlParameter("@consultaCodigo", consultaCodigo));
+                comandoSQL.ExecuteNonQuery();
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new Exception($"Error al cambiar el estado a pendiente: {sqlEx.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error inesperado: {ex.Message}");
+            }
+        }
+
+        //estado No Asistieron
+        public void CambiarEstadoNoAsistieron(string consultaCodigo)
+        {
+            string procedimientoSQL = "pro_Actualizar_Estado_ConsultaPendiente";
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+                comandoSQL.Parameters.Add(new SqlParameter("@consultaCodigo", consultaCodigo));
+                comandoSQL.ExecuteNonQuery();
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new Exception($"Error al cambiar el estado a pendiente: {sqlEx.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error inesperado: {ex.Message}");
+            }
+        }
+
+        //estado Atendido
+        public void CambiarEstadoAtendido(string consultaCodigo)
+        {
+            string procedimientoSQL = "pro_Actualizar_Estado_ConsultaPendiente";
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+                comandoSQL.Parameters.Add(new SqlParameter("@consultaCodigo", consultaCodigo));
+                comandoSQL.ExecuteNonQuery();
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new Exception($"Error al cambiar el estado a pendiente: {sqlEx.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error inesperado: {ex.Message}");
+            }
+        }
+        //estado Cancelada
+
+        public void CambiarEstadoCancelado(string consultaCodigo)
+        {
+            string procedimientoSQL = "pro_Actualizar_Estado_ConsultaPendiente";
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+                comandoSQL.Parameters.Add(new SqlParameter("@consultaCodigo", consultaCodigo));
+                comandoSQL.ExecuteNonQuery();
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new Exception($"Error al cambiar el estado a pendiente: {sqlEx.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error inesperado: {ex.Message}");
+            }
+        }
+
+
 
 
 

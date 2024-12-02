@@ -101,34 +101,61 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             }
         }
 
-        public Paciente MostrarPacientePorCodigo (string pacienteCodigo)
+        //tengo esto en la capa de persistencia
+
+        public Paciente MostrarPacientePorCodigo(string pacienteCodigo)
         {
-            Paciente paciente;
+            Paciente paciente = null;
             string procedimientoSQL = "pro_Mostrar_Paciente_por_codigo";
+
             try
             {
                 SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
                 comandoSQL.Parameters.Add(new SqlParameter("@pacienteCodigo", pacienteCodigo));
-                SqlDataReader resultadoSQL = comandoSQL.ExecuteReader();
-                if (resultadoSQL.Read())
+
+                // Usar using para asegurar el cierre del SqlDataReader
+                using (SqlDataReader resultadoSQL = comandoSQL.ExecuteReader())
                 {
-                    paciente = ObtenerPaciente(resultadoSQL);
-                }
-                else
-                {
-                    throw new ExcepcionPacienteInvalido(ExcepcionPacienteInvalido.NO_EXISTE_REGISTRO);
+                    if (resultadoSQL.Read())
+                    {
+                        paciente = new Paciente
+                        {
+                            PacienteCodigo = resultadoSQL["pacienteCodigo"].ToString().Trim(),
+                            PacienteDNI = resultadoSQL["pacienteDNI"].ToString().Trim(),
+                            PacienteNombreCompleto = resultadoSQL["pacienteNombreCompleto"].ToString().Trim(),
+                            PacienteFechaNacimiento = resultadoSQL["pacienteFechaNacimiento"] != DBNull.Value
+                                ? Convert.ToDateTime(resultadoSQL["pacienteFechaNacimiento"])
+                                : DateTime.MinValue,
+                            PacienteDireccion = resultadoSQL["pacienteDireccion"] != DBNull.Value
+                                ? resultadoSQL["pacienteDireccion"].ToString().Trim()
+                                : null,
+                            PacienteTelefono = resultadoSQL["pacienteTelefono"] != DBNull.Value
+                                ? resultadoSQL["pacienteTelefono"].ToString().Trim()
+                                : null,
+                            PacienteCorreoElectronico = resultadoSQL["pacienteCorreoElectronico"] != DBNull.Value
+                                ? resultadoSQL["pacienteCorreoElectronico"].ToString().Trim()
+                                : null,
+                            PacienteEstado = resultadoSQL["pacienteEstado"].ToString().Trim()
+                        };
+                    }
+                    else
+                    {
+                        return null; // Retornar null si no se encuentra el paciente
+                    }
                 }
             }
-            catch (SqlException sqlEx)
+            catch (SqlException exSQL)
             {
-                throw sqlEx;
+                throw new Exception($"Error al ejecutar el procedimiento almacenado: {exSQL.Message}", exSQL);
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception($"Error inesperado: {ex.Message}", ex);
             }
-            return paciente;
+
+            return paciente; // Devolver el paciente encontrado o null
         }
+
 
         public Paciente MostarPacienteDni(string pacienteDNI) 
         {

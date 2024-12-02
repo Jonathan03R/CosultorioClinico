@@ -1,4 +1,5 @@
-﻿using Capa4_Persistencia.SqlServer.ModuloBase;
+﻿using Capa3_Dominio.ModuloPrincipal;
+using Capa4_Persistencia.SqlServer.ModuloBase;
 using Capa4_Persistencia.SqlServer.ModuloPrincipal;
 using System;
 using System.Collections.Generic;
@@ -13,22 +14,51 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
 
         private readonly AccesoSQLServer accesoSQLServer;
         private readonly CodigoSQL codigoSQL;
-        private readonly CitaSQL citaSQL;
+        private readonly ConsultaSQL consultaSQL;
+        private readonly PacienteSQL pacienteSQL;
+        private readonly MedicoSQL medicoSQL;
 
 
         public AtenderConsultaServicio()
         {
             accesoSQLServer = new AccesoSQLServer();
             codigoSQL = new CodigoSQL(accesoSQLServer);
-            citaSQL = new CitaSQL(accesoSQLServer);
+            consultaSQL = new ConsultaSQL(accesoSQLServer);
+            pacienteSQL = new PacienteSQL(accesoSQLServer);
+            medicoSQL = new MedicoSQL(accesoSQLServer);
         }
 
-        //Listar Consultas
 
+        //Listar las consultas de los  pacientes de la fecha de hoy
+        public List<Consulta> MostrarConsultasDelDia()
+        {
+            List<Consulta> consultasDeHoy = new List<Consulta>();
 
-        //Listar los pacientes de la fecha de hoy
+          
+                accesoSQLServer.AbrirConexion(); 
+                List<Consulta> consultas = consultaSQL.ListarConsultas();
 
-        //Permitir Cambiar el estado de las consultas
+                foreach (var consulta in consultas)
+                {
+                    if (consulta.ConsultaFechaHora.Date == DateTime.Today) 
+                    {
+                        Paciente paciente = pacienteSQL.MostrarPacientePorCodigo(consulta.ConsultaPacienteCodigo);
+                        consulta.Paciente = paciente;
+
+                        Medico medico = medicoSQL.ObtenerMedicoPorCodigo(consulta.ConsultaMedicoCodigo);
+                        consulta.Medicos = medico;
+
+                        consultasDeHoy.Add(consulta); 
+                    }
+                }
+
+                accesoSQLServer.CerrarConexion(); 
+            
+            
+            return consultasDeHoy; 
+        }
+
+        //Cambiar estado
 
         //Registrar Diagnostico
         //Listar Diagnostico

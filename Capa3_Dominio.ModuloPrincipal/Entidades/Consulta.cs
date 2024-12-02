@@ -16,12 +16,17 @@ namespace Capa3_Dominio.ModuloPrincipal
         private string consultaMotivo;
         private string consultaEstado;
 
+        private Paciente paciente;
+        private Medico medicos;
+
         public string ConsultaCodigo { get => consultaCodigo; set => consultaCodigo = value; }
         public DateTime ConsultaFechaHora { get => consultaFechaHora; set => consultaFechaHora = value; }
         public string ConsultaMedicoCodigo { get => consultaMedicoCodigo; set => consultaMedicoCodigo = value; }
         public string ConsultaPacienteCodigo { get => consultaPacienteCodigo; set => consultaPacienteCodigo = value; }
         public string ConsultaMotivo { get => consultaMotivo; set => consultaMotivo = value; }
         public string ConsultaEstado { get => consultaEstado; set => consultaEstado = value; }
+        public Paciente Paciente { get => paciente; set => paciente = value; }
+        public Medico Medicos { get => medicos; set => medicos = value; }
 
         /*Regla 2:*/
         public bool EsDatosValidosConsulta()
