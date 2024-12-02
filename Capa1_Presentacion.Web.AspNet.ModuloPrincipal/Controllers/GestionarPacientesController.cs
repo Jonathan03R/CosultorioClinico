@@ -39,15 +39,15 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
                 var listaPacientes = gestionarPacienteServicio.listarPacientes();
 
                 listaPacientesFormatada = listaPacientes.Select(p => new {
-                    PacienteCodigo = p.Paciente?.PacienteCodigo ?? "null",
-                    PacienteDNI = p.Paciente?.PacienteDNI ?? "null",
-                    PacienteNombreCompleto = p.Paciente?.PacienteNombreCompleto ?? "null",
-                    PacienteFechaNacimiento = p.Paciente?.PacienteFechaNacimiento.ToString("yyyy-MM-dd") ?? "null",
-                    PacienteDireccion = p.Paciente?.PacienteDireccion ?? "null",
-                    PacienteTelefono = p.Paciente?.PacienteTelefono ?? "null",
-                    PacienteCorreoElectronico = p.Paciente?.PacienteCorreoElectronico ?? "null",
-                    PacienteEstado = p.Paciente?.PacienteEstado == "A" ? "Activo" : "Inactivo",
-                    PacienteHistorialClinicoCodigo = p.HistorialClinicoCodigo ?? "null",
+                    PacienteCodigo = p.PacienteCodigo ?? "null",
+                    PacienteDNI = p.PacienteDNI ?? "null",
+                    PacienteNombreCompleto = p.PacienteNombreCompleto ?? "null",
+                    PacienteFechaNacimiento = p.PacienteFechaNacimiento.ToString("yyyy-MM-dd") ?? "null",
+                    PacienteDireccion = p.PacienteDireccion ?? "null",
+                    PacienteTelefono = p.PacienteTelefono ?? "null",
+                    PacienteCorreoElectronico = p.PacienteCorreoElectronico ?? "null",
+                    PacienteEstado = p.PacienteEstado == "A" ? "Activo" : "Inactivo",
+                    PacienteHistorialClinicoCodigo = p.HistoriaClinica.HistorialClinicoCodigo ?? "null",
                     PacienteSeguro = "Sin seguro", 
                     PacienteFechaActivacion = DateTime.Now.ToString("yyyy-MM-dd"),
                     PacienteNotas = "No hay notas adicionales" 
@@ -74,10 +74,7 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
 
             try
             {
-                System.Diagnostics.Debug.WriteLine("Paciente:");
-                System.Diagnostics.Debug.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(paciente));
-                System.Diagnostics.Debug.WriteLine("Contactos de Emergencia:");
-                System.Diagnostics.Debug.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(contactoEmergencia));
+              
 
                 gestionarPacienteServicio.RegistrarPacienteConHistoria(paciente, contactoEmergencia);
                 accionExitosa = true;
@@ -110,6 +107,29 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
             {
                 accionExitosa = false;
                 mensajeRetorno = $"Error al actualizar el paciente: {ex.Message}";
+            }
+
+            return Json(new { transaccionExitosa = accionExitosa, mensaje = mensajeRetorno });
+        }
+
+
+        [HttpPost]
+        public JsonResult ActualizarContactoEmergencia(ContactoEmergencia contactoEmergencia)
+        {
+            bool accionExitosa;
+            string mensajeRetorno;
+
+            try
+            {
+                gestionarPacienteServicio.ActualizarContactoEmergencia(contactoEmergencia);
+
+                accionExitosa = true;
+                mensajeRetorno = "Contacto de emergencia actualizado exitosamente.";
+            }
+            catch (Exception ex)
+            {
+                accionExitosa = false;
+                mensajeRetorno = $"Error al actualizar el contacto de emergencia: {ex.Message}";
             }
 
             return Json(new { transaccionExitosa = accionExitosa, mensaje = mensajeRetorno });

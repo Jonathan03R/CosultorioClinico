@@ -22,16 +22,14 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
         // Método para agregar una historia clínica a la base de datos
         public void AgregarHistoriaClinica(HistoriaClinica historiaClinica)
         {
-            string procedimientoSQL = "pro_AgregarHistoriaClinica";
+            string procedimientoSQL = "pro_Agregar_HistoriaClinica";
             try
             {
                 SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
                 comandoSQL.Parameters.Add(new SqlParameter("@historialClinicoCodigo", historiaClinica.HistorialClinicoCodigo));
-                comandoSQL.Parameters.Add(new SqlParameter("@pacienteCodigo", historiaClinica.Paciente.PacienteCodigo));
                 comandoSQL.Parameters.Add(new SqlParameter("@antecedentesMedicos", (object)historiaClinica.AntecedentesMedicos ?? DBNull.Value));
                 comandoSQL.Parameters.Add(new SqlParameter("@alergias", (object)historiaClinica.Alergias ?? DBNull.Value));
                 comandoSQL.Parameters.Add(new SqlParameter("@fechaCreacion", historiaClinica.FechaCreacion));
-                comandoSQL.Parameters.Add(new SqlParameter("@fechaActualizacion", historiaClinica.FechaActualizacion));
                 comandoSQL.ExecuteNonQuery();
             }
             catch (SqlException ex)
@@ -45,42 +43,37 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
         {
             HistoriaClinica historiaClinica = null;
             string procedimientoSQL = "pro_Mostrar_HistoriaClinica";
+
             try
             {
                 SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
                 comandoSQL.Parameters.Add(new SqlParameter("@pacienteCodigo", pacienteCodigo));
                 SqlDataReader resultadoSQL = comandoSQL.ExecuteReader();
+
                 if (resultadoSQL.Read())
                 {
-                    historiaClinica = ObtenerHistoriaClinica(resultadoSQL);
+                    historiaClinica = new HistoriaClinica
+                    {
+                        HistorialClinicoCodigo = resultadoSQL.GetString(0),
+                        AntecedentesMedicos = resultadoSQL.IsDBNull(2) ? null : resultadoSQL.GetString(2),
+                        Alergias = resultadoSQL.IsDBNull(3) ? null : resultadoSQL.GetString(3),
+                        FechaCreacion = resultadoSQL.GetDateTime(4)
+                    };
                 }
                 else
                 {
                     throw new ExcepcionHistoriaClinicaInvalida(ExcepcionHistoriaClinicaInvalida.NO_EXISTE_REGISTRO);
                 }
+
+                resultadoSQL.Close();
             }
             catch (SqlException)
             {
                 throw new ExcepcionHistoriaClinicaInvalida(ExcepcionHistoriaClinicaInvalida.ERROR_DE_CONSULTA);
             }
+
             return historiaClinica;
         }
-        private HistoriaClinica ObtenerHistoriaClinica(SqlDataReader resultadoSQL)
-        {
-            HistoriaClinica historiaClinica = new HistoriaClinica
-            {
-                HistorialClinicoCodigo = resultadoSQL.GetString(0),
-                AntecedentesMedicos = resultadoSQL.GetString(4),
-                Alergias = resultadoSQL.GetString(5),
-                FechaCreacion = resultadoSQL.GetDateTime(6),
-                FechaActualizacion = resultadoSQL.GetDateTime(7),
-                Paciente = new Paciente
-                {
-                    PacienteCodigo = resultadoSQL.GetString(1)
-                },
-                
-            };
-            return historiaClinica;
-        }
+
     }
 }

@@ -76,6 +76,23 @@ create table Administracion.Medico
 ) on gestionPacientes;
 go
 
+
+-- Tabla HistoriaClinica (almacena el historial médico de los pacientes)
+create table Salud.HistoriaClinica
+(
+    historialClinicoCodigo nchar(10) not null,
+	-- no tenia sentido tener codigo de paciente aqui
+    --pacienteCodigo nchar(10) not null,
+    --medicoCodigo nchar(10) not null,
+    antecedentesMedicos nvarchar(255), 
+    alergias nvarchar(255),
+    fechaCreacion date not null,
+    constraint HistoriaClinicaPK primary key (historialClinicoCodigo),
+    --constraint HistoriaClinicaPacienteFK foreign key (pacienteCodigo) references Salud.Pacientes(pacienteCodigo),
+    --constraint HistoriaClinicaMedicoFK foreign key (medicoCodigo) references Administracion.Medico(medicoCodigo)
+) on gestionConsultas;
+go
+
 -- Tabla Pacientes (almacena la información general de los pacientes)  --- necesario para la gestionar citas****************	
 create table Salud.Pacientes
 (
@@ -87,27 +104,12 @@ create table Salud.Pacientes
     pacienteTelefono nvarchar(15),
     pacienteCorreoElectronico nvarchar(100),
     pacienteEstado nchar(1) constraint pacienteEstadoDF default 'A', -- A = Activo, I = Inactivo
+
+	historialClinicoCodigo nchar(10) null unique,
     constraint PacientesPK primary key (pacienteCodigo),
-    constraint PacientesEstadoCK check (pacienteEstado = 'A' or pacienteEstado = 'I')
+    constraint PacientesEstadoCK check (pacienteEstado = 'A' or pacienteEstado = 'I'),
+	constraint historialClinicoCodigoFK foreign key (historialClinicoCodigo) references Salud.HistoriaClinica(historialClinicoCodigo), 
 ) on gestionPacientes;
-go
-
-
-
--- Tabla HistoriaClinica (almacena el historial médico de los pacientes)
-create table Salud.HistoriaClinica
-(
-    historialClinicoCodigo nchar(10) not null,
-    pacienteCodigo nchar(10) not null,
-    --medicoCodigo nchar(10) not null,
-    antecedentesMedicos nvarchar(255), 
-    alergias nvarchar(255),
-    fechaCreacion date not null,
-    fechaActualizacion date not null,
-    constraint HistoriaClinicaPK primary key (historialClinicoCodigo),
-    constraint HistoriaClinicaPacienteFK foreign key (pacienteCodigo) references Salud.Pacientes(pacienteCodigo),
-    --constraint HistoriaClinicaMedicoFK foreign key (medicoCodigo) references Administracion.Medico(medicoCodigo)
-) on gestionConsultas;
 go
 
 -- Tabla ContactosEmergencia (almacena información de contactos de emergencia de los pacientes)
@@ -117,11 +119,14 @@ create table Salud.ContactosEmergencia
     contactoEmergenciaNombre nvarchar(100) not null,
     contactoEmergenciaRelacion nvarchar(50) not null,
     contactoEmergenciaTelefono nvarchar(15) not null,
-    pacienteCodigo nchar(10) not null,
+	pacienteCodigo nchar(10) not null,
     constraint ContactosEmergenciaPK primary key (contactoEmergenciaCodigo),
-    constraint ContactosEmergenciaPacientesFK foreign key (pacienteCodigo) references Salud.Pacientes(pacienteCodigo)
+	constraint pacienteCodigoPk foreign key (pacienteCodigo) references Salud.Pacientes(pacienteCodigo)
 ) on gestionPacientes;
 go
+
+
+
 
 --- tablas necesarias para  gestionarCitas == responsable Jhony
 
@@ -220,26 +225,35 @@ create table Salud.RecetaMedica (
 ) on gestionConsultas
 go
 
-
-
-
 --insert para hacer pruebas
 
-insert into Salud.Pacientes (pacienteCodigo, pacienteDNI, pacienteNombreCompleto, pacienteFechaNacimiento, pacienteDireccion, pacienteTelefono, pacienteCorreoElectronico)
+insert into Salud.HistoriaClinica([historialClinicoCodigo], [fechaCreacion])
+values 
+('HIS0000001','2024-11-20' ),
+('HIS0000002','2024-11-20' ),
+('HIS0000003','2024-11-20' ),
+('HIS0000004','2024-11-20' ),
+('HIS0000005','2024-11-20' )
+
+go
+
+insert into Salud.Pacientes (pacienteCodigo, pacienteDNI, pacienteNombreCompleto, pacienteFechaNacimiento, pacienteDireccion, pacienteTelefono, pacienteCorreoElectronico,  historialClinicoCodigo)
 values
-('PAC0000001', '12345678', 'Juan Pérez', '1985-04-15', 'Av. Principal 123', '987654321', 'juan.perez@example.com'),
-('PAC0000002', '87654321', 'María Gómez', '1990-06-20', 'Calle Secundaria 45', '987123456', 'maria.gomez@example.com'),
-('PAC0000003', '23456789', 'Carlos López', '1982-11-10', 'Calle 3 de Abril 67', '987456123', 'carlos.lopez@example.com'),
-('PAC0000004', '34567891', 'Ana Torres', '1995-02-25', 'Pasaje Lima 8', '987789321', 'ana.torres@example.com'),
-('PAC0000005', '45678912', 'Luis Rojas', '1987-08-15', 'Jr. Ayacucho 342', '987963258', 'luis.rojas@example.com');
+('PAC0000001', '12345678', 'Juan Pérez', '1985-04-15', 'Av. Principal 123', '987654321', 'juan.perez@example.com','HIS0000001' ),
+('PAC0000002', '87654321', 'María Gómez', '1990-06-20', 'Calle Secundaria 45', '987123456', 'maria.gomez@example.com', 'HIS0000002'),
+('PAC0000003', '23456789', 'Carlos López', '1982-11-10', 'Calle 3 de Abril 67', '987456123', 'carlos.lopez@example.com', 'HIS0000003'),
+('PAC0000004', '34567891', 'Ana Torres', '1995-02-25', 'Pasaje Lima 8', '987789321', 'ana.torres@example.com', 'HIS0000004'),
+('PAC0000005', '45678912', 'Luis Rojas', '1987-08-15', 'Jr. Ayacucho 342', '987963258', 'luis.rojas@example.com', 'HIS0000005');
 go
 
 
 insert into Salud.ContactosEmergencia (contactoEmergenciaCodigo, contactoEmergenciaNombre, contactoEmergenciaRelacion, contactoEmergenciaTelefono, pacienteCodigo)
 values
-('CEM0000001', 'Pedro Pérez', 'Padre', '987654111', 'PAC0000001'),
-('CEM0000002', 'Lucía Gómez', 'Hermana', '987123111', 'PAC0000002');
+('CEM0000001', 'Pedro Pérez', 'Padre', '987654111' , 'PAC0000001'),
+('CEM0000002', 'Lucía Gómez', 'Hermana', '987123111' , 'PAC0000001');
 go
+
+
 
 insert into Administracion.Especialidad (especialidadCodigo, especialidadNombre, especialidadDescripcion)
 values

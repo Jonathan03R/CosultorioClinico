@@ -20,6 +20,7 @@ Parámetros:
     - @pacienteCorreoElectronico: Correo electrónico del paciente (opcional).
     - @pacienteEstado: Estado del paciente (A = Activo, I = Inactivo). Por defecto es 'A'.
 ******************************************************************************************/
+
 create or alter procedure pro_Crear_Paciente
     @pacienteCodigo nchar(10),
     @pacienteDNI nchar(8),
@@ -28,7 +29,7 @@ create or alter procedure pro_Crear_Paciente
     @pacienteDireccion nvarchar(255) = null,
     @pacienteTelefono nvarchar(15) = null,
     @pacienteCorreoElectronico nvarchar(100) = null,
-    @pacienteEstado nchar(1) = 'A'
+	@historialClinicoCodigo nchar(10) null
 	as
 	set nocount on;
 
@@ -41,7 +42,7 @@ create or alter procedure pro_Crear_Paciente
 		pacienteDireccion,
 		pacienteTelefono,
 		pacienteCorreoElectronico,
-		pacienteEstado
+		historialClinicoCodigo
 	)
 	values 
 	(
@@ -52,7 +53,7 @@ create or alter procedure pro_Crear_Paciente
 		@pacienteDireccion,
 		@pacienteTelefono,
 		@pacienteCorreoElectronico,
-		@pacienteEstado
+		@historialClinicoCodigo
 	);
 go
 
@@ -151,22 +152,18 @@ create or alter procedure pro_listar_pacientes
 	as
 begin
     set nocount on;
-
     select 
         P.pacienteCodigo,
-        HC.historialClinicoCodigo as pacienteHistorialClinicoCodigo,
         P.pacienteDNI,
         P.pacienteNombreCompleto,
         P.pacienteFechaNacimiento,
         P.pacienteDireccion,
         P.pacienteTelefono,
         P.pacienteCorreoElectronico,
-        P.pacienteEstado
+        P.pacienteEstado,
+		p.historialClinicoCodigo
     from 
         Salud.Pacientes as P
-    left join 
-        Salud.HistoriaClinica as HC on P.pacienteCodigo = HC.pacienteCodigo;
-
     set nocount off;
 end
 go
@@ -179,19 +176,25 @@ Parámetros:
     - @pacienteCodigo: Código único del paciente cuyo historial clínico se desea obtener.
 ******************************************************************************************/
 create or alter procedure pro_Mostrar_HistoriaClinica
-		@pacienteCodigo nchar(10)
-	as
-	set nocount on;
+    @pacienteCodigo nchar(10)
+as
+begin
+    set nocount on;
 
-	select hc.historialClinicoCodigo,
-		   hc.pacienteCodigo,
-		   hc.antecedentesMedicos,
-		   hc.alergias,
-		   hc.fechaCreacion,
-		   hc.fechaActualizacion
-	from Salud.HistoriaClinica hc
-	where hc.pacienteCodigo = @pacienteCodigo;
+    select
+        hc.historialClinicoCodigo,
+        p.pacienteCodigo,
+        hc.antecedentesMedicos,
+        hc.alergias,
+        hc.fechaCreacion
+    from Salud.Pacientes p
+    inner join Salud.HistoriaClinica hc
+        on p.historialClinicoCodigo = hc.historialClinicoCodigo
+    where p.pacienteCodigo = @pacienteCodigo;
+end;
 go
+
+
 
 /******************************************************************************************
 Procedimiento: pro_Mostrar_ContactosEmergencia
@@ -200,16 +203,21 @@ Parámetros:
     - @pacienteCodigo: Código único del paciente cuyos contactos de emergencia se desean obtener.
 ******************************************************************************************/
 create or alter procedure pro_Mostrar_ContactosEmergencia
-		@pacienteCodigo nchar(10)
-	as
-	set nocount on;
+    @pacienteCodigo nchar(10)
+as
+begin
+    set nocount on;
 
-	select ce.contactoEmergenciaCodigo,
-		   ce.contactoEmergenciaNombre,
-		   ce.contactoEmergenciaRelacion,
-		   ce.contactoEmergenciaTelefono
-	from Salud.ContactosEmergencia ce
-	where ce.pacienteCodigo = @pacienteCodigo;
+    select 
+        ce.contactoEmergenciaCodigo,
+        ce.contactoEmergenciaNombre,
+        ce.contactoEmergenciaRelacion,
+        ce.contactoEmergenciaTelefono
+    from Salud.ContactosEmergencia ce
+    where ce.pacienteCodigo = @pacienteCodigo;
+
+    set nocount off;
+end;
 go
 
 /******************************************************************************************
@@ -218,12 +226,12 @@ Descripción de procedimiento almacenado:
 Procedimiento almacenado para agregar un contacto de emergencia en la tabla `ContactosEmergencia`.
 
 **********************************************************************************************/
-create or alter procedure pro_ContactosEmergencia_Agregar 
+create or alter procedure pro_Agregar_ContactoEmergencia 
     @contactoEmergenciaCodigo nchar(10),
     @contactoEmergenciaNombre nvarchar(100),
     @contactoEmergenciaRelacion nvarchar(50),
     @contactoEmergenciaTelefono nvarchar(15),
-    @pacienteCodigo nchar(10)
+	@pacienteCodigo nchar(10)
 as
 begin
     set nocount on;
@@ -233,14 +241,14 @@ begin
         contactoEmergenciaNombre,
         contactoEmergenciaRelacion,
         contactoEmergenciaTelefono,
-        pacienteCodigo
+		pacienteCodigo
     )
     values (
         @contactoEmergenciaCodigo,
         @contactoEmergenciaNombre,
         @contactoEmergenciaRelacion,
         @contactoEmergenciaTelefono,
-        @pacienteCodigo
+		@pacienteCodigo
     );
 
     set nocount off;
@@ -249,38 +257,25 @@ go
 
 
 
-/******************************************************************************************
-Procedimiento: pro_Agregar_ContactosEmergencia
-Descripción: agrega contasto de emergencia para un paciente en especifico
-Parámetros:
-    - @pacienteCodigo: Código único del paciente cuyos contactos de emergencia se desean obtener.
-******************************************************************************************/
+create or alter procedure pro_Actualizar_ContactoEmergencia
+    @contactoEmergenciaCodigo nchar(10),
+    @contactoEmergenciaNombre nvarchar(100),
+    @contactoEmergenciaRelacion nvarchar(50),
+    @contactoEmergenciaTelefono nvarchar(15)
+as
+begin
+    set nocount on;
 
-create or alter procedure pro_AgregarContactosEmergencia
-	@ContactoEmergenciaCodigo nchar(10),
-	@ContactoEmergenciaNombre nvarchar(100),
-	@ContactoEmergenciaRelacion nvarchar(50),
-	@ContactoEmergenciaTelefono nvarchar(15),
-	@CodigoPacientes nvarchar(10)
-	as
-	set nocount on;
-	insert into Salud.ContactosEmergencia
-	(
-		contactoEmergenciaCodigo, 
-		contactoEmergenciaNombre, 
-		contactoEmergenciaRelacion,
-		contactoEmergenciaTelefono,
-		pacienteCodigo
-	)values
-	(
-		@ContactoEmergenciaCodigo ,
-		@ContactoEmergenciaNombre ,
-		@ContactoEmergenciaRelacion ,
-		@ContactoEmergenciaTelefono ,
-		@CodigoPacientes 
-	);
-	
+    update Salud.ContactosEmergencia
+    set
+        contactoEmergenciaNombre = @contactoEmergenciaNombre,
+        contactoEmergenciaRelacion = @contactoEmergenciaRelacion,
+        contactoEmergenciaTelefono = @contactoEmergenciaTelefono
+    where
+        contactoEmergenciaCodigo = @contactoEmergenciaCodigo;
+end;
 go
+
 
 /******************************************************************************************
 Procedimiento: pro_Mostrar_MedicosConEspecialidad
@@ -599,13 +594,11 @@ Fecha        Usuario         Descripción de cambio
 ---------------------------------------------------------------------------------------------
 <12/11/2024> <Jonathan Roque>      Creación inicial
 **************************************************************************************/
-create or alter procedure pro_AgregarHistoriaClinica
+create or alter procedure pro_Agregar_HistoriaClinica
     @historialClinicoCodigo nchar(10),
-    @pacienteCodigo nchar(10),
     @antecedentesMedicos nvarchar(255) = null,
     @alergias nvarchar(255) = null,
-    @fechaCreacion date,
-    @fechaActualizacion date
+    @fechaCreacion date
 	as
 	begin
 		set nocount on;
@@ -613,20 +606,16 @@ create or alter procedure pro_AgregarHistoriaClinica
 		insert into Salud.HistoriaClinica
 		(
 			historialClinicoCodigo,
-			pacienteCodigo,
 			antecedentesMedicos,
 			alergias,
-			fechaCreacion,
-			fechaActualizacion
+			fechaCreacion
 		)
 		values
 		(
 			@historialClinicoCodigo,
-			@pacienteCodigo,
 			@antecedentesMedicos,
 			@alergias,
-			@fechaCreacion,
-			@fechaActualizacion
+			@fechaCreacion
 		);
 
 		set nocount off;
