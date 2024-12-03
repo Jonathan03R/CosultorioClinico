@@ -8,7 +8,8 @@ namespace Capa3_Dominio.ModuloPrincipal.Entidad
 {
     public class Cita
     {
-        private string citaCodigo, citaEstado;
+        private string citaCodigo;
+        private string citaEstado;
         private DateTime citaFechaHora;
         private Notificacion citaNotificacion;
         private Paciente citaPaciente;

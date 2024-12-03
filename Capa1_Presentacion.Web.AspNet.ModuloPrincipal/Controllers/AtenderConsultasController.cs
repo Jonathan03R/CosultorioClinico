@@ -45,7 +45,7 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
                     MedicoNombre = $"{c.Cita.CitaMedico.MedicoNombre} {c.Cita.CitaMedico.MedicoApellido}",
                     PacienteNombre = c.Cita.CitaPaciente.PacienteNombreCompleto,
                     ConsultaMotivo = c.ConsultaMotivo,
-                    ConsultaEstado = c.ConsultaEstado
+                    ConsultaEstado = c.Cita.CitaEstado
                 }).ToList<object>();
 
                 accionExitosa = true;

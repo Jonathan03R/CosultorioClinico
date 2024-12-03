@@ -189,5 +189,89 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
         }
 
 
+
+        // Cambio de estado Pendiente
+
+        public void CambiarEstadoPendiente(string consultaCodigo)
+        {
+            string procedimientoSQL = "pro_Actualizar_Estado_CitaPendiente";
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+                comandoSQL.Parameters.Add(new SqlParameter("@consultaCodigo", consultaCodigo));
+                comandoSQL.ExecuteNonQuery();
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new Exception($"Error al cambiar el estado a pendiente: {sqlEx.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error inesperado: {ex.Message}");
+            }
+        }
+
+        //estado No Asistieron
+        public void CambiarEstadoNoAsistieron(string consultaCodigo)
+        {
+            string procedimientoSQL = "pro_Actualizar_Estado_CitaNoAsistio";
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+                comandoSQL.Parameters.Add(new SqlParameter("@consultaCodigo", consultaCodigo));
+                comandoSQL.ExecuteNonQuery();
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new Exception($"Error al cambiar el estado a pendiente: {sqlEx.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error inesperado: {ex.Message}");
+            }
+        }
+
+        //estado Atendido
+        public void CambiarEstadoAtendido(string consultaCodigo)
+        {
+            string procedimientoSQL = "pro_Actualizar_Estado_CitaAtendido";
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+                comandoSQL.Parameters.Add(new SqlParameter("@consultaCodigo", consultaCodigo));
+                comandoSQL.ExecuteNonQuery();
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new Exception($"Error al cambiar el estado a pendiente: {sqlEx.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error inesperado: {ex.Message}");
+            }
+        }
+        //estado Cancelada
+
+        public void CambiarEstadoCancelado(string consultaCodigo)
+        {
+            string procedimientoSQL = "pro_Actualizar_Estado_CitaCancelado";
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+                comandoSQL.Parameters.Add(new SqlParameter("@consultaCodigo", consultaCodigo));
+                comandoSQL.ExecuteNonQuery();
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new Exception($"Error al cambiar el estado a pendiente: {sqlEx.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error inesperado: {ex.Message}");
+            }
+        }
+
+
+
     }
 }

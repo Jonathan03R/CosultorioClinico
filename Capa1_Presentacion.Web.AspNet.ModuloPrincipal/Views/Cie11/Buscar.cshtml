@@ -1,0 +1,50 @@
+﻿@{
+    ViewBag.Title = "Buscar en CIE-11";
+}
+
+<h2>Buscar en CIE-11</h2>
+
+<div>
+    <label for="termino">Término de Búsqueda:</label>
+    <input type="text" id="termino" />
+    <button id="buscar-btn">Buscar</button>
+</div>
+
+<div id="resultado"></div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('#buscar-btn').on('click', function () {
+                var termino = $('#termino').val().trim();
+
+                if (!termino) {
+                    alert("Por favor, ingresa un término de búsqueda.");
+                    return;
+                }
+
+                $.ajax({
+                    url: '@Url.Action("BuscarTermino", "Cie11")',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ termino: termino }),
+                    success: function (response) {
+                        if (response.success) {
+                            var html = "<h3>Resultados:</h3><ul>";
+                            response.data.forEach(function (entity) {
+                                html += `<li><strong>${entity.Codigo}</strong>: ${entity.Titulo}</li>`;
+                            });
+                            html += "</ul>";
+                            $('#resultado').html(html);
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function () {
+                        alert("Error al realizar la búsqueda.");
+                    }
+                });
+            });
+        });
+    </script>
+}

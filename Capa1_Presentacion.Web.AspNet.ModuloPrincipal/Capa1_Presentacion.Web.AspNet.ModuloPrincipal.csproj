@@ -115,6 +115,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AtenderConsultasController.cs" />
+    <Compile Include="Controllers\Cie11Controller.cs" />
     <Compile Include="Controllers\GestionarCitasController.cs" />
     <Compile Include="Controllers\GestionarPacientesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -449,6 +450,7 @@
     <Content Include="Views\Shared\Modals\_ModalActualizarPaciente.cshtml" />
     <Content Include="Views\Shared\Modals\_ModalAgregarPaciente.cshtml" />
     <Content Include="Views\AtenderConsultas\Consultas.cshtml" />
+    <Content Include="Views\Cie11\Buscar.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

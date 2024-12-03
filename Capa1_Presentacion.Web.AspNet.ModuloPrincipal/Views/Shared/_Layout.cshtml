@@ -127,6 +127,12 @@
                         @class = "nav-link " + (currentController == "AtenderConsultas" && currentAction == "Consultas" ? "active" : "")
                     })
                 </li>
+                <li>
+                    @Html.ActionLink("PruebasCIE-11", "Buscar", "Cie11", null, new
+                    {
+                        @class = "nav-link " + (currentController == "Cie11" && currentAction == "Buscar" ? "active" : "")
+                    })
+                </li>
             </ul>
         </div>
 

@@ -81,15 +81,10 @@ go
 create table Salud.HistoriaClinica
 (
     historialClinicoCodigo nchar(10) not null,
-	-- no tenia sentido tener codigo de paciente aqui
-    --pacienteCodigo nchar(10) not null,
-    --medicoCodigo nchar(10) not null,
     antecedentesMedicos nvarchar(255), 
     alergias nvarchar(255),
     fechaCreacion date not null,
     constraint HistoriaClinicaPK primary key (historialClinicoCodigo),
-    --constraint HistoriaClinicaPacienteFK foreign key (pacienteCodigo) references Salud.Pacientes(pacienteCodigo),
-    --constraint HistoriaClinicaMedicoFK foreign key (medicoCodigo) references Administracion.Medico(medicoCodigo)
 ) on gestionConsultas;
 go
 
@@ -179,27 +174,21 @@ create table Gestion.cita
     constraint CitaNotificacionFK foreign key (citaNotificacionCodigo) references Gestion.notificacion(notificacionCodigo),
 	constraint CitaMedicoFK foreign key (citaMedicoCodigo) references Administracion.medico(medicoCodigo),
     constraint CitaTipoConsultaFK foreign key (citaTipoConsultaCodigo) references Gestion.tipoConsulta(tipoConsultaCodigo),
-    constraint CitaEstadoCK check (citaEstado in ('P', 'C', 'X')) -- P: pendiente, C: confirmada, X: cancelada
+    constraint CitaEstadoCK check (citaEstado in ('P', 'N', 'A', 'C')) -- P: pendiente, N: No Asistida, A: atendida, C: cancelada
     )
 go
 
 
 --tablas de gestión de consultas 
+
 create table Gestion.Consulta (
     consultaCodigo nchar(10),
     consultacitaCodigo nchar(10),
     consultaFechaHoraFinal datetime null,
-    --problemas de redundancia para que el codigo del medico si ya existe en Citas
-
-        --consultaMedicoCodigo nchar(10),
-        --consultaPacienteCodigo nchar(10),
     consultaMotivo nvarchar(255) null,
-    consultaEstado nchar(1) default 'P', 
+    --consultaEstado nchar(1) default 'P', 
     constraint ConsultaPK primary key (consultaCodigo),
-    --constraint ConsultaMedicoFK foreign key (consultaMedicoCodigo) references Administracion.Medico(medicoCodigo),
-    --constraint ConsultaPacienteFK foreign key (consultaPacienteCodigo) references Salud.Pacientes(pacienteCodigo),
     constraint consultacitaCodigoFK foreign key (consultacitaCodigo) references  Gestion.cita(citaCodigo),
-    constraint ConsultaEstadoCK check (consultaEstado in ('P', 'N', 'A', 'C'))
 ) on gestionConsultas
 go
 
@@ -283,12 +272,12 @@ values
 go
 
 
-insert into Gestion.Consulta (consultaCodigo,consultacitaCodigo, consultaFechaHoraFinal, consultaMotivo, consultaEstado)
+insert into Gestion.Consulta (consultaCodigo,consultacitaCodigo, consultaFechaHoraFinal, consultaMotivo)
 values
-('CON0000001','CIT0000001', '2024-12-1 10:00:00', 'Dolor en el pecho', 'P'),
-('CON0000002','CIT0000002', '2024-12-1 11:30:00', 'Revisión pediátrica', 'P'),
-('CON0000003','CIT0000003', '2024-12-1 09:00:00', 'Control de presión arterial', 'P'),
-('CON0000004','CIT0000004', '2024-12-1 14:00:00', 'Consulta de crecimiento', 'P');
+('CON0000001','CIT0000001', '2024-12-1 10:00:00', 'Dolor en el pecho'),
+('CON0000002','CIT0000002', '2024-12-1 11:30:00', 'Revisión pediátrica'),
+('CON0000003','CIT0000003', '2024-12-1 09:00:00', 'Control de presión arterial'),
+('CON0000004','CIT0000004', '2024-12-1 14:00:00', 'Consulta de crecimiento');
 
 
 insert into Salud.Diagnostico (diagnosticoCodigo, diagnosticoconsultaCodigo, diagnosticoDescripcion, diagnosticoFecha)
@@ -305,8 +294,8 @@ values
 ('REC0000003', 'CON0000003', 'Losartán 50mg', '2024-11-26', '1 tableta al día', 'Medir presión arterial diariamente'),
 ('REC0000004', 'CON0000004', 'Suplemento de calcio', '2024-11-26', '1 tableta al día', 'Seguir dieta rica en calcio');
 
-insert into Gestion.Consulta (consultaCodigo,consultacitaCodigo, consultaFechaHoraFinal, consultaMotivo, consultaEstado)
+insert into Gestion.Consulta (consultaCodigo,consultacitaCodigo, consultaFechaHoraFinal, consultaMotivo)
 values
-('CON0000005','CIT0000001', '2024-11-1 09:00:00', 'Control de presión arterial', 'P'),
-('CON0000006','CIT0000002', '2024-11-1 14:00:00', 'Consulta de crecimiento', 'P');
+('CON0000005','CIT0000001', '2024-11-1 09:00:00', 'Control de presión arterial'),
+('CON0000006','CIT0000002', '2024-11-1 14:00:00', 'Consulta de crecimiento');
 

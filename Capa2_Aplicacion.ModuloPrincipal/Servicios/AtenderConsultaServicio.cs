@@ -17,6 +17,7 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
         private readonly ConsultaSQL consultaSQL;
         private readonly PacienteSQL pacienteSQL;
         private readonly MedicoSQL medicoSQL;
+        private readonly CitaSQL citaSQL;
 
 
         public AtenderConsultaServicio()
@@ -26,6 +27,7 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
             consultaSQL = new ConsultaSQL(accesoSQLServer);
             pacienteSQL = new PacienteSQL(accesoSQLServer);
             medicoSQL = new MedicoSQL(accesoSQLServer);
+            citaSQL = new CitaSQL(accesoSQLServer);
         }
 
 
@@ -62,7 +64,7 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
         public void cambiarEstadoConsultaPendientree(string codigoConsulta)
         {
             accesoSQLServer.AbrirConexion();
-            consultaSQL.CambiarEstadoPendiente(codigoConsulta);
+            citaSQL.CambiarEstadoPendiente(codigoConsulta);
             accesoSQLServer.CerrarConexion();
         }
 
@@ -71,9 +73,9 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
         //Cambiar estado Pendiente, No Asistieron, Atendido, Cancelado
         public void cambiarEstadoActivoConsultaNoAsistieron(string codigoConsulta)
         {
-           
+
             accesoSQLServer.AbrirConexion();
-            consultaSQL.CambiarEstadoNoAsistieron(codigoConsulta);
+            citaSQL.CambiarEstadoNoAsistieron(codigoConsulta);
             accesoSQLServer.CerrarConexion();
         }
 
@@ -81,14 +83,14 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
         {
 
             accesoSQLServer.AbrirConexion();
-            consultaSQL.CambiarEstadoAtendido(codigoConsulta);
+            citaSQL.CambiarEstadoAtendido(codigoConsulta);
             accesoSQLServer.CerrarConexion();
         }
         public void cambiarEstadoActivoConsultaCancelada(string codigoConsulta)
         {
 
             accesoSQLServer.AbrirConexion();
-            consultaSQL.CambiarEstadoCancelado(codigoConsulta);
+            citaSQL.CambiarEstadoCancelado(codigoConsulta);
             accesoSQLServer.CerrarConexion();
         }
 

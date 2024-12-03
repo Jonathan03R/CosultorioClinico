@@ -477,26 +477,6 @@ BEGIN
 END
 GO
 
---------------------------------------
-/*************************************************************************************************************************
-Procedimiento: pro_Cancelar_Cita
-Descripción: procedimiento almacenado para cancelar una cita cambiando el estado de la cita.
-Parámetros: 
- -@citaCodigo: El codigo de la cita a cambiar estado.
-
-***************************************************************************************************************************/
-CREATE or alter PROCEDURE pro_Cancelar_Cita
-    @citaCodigo nchar(10)
-AS
-BEGIN
-    UPDATE Gestion.cita
-    SET citaEstado = 'X'
-    WHERE citaCodigo = @citaCodigo;
-END
-GO
---select * from Gestion.cita
---EXEC pro_Cancelar_Cita 'CITA001';
-
 /*************************************************************************************************************************
 Procedimiento: pro_CambiarEstadoPaciente
 Descripción: Cambiar el estado pacienteEstado con I de inactivo al momento de eliminar al paciente.
@@ -709,9 +689,9 @@ begin
         ct.citaFechaHora as HoraCitaInicio,
 		ct.citaPacienteCodigo as PacienteCodigo,
 		ct.citaMedicoCodigo as MedicoCodigo,
+		ct.citaEstado as EstadoCita,
         c.consultaFechaHoraFinal,
-        c.consultaMotivo,
-        c.consultaEstado
+        c.consultaMotivo
     from 
         Gestion.Consulta c
     left join 
@@ -724,7 +704,7 @@ go
 
 
 /******************************************************************************************
-Procedimiento: pro_Cambiar_Estado_Consulta
+Procedimiento: pro_Cambiar_Estado_Cita
 Descripción:  Procedimiento almacenado para cambiar el estado de una consulta.
 -@consultaCodigo: El código de la consulta que deseas modificar.
 -@nuevoEstado: El nuevo estado que deseas asignar a la consulta. Los posibles valores son 'P', 'C', 'X'.
@@ -732,67 +712,62 @@ Descripción:  Procedimiento almacenado para cambiar el estado de una consulta.
 -@cambioDescripcion: Una descripción que indica qué cambio se ha realizado.
 ******************************************************************************************/
 
-create or alter procedure pro_Actualizar_Estado_ConsultaPendiente
-    @consultaCodigo nchar(10)
+
+create or alter procedure pro_Actualizar_Estado_CitaPendiente
+    @citaCodigo nchar(10)
 as
 begin
     set nocount on;
 
-    update Gestion.Consulta
-    set consultaEstado = 'P'
-    where consultaCodigo = @consultaCodigo;
+    update Gestion.cita
+    set citaEstado = 'P'
+    where citaCodigo = @citaCodigo;
 
     set nocount off;
 end;
 go
 
-create or alter procedure pro_Actualizar_Estado_ConsultaCancelado
-    @consultaCodigo nchar(10)
+create or alter procedure pro_Actualizar_Estado_CitaCancelado
+    @citaCodigo nchar(10)
 as
 begin
     set nocount on;
 
-    update Gestion.Consulta
-    set consultaEstado = 'C'
-    where consultaCodigo = @consultaCodigo;
+    update Gestion.cita
+    set citaEstado = 'C'
+    where citaCodigo = @citaCodigo;
 
     set nocount off;
 end;
 go
 
-create or alter procedure pro_Actualizar_Estado_ConsultaNoAsistio
-    @consultaCodigo nchar(10)
+create or alter procedure pro_Actualizar_Estado_CitaNoAsistio
+    @citaCodigo nchar(10)
 as
 begin
     set nocount on;
 
-    update Gestion.Consulta
-    set consultaEstado = 'N'
-    where consultaCodigo = @consultaCodigo;
+    update Gestion.cita
+    set citaEstado = 'N'
+    where citaCodigo = @citaCodigo;
 
     set nocount off;
 end;
 go
 
-create or alter procedure pro_Actualizar_Estado_ConsultaAtendido
-    @consultaCodigo nchar(10)
+create or alter procedure pro_Actualizar_Estado_CitaAtendido
+    @citaCodigo nchar(10)
 as
 begin
     set nocount on;
 
-    update Gestion.Consulta
-    set consultaEstado = 'A'
-    where consultaCodigo = @consultaCodigo;
+    update Gestion.cita
+    set citaEstado = 'A'
+    where citaCodigo = @citaCodigo;
 
     set nocount off;
-end;
+end
 go
-
-
-
-
-
-
 
 /******************************************************************************************
 Descripción de procedimiento almacenado: Genera un código único basado en un prefijo y la secuencia en una columna específica.
