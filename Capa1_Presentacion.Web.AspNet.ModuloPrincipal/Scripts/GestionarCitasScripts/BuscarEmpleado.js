@@ -48,8 +48,11 @@ function mostrarDatosPaciente(paciente) {
     // Llenar los datos en el collapse
     $('#pacienteNombre').text(paciente.PacienteNombreCompleto || 'N/A');
     const estado = paciente.PacienteEstado || 'Desconocido';
-    const badgeClass = estado === 'Activo' ? 'bg-success' : 'bg-danger';
-    $('#pacienteEstado').text(estado).removeClass('bg-success bg-danger').addClass(badgeClass);
+
+    const badgeClass = estado === 'Activo' ? 'bg-success' : 'bg-danger'; // Cambia la clase según el estado
+    $('#pacienteEstado').text(estado) // Establecer el texto del estado
+        .removeClass('bg-success bg-danger') // Elimina las clases anteriores
+        .addClass(badgeClass); // Agrega la clase correcta (verde o rojo)
 
     // Guardar el código del paciente en un campo oculto
     $('#pacienteCodigo').text(paciente.PacienteCodigo);

@@ -23,6 +23,7 @@
             </svg>
         </button>
     </div>
+
     <div style="width:150px;">
         <button class="btn btn-success " data-bs-toggle="modal" data-bs-target="#ModalNuevaCita">Nueva Cita</button>
     </div>
@@ -30,153 +31,43 @@
 </div>
 
 
-<!-- Filtros -->
-<div class="collapse multi-collapse" id="multiCollapseExample1">
-
-    <div class="card p-4 mb-4 shadow-sm">
-        <h5 class="font-weight-bold">Filtros de Búsqueda</h5>
-        <div class="row">
-            <div class="col-md-3">
-                <div class="input-group mb-3">
-                    <label class="input-group-text" for="inputSelectEspecialidad">Especialidad:</label>
-                    <select class="form-select" id="inputSelectEspecialidad">
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="input-group mb-3">
-                    <label class="input-group-text" for="inputSelectMedico">Médico:</label>
-                    <select class="form-select" id="inputSelectMedico">
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="input-group mb-3">
-                    <label class="input-group-text" for="inputSelectEstado">Estado:</label>
-                    <select class="form-select" id="inputSelectEstado">
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="input-group mb-3">
-                    <label class="input-group-text" for="inputFecha">Fecha:</label>
-                    <input type="date" class="form-control" id="inputFecha">
-                </div>
-            </div>
-
-        </div>
-    </div>
-    <button id="resetFilter">resetear</button>
-</div>
-
+@Html.Partial("modals/_Filters")
 
 <!-- Tabla -->
 
 <table id="tabla_Citas" class="table table-hover" data-url-listar-Citas="@Url.Action("ObtenerTodaslasCitas", "GestionarCitas")">
-       <thead>
-            <tr>
-                <th>Código</th>
-                <th>Paciente</th>
-                <th>Médico</th>
-                <th>Especialidad</th>
-                <th>Fecha y Hora</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-                @*<th>tm</th>*@  
-            </tr>
-        </thead>
-        <tbody></tbody>
- </table>
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Paciente</th>
+            <th>Médico</th>
+            <th>Especialidad</th>
+            <th>Fecha y Hora</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+            @*<th>tm</th>*@
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
 
+@Html.Partial("modals/_CrearCitasModal")
 
-    <!-- Modal -->
-    <div class="modal fade" id="ModalNuevaCita" tabindex="-1" aria-labelledby="ModalNuevaCitaLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Registrar Cita</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="formCita">
-                        <div class="input-group mb-3">
-                            <span class="input-group-text" id="dni-paciente">Dni Paciente</span>
-                            <input type="text" class="form-control" id="inputDniPaciente" placeholder="Ingrese DNI" aria-label="dni" aria-describedby="dni-paciente">
-
-                            <button class="btn btn-outline-secondary" type="button" id="button-addon2"><i class="fas fa-search"></i></button>
-                        </div>
-                        <div class="collapse" id="datosPaciente">
-                            <div class="card card-body">
-                                <p><strong>Nombre:</strong> <span id="pacienteNombre"></span></p>
-                                <p><strong>Estado:</strong> <span id="pacienteEstado"></span></p>
-                                <p><strong>codigo:</strong> <span id="pacienteCodigo"></span></p>
+@Html.Partial("modals/_AgregarPaciente")
 
 
 
-                            </div>
-                        </div>
-                        <div class="input-group mb-3">
-                            <label class="input-group-text" for="inputSelectEspecialidadModal">Especialidad</label>
-                            <select class="form-select" id="inputSelectEspecialidadModal">
-                            </select>
-                        </div>
-
-                        <div class="input-group mb-3">
-                            <label class="input-group-text" for="inputSelectMedicoModal">Médico</label>
-                            <select class="form-select" id="inputSelectMedicoModal">
-                            </select>
-                        </div>
-                        <div class="input-group mb-3">
-                            <label class="input-group-text" for="inputSelectTipoConsulta">Tipo de Consulta</label>
-                            <select class="form-select" id="inputSelectTipoConsulta">
-                            </select>
-                        </div>
-                        <div class="input-group mb-3">
-                            <label class="input-group-text" for="inputFechaHora">Fecha y hora:</label>
-                            <input type="datetime-local" class="form-control" id="inputFechaHora">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="btnGuardarCita" class="btn btn-primary">Guardar cita</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- Modal para Agregar Paciente -->
-    <div class="modal fade" id="modalAgregarPaciente" tabindex="-1" aria-labelledby="modalAgregarPacienteLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalAgregarPacienteLabel">Paciente no encontrado</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body">
-                    <p>No se encontró el paciente con el DNI ingresado. ¿Deseas agregar un nuevo paciente?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="btnAgregarPaciente">Agregar Paciente</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-    @section Scripts {
-        <script>
+@section Scripts {
+    <script>
             var urlRegistrarCita = '@Url.Action("RegistrarCita", "GestionarCitas")';
             console.log('@Url.Action("ObtenerTodasCitas", "GestionarCitas")');
 
-        </script>
+    </script>
 
 
-        <script src="~/Scripts/GestionarCitasScripts/LlenarSelects.js"></script>
-        <script src="~/Scripts/GestionarCitasScripts/BuscarEmpleado.js"></script>
-        <script src="~/Scripts/GestionarCitasScripts/AgregarCita.js"></script>
-        <script src="~/Scripts/GestionarCitasScripts/tablaCitas.js"></script>
-        <script src="~/Scripts/GestionarCitasScripts/buscadorCustomCitas.js" ></script>
-    }
+    <script src="~/Scripts/GestionarCitasScripts/LlenarSelects.js"></script>
+    <script src="~/Scripts/GestionarCitasScripts/BuscarEmpleado.js"></script>
+    <script src="~/Scripts/GestionarCitasScripts/AgregarCita.js"></script>
+    <script src="~/Scripts/GestionarCitasScripts/tablaCitas.js"></script>
+    <script src="~/Scripts/GestionarCitasScripts/buscadorCustomCitas.js"></script>
+}

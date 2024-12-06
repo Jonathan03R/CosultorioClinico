@@ -453,6 +453,8 @@
     <Content Include="Views\AtenderConsultas\Consultas.cshtml" />
     <Content Include="Views\Cie11\Buscar.cshtml" />
     <Content Include="Views\GestionarCitas\modals\_CrearCitasModal.cshtml" />
+    <Content Include="Views\GestionarCitas\modals\_AgregarPaciente.cshtml" />
+    <Content Include="Views\GestionarCitas\modals\_Filters.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

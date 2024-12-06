@@ -220,22 +220,54 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
         {
             bool accionExitosa;
             string mensajeRetorno;
-            Paciente paciente = new Paciente { PacienteDNI = dni };
+            object pacienteFormateado;
 
             try
             {
-                paciente = gestionarCitaServicio.obtenerPacientePorDni(paciente);
+                // Obtener el paciente utilizando el servicio
+                Paciente paciente = gestionarCitaServicio.obtenerPacientePorDni(new Paciente { PacienteDNI = dni });
+
+                // Formatear los datos como un objeto anónimo antes de enviarlo
+                if (paciente != null)
+                {
+                    pacienteFormateado = new
+                    {
+                        PacienteCodigo = paciente.PacienteCodigo,
+                        PacienteDNI = paciente.PacienteDNI,
+                        PacienteNombreCompleto = paciente.PacienteNombreCompleto,
+                        PacienteFechaNacimiento = paciente.PacienteFechaNacimiento.ToString("dd-MM-yyyy"), // Formato de fecha
+                        PacienteDireccion = paciente.PacienteDireccion ?? "N/A", // Si no tiene dirección, coloca "N/A"
+                        PacienteTelefono = paciente.PacienteTelefono ?? "N/A", // Lo mismo para teléfono
+                        PacienteCorreoElectronico = paciente.PacienteCorreoElectronico ?? "N/A", // Lo mismo para correo
+                        PacienteEstado = GetEstadoDescripcionDni(paciente.PacienteEstado) // Llamada al método para obtener el estado
+                    };
+                }
+                else
+                {
+                    pacienteFormateado = null;
+                }
+
                 accionExitosa = true;
-                mensajeRetorno = "";
+                mensajeRetorno = paciente != null ? "Consulta exitosa." : "Paciente no encontrado.";
             }
             catch (Exception ex)
             {
-                paciente = null;
+                pacienteFormateado = null;
                 accionExitosa = false;
                 mensajeRetorno = ex.Message;
             }
 
-            return Json(new { data = paciente, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+            return Json(new { data = pacienteFormateado, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+        }
+
+        private string GetEstadoDescripcionDni(string estado)
+        {
+            if (estado == "A")
+                return "Activo";
+            else if (estado == "I")
+                return "Inactivo";
+            else
+                return "Desconocido"; 
         }
 
         // Cancelar una cita
