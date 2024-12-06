@@ -549,8 +549,8 @@ begin
 		m.medicoCodigo,
         m.medicoNombre,
         m.medicoApellido,
-		e.especialidadCodigo,
 		e.especialidadNombre,
+		e.especialidadCodigo,
 		p.pacienteCodigo,
 		p.pacienteNombreCompleto
     from 
