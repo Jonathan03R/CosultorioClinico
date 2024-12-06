@@ -60,26 +60,53 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
 
         // Obtener todas las citas
         [HttpGet]
-        public JsonResult ObtenerTodasCitas()
+        public JsonResult ObtenerTodaslasCitas()
         {
             bool accionExitosa;
             string mensajeRetorno;
-            List<Cita> listaCitas;
+            List<object> listaCitaFormateada;
 
             try
             {
-                listaCitas = gestionarCitaServicio.ObtenerTodasCitas();
+                var listaCitas = gestionarCitaServicio.ObtenerTodasCitas();
+                listaCitaFormateada = listaCitas.Select(c => new{
+                    CitaCodigo = c.CitaCodigo,
+                    Fecha = c.CitaFechaHora.ToString("dd-MM-yyyy HH:mm:ss"),
+                    TipoConsulta = c.CitaTipoConsulta.TipoConsultaCodigo,
+                    MedicoNombre = $"Dr. {c.CitaMedico.MedicoNombre} {c.CitaMedico.MedicoApellido}",
+                    Especialidad = c.CitaMedico.Especialidad.EspecialidadNombre,
+                    Estado = GetEstadoDescripcion(c.CitaEstado), 
+                    CodigoPaciente = c.CitaPaciente.PacienteCodigo,
+                    NombrePaciente = c.CitaPaciente.PacienteNombreCompleto,
+                    EspecialidadCod = c.CitaMedico.Especialidad.EspecialidadCodigo,
+                    MedicoCodigo = c.CitaMedico.MedicoCodigo
+                }).ToList<object>();
                 accionExitosa = true;
                 mensajeRetorno = "Consulta exitosa.";
             }
             catch (Exception ex)
             {
-                listaCitas = null;
+                listaCitaFormateada  = null;
                 accionExitosa = false;
                 mensajeRetorno = ex.Message;
             }
 
-            return Json(new { data = listaCitas, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+            return Json(new { data = listaCitaFormateada, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+        }
+
+
+        private string GetEstadoDescripcion(string estado)
+        {
+            if (estado == "P")
+                return "Pendiente";
+            else if (estado == "N")
+                return "No Asistida";
+            else if (estado == "A")
+                return "Atendida";
+            else if (estado == "C")
+                return "Cancelada";
+            else
+                return "N/A";
         }
 
 

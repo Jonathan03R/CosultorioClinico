@@ -542,26 +542,29 @@ begin
     set nocount on;
 
     select 
-        c.citaCodigo as CodigoCita,
-        c.citaEstado as EstadoCita,
-        c.citaFechaHora as FechaHoraCita,
-        c.citaTipoConsultaCodigo as TipoConsultaCodigo,
-        c.citaNotificacionCodigo as NotificacionCodigo,
-        m.medicoNombre as NombreMedico,
-        m.medicoApellido as ApellidoMedico,
+        c.citaCodigo,
+        c.citaEstado,
+        c.citaFechaHora,
+        c.citaTipoConsultaCodigo,
+		m.medicoCodigo,
+        m.medicoNombre,
+        m.medicoApellido,
+		e.especialidadCodigo,
+		e.especialidadNombre,
 		p.pacienteCodigo,
-		p.pacienteNombreCompleto As NombrePaciente
+		p.pacienteNombreCompleto
     from 
         Gestion.cita as c
     join 
         Administracion.medico as m on c.citaMedicoCodigo = m.medicoCodigo
 	join
-		Salud.Pacientes as p on c.citaPacienteCodigo = p.pacienteCodigo;
+        Administracion.especialidad as e on m.especialidadCodigo = e.especialidadCodigo  -- Relación con Especialidad
+    join
+        Salud.Pacientes as p on c.citaPacienteCodigo = p.pacienteCodigo;
 
     set nocount off;
 end
 go
-
 
 /******************************************************************************************
 Descripción de procedimiento almacenado:

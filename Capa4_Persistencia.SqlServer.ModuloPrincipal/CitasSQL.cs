@@ -1,12 +1,9 @@
-﻿using Capa3_Dominio.ModuloPrincipal.Entidad;
-using Capa3_Dominio.ModuloPrincipal;
+﻿using Capa3_Dominio.ModuloPrincipal;
+using Capa3_Dominio.ModuloPrincipal.Entidad;
 using Capa4_Persistencia.SqlServer.ModuloBase;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
 {
@@ -147,35 +144,34 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
 
                 while (resultadoSQL.Read())
                 {
-                    Cita cita = new Cita();
-
-                    // Asignar valores a las propiedades de la cita
-                    cita.CitaCodigo = resultadoSQL.GetString(0);   // CodigoCita
-                    cita.CitaEstado = resultadoSQL.GetString(1);   // EstadoCita
-                    cita.CitaFechaHora = resultadoSQL.GetDateTime(2);
-                    // Asignar TipoConsulta
-                    cita.CitaTipoConsulta = new TipoConsulta
+                    Cita cita = new Cita()
                     {
-                        TipoConsultaCodigo = resultadoSQL.GetString(3) 
-                    };
-                    if (!resultadoSQL.IsDBNull(4))
-                    {
-                        cita.CitaNotificacion = new Notificacion
+                        CitaCodigo = resultadoSQL.GetString(0),
+                        CitaEstado = resultadoSQL.GetString(1),
+                        CitaFechaHora = resultadoSQL.GetDateTime(2),
+                        CitaTipoConsulta = new TipoConsulta
                         {
-                            NotificacionCodigo = resultadoSQL.GetString(4) 
-                        };
-                    }
-                    cita.CitaMedico = new Medico
-                    {
-                        MedicoNombre = resultadoSQL.GetString(5),   
-                        MedicoApellido = resultadoSQL.GetString(6)  // ApellidoMedico
-                    };
-                    cita.CitaPaciente = new Paciente
-                    {
-                        PacienteCodigo = resultadoSQL.GetString(7),           // PacienteCodigo
-                        PacienteNombreCompleto = resultadoSQL.GetString(8)   // NombrePaciente
-                    };
+                            TipoConsultaCodigo = resultadoSQL.GetString(3), 
+                        },
+                        CitaMedico = new Medico
+                        {
+                            MedicoCodigo = resultadoSQL.GetString(4),   
+                            MedicoNombre = resultadoSQL.GetString(5),
+                            MedicoApellido = resultadoSQL.GetString(6),
+                            Especialidad = new Especialidad 
+                            {
+                                EspecialidadCodigo = resultadoSQL.GetString(7),
+                                EspecialidadNombre = resultadoSQL.GetString(8)
+                            }
+                        },
 
+                        CitaPaciente = new Paciente 
+                        {
+                            PacienteCodigo = resultadoSQL.GetString(9), 
+                            PacienteNombreCompleto = resultadoSQL.GetString(10)
+                        }
+
+                    }; 
                     listaCitas.Add(cita);
                 }
                 resultadoSQL.Close();
@@ -187,8 +183,6 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
 
             return listaCitas;
         }
-
-
 
         // Cambio de estado Pendiente
 

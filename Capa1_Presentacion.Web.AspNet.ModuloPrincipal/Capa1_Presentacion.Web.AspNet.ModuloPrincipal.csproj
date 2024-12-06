@@ -411,6 +411,7 @@
     <Content Include="Scripts\DataTables\responsive.semanticui.min.js" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
     <Content Include="Scripts\GestionarCitasScripts\AgregarCita.js" />
+    <Content Include="Scripts\GestionarCitasScripts\buscadorCustomCitas.js" />
     <Content Include="Scripts\GestionarCitasScripts\BuscarEmpleado.js" />
     <Content Include="Scripts\GestionarCitasScripts\LlenarSelects.js" />
     <Content Include="Scripts\GestionarCitasScripts\tablaCitas.js" />
@@ -451,6 +452,7 @@
     <Content Include="Views\Shared\Modals\_ModalAgregarPaciente.cshtml" />
     <Content Include="Views\AtenderConsultas\Consultas.cshtml" />
     <Content Include="Views\Cie11\Buscar.cshtml" />
+    <Content Include="Views\GestionarCitas\modals\_CrearCitasModal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
