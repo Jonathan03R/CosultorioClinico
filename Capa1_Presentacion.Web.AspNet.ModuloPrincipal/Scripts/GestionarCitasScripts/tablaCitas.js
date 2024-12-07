@@ -44,7 +44,7 @@ function obtenerColumnas() {
             data: null,
             render: function (data, type, row) {
                 return `
-                    <button class="btn btn-info" onclick="verCita('${row.CitaCodigo}')">Ver</button>
+                    <button class="btn btn-info" onclick="verCita('${row.CitaCodigo}')">Actualizar</button>
                     <button class="btn btn-danger" onclick="cancelarCita('${row.CitaCodigo}')">Cancelar</button>
                 `;
             }
