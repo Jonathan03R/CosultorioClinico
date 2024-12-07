@@ -699,7 +699,9 @@ begin
     from 
         Gestion.Consulta c
     left join 
-        Gestion.Cita ct on c.consultacitaCodigo = ct.citaCodigo; 
+        Gestion.Cita ct on c.consultacitaCodigo = ct.citaCodigo
+	order by 
+		ct.citaFechaHora Desc;
 
     set nocount off;
 end;

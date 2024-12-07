@@ -20,23 +20,57 @@
 }
 
 function formatearDetalles(data) {
-    // Ajustar las claves para coincidir con los datos correctos
     const estadoClase = obtenerClaseEstado(data.ConsultaEstado);
     const fechaActivacion = data.ConsultaFechaCita || "Error al cargar fecha";
 
-    return `
+    let detallesHTML = `
         <div class="expansion-content">
             <div class="contenido">
-                <p><b>${data.PacienteNombre}</b> Tiene cita ${fechaActivacion}.</p>
+                <p><b>${data.PacienteNombre}</b> `;
+
+    switch (data.ConsultaEstado) {
+        case "Pendiente":
+            detallesHTML += `Tiene cita ${fechaActivacion}.</p>
                 <p>Estado actual: <span class="badge ${estadoClase}">${data.ConsultaEstado}</span></p>
                 <p>Motivo de la consulta : ${data.ConsultaMotivo}</p>
                 <p>
                     ¿Quieres Iniciar la consulta? 
                     <button class="btn btn-link p-0" onclick='abrirFormModalConsulta(${JSON.stringify(data)})'>Iniciar</button>
                 </p>
-            </div>
-        </div>`;
+            `;
+            break;
+        case "No asistio":
+            detallesHTML += `Su cita fue para la fecha ${fechaActivacion}.</p>
+                <p>Estado actual: <span class="badge ${estadoClase}">${data.ConsultaEstado}</span></p>
+                <p>Motivo de la consulta : ${data.ConsultaMotivo}</p>
+                <p>
+                    ¿Quieres reprogramar la cita? 
+                    <button class="btn btn-link p-0" onclick='reprogramarCita(${JSON.stringify(data)})'>Reprogramar</button>
+                </p>
+            `;
+            break;
+        case "Atendido":
+            detallesHTML += `Fue atendido el ${fechaActivacion}.</p>
+                <p>Estado actual: <span class="badge ${estadoClase}">${data.ConsultaEstado}</span></p>
+                <p>Motivo de la consulta : ${data.ConsultaMotivo}</p>
+                <p>Notas adicionales: ${data.NotasAdicionales || "Sin notas adicionales"}</p>
+            `;
+            break;
+        case "Cancelado":
+            detallesHTML += `La consulta ha sido cancelada.</p>
+                <p>Motivo de la cancelación : ${data.ConsultaMotivo}</p>
+            `;
+            break;
+        default:
+            detallesHTML += `Estado desconocido. Por favor, contacte al soporte.</p>
+            `;
+            break;
+    }
+
+    detallesHTML += `</div></div>`;
+    return detallesHTML;
 }
+
 
 
 function obtenerClaseEstado(estado) {

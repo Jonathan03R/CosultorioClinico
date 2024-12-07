@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.Diagnostics;
+
 namespace Capa3_Dominio.ModuloPrincipal.Entidad
 {
     public class Cita
@@ -26,7 +28,10 @@ namespace Capa3_Dominio.ModuloPrincipal.Entidad
         public TipoConsulta CitaTipoConsulta { get => citaTipoConsulta; set => citaTipoConsulta = value; }
         public Notificacion CitaNotificacion { get => citaNotificacion; set => citaNotificacion = value; }
 
-   
+        //comprobar si la cita es valida del dia de hoy
+        public bool EsCitaPasada() {
+            return citaFechaHora.Date < DateTime.Today && (citaEstado == "P" || citaEstado == "N");
+        }
 
     }
 }

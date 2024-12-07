@@ -38,7 +38,7 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
                 listaConsultasFormatada = consultasDelDia.Select(c => new
                 {
                     ConsultaCodigo = c.ConsultaCodigo,
-                    CitaCiodigo = c.Cita.CitaCodigo,
+                    CitaCodigo = c.Cita.CitaCodigo,
                     ConsultaFechaCita = c.Cita.CitaFechaHora.ToString("dd-MMMM-yyyy"),
                     ConsultaHoraFecha = c.Cita.CitaFechaHora.ToString("hh:mm tt"),
                     ConsultaFechaHoraFinal = c.ConsultaFechaHoraFinal.HasValue
@@ -48,6 +48,7 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
                     PacienteNombre = c.Cita.CitaPaciente.PacienteNombreCompleto,
                     ConsultaMotivo = c.ConsultaMotivo,
                     ConsultaEstado = GetEstadoCita(c.Cita.CitaEstado),
+                    FechaCitaFilter = c.Cita.CitaFechaHora.ToString("dd-MM-yyyy HH:mm:ss"),
                 }).ToList<object>();
 
                 accionExitosa = true;

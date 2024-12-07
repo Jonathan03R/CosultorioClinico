@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Diagnostics;
 namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
 {
     public class AtenderConsultaServicio
@@ -35,16 +35,26 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
         public List<Consulta> MostrarConsultasDelDia()
         {
             List<Consulta> consultasDeHoy = new List<Consulta>();
-
-          
-                accesoSQLServer.AbrirConexion(); 
+            try
+            {
+                accesoSQLServer.IniciarTransaccion();
                 List<Consulta> consultas = consultaSQL.ListarConsultas();
+
+                foreach (var consulta in consultas) 
+                {
+                    if (consulta.Cita.EsCitaPasada())
+                    {
+                        citaSQL.CambiarEstadoNoAsistieron(consulta.Cita.CitaCodigo);
+                    }
+                }
+
+                consultas = consultaSQL.ListarConsultas();
 
                 foreach (var consulta in consultas)
                 {
                     //if (consulta.Cita.CitaFechaHora.Date == DateTime.Today) 
                     //{
-                        Paciente paciente = pacienteSQL.MostrarPacientePorCodigo(consulta.Cita.CitaPaciente.PacienteCodigo);
+                       Paciente paciente = pacienteSQL.MostrarPacientePorCodigo(consulta.Cita.CitaPaciente.PacienteCodigo);
                         consulta.Cita.CitaPaciente = paciente;
 
                         Medico medico = medicoSQL.ObtenerMedicoPorCodigo(consulta.Cita.CitaMedico.MedicoCodigo);
@@ -54,10 +64,15 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
                     //}
                 }
 
-                accesoSQLServer.CerrarConexion(); 
+                accesoSQLServer.TerminarTransaccion(); 
+                return consultasDeHoy; 
             
+            }
+            catch (Exception ex) {
+                throw ex;
+            }
+          
             
-            return consultasDeHoy; 
         }
 
 

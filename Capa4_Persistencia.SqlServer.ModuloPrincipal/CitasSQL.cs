@@ -192,7 +192,7 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             try
             {
                 SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
-                comandoSQL.Parameters.Add(new SqlParameter("@consultaCodigo", consultaCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@citaCodigo", consultaCodigo));
                 comandoSQL.ExecuteNonQuery();
             }
             catch (SqlException sqlEx)
@@ -212,7 +212,7 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             try
             {
                 SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
-                comandoSQL.Parameters.Add(new SqlParameter("@consultaCodigo", consultaCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@citaCodigo", consultaCodigo));
                 comandoSQL.ExecuteNonQuery();
             }
             catch (SqlException sqlEx)
@@ -232,7 +232,7 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             try
             {
                 SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
-                comandoSQL.Parameters.Add(new SqlParameter("@consultaCodigo", consultaCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@citaCodigo", consultaCodigo));
                 comandoSQL.ExecuteNonQuery();
             }
             catch (SqlException sqlEx)
@@ -252,7 +252,7 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             try
             {
                 SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
-                comandoSQL.Parameters.Add(new SqlParameter("@consultaCodigo", consultaCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@citaCodigo", consultaCodigo));
                 comandoSQL.ExecuteNonQuery();
             }
             catch (SqlException sqlEx)

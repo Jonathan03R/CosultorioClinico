@@ -288,7 +288,7 @@ values
 go
 insert into Gestion.cita (citaCodigo, citaFechaHora, citaPacienteCodigo, citaTipoConsultaCodigo, citaMedicoCodigo)
 values
-('CIT0000001', '2024-12-16 10:00:00', 'PAC0000001', 'TDC0000001', 'MED0000001'),
+('CIT0000001', '2024-11-18 10:00:00', 'PAC0000001', 'TDC0000001', 'MED0000001'),
 ('CIT0000006', '2024-12-20 09:00:00', 'PAC0000002', 'TDC0000002', 'MED0000002'),
 ('CIT0000002', '2024-12-19 15:00:00', 'PAC0000002', 'TDC0000002', 'MED0000002'),
 ('CIT0000003', '2024-12-20 09:00:00', 'PAC0000003', 'TDC0000001', 'MED0000003'),
@@ -302,7 +302,10 @@ values
 ('CON0000001','CIT0000001', '2024-12-1 10:00:00', 'Dolor en el pecho'),
 ('CON0000002','CIT0000002', '2024-12-1 11:30:00', 'Revisión pediátrica'),
 ('CON0000003','CIT0000003', '2024-12-1 09:00:00', 'Control de presión arterial'),
-('CON0000004','CIT0000004', '2024-12-1 14:00:00', 'Consulta de crecimiento');
+('CON0000004','CIT0000004', '2024-12-1 14:00:00', 'Consulta de crecimiento'),
+('CON0000005','CIT0000005', '2024-11-1 09:00:00', 'Control de presión arterial'),
+('CON0000006','CIT0000006', '2024-11-1 14:00:00', 'Consulta de crecimiento');
+
 
 
 insert into Salud.Diagnostico (diagnosticoCodigo, diagnosticoconsultaCodigo, diagnosticoDescripcion, diagnosticoFecha)
@@ -318,9 +321,4 @@ values
 ('REC0000002', 'CON0000002', 'Multivitamínicos pediátricos', '2024-11-25', '1 por día', 'Mantener dieta equilibrada'),
 ('REC0000003', 'CON0000003', 'Losartán 50mg', '2024-11-26', '1 tableta al día', 'Medir presión arterial diariamente'),
 ('REC0000004', 'CON0000004', 'Suplemento de calcio', '2024-11-26', '1 tableta al día', 'Seguir dieta rica en calcio');
-
-insert into Gestion.Consulta (consultaCodigo,consultacitaCodigo, consultaFechaHoraFinal, consultaMotivo)
-values
-('CON0000005','CIT0000001', '2024-11-1 09:00:00', 'Control de presión arterial'),
-('CON0000006','CIT0000002', '2024-11-1 14:00:00', 'Consulta de crecimiento');
 
