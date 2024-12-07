@@ -38,14 +38,16 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
                 listaConsultasFormatada = consultasDelDia.Select(c => new
                 {
                     ConsultaCodigo = c.ConsultaCodigo,
-                    ConsultaFechaCita = c.Cita.CitaFechaHora.ToString("yyyy-MM-dd HH:mm:ss"),
+                    CitaCiodigo = c.Cita.CitaCodigo,
+                    ConsultaFechaCita = c.Cita.CitaFechaHora.ToString("dd-MMMM-yyyy"),
+                    ConsultaHoraFecha = c.Cita.CitaFechaHora.ToString("hh:mm tt"),
                     ConsultaFechaHoraFinal = c.ConsultaFechaHoraFinal.HasValue
-                    ? c.ConsultaFechaHoraFinal.Value.ToString("yyyy-MM-dd HH:mm:ss")
+                    ? c.ConsultaFechaHoraFinal.Value.ToString("dd-MM-yyyy HH:mm:ss")
                     : null,
                     MedicoNombre = $"{c.Cita.CitaMedico.MedicoNombre} {c.Cita.CitaMedico.MedicoApellido}",
                     PacienteNombre = c.Cita.CitaPaciente.PacienteNombreCompleto,
                     ConsultaMotivo = c.ConsultaMotivo,
-                    ConsultaEstado = c.Cita.CitaEstado
+                    ConsultaEstado = GetEstadoCita(c.Cita.CitaEstado),
                 }).ToList<object>();
 
                 accionExitosa = true;
@@ -62,5 +64,18 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
             return Json(new { data = listaConsultasFormatada, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
         }
 
+        private string GetEstadoCita(string estado)
+        {
+            if (estado == "P")
+                return "Pendiente";
+            else if (estado == "N")
+                return "No asistio";
+            else if (estado == "A")
+                return "Atendido";
+            else if (estado == "C")
+                return "Cancelado";
+            else
+                return "Desconocido";
+        }
     }
 }

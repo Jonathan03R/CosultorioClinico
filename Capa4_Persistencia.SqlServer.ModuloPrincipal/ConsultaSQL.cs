@@ -40,6 +40,8 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             }
         }
 
+
+
         public List<Consulta> ListarConsultas()
         {
             List<Consulta> consultas = new List<Consulta>();
@@ -53,28 +55,25 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                 {
                     while (resultadoSQL.Read())
                     {
-                        Consulta consulta = new Consulta
+                        Consulta consulta = new Consulta()
                         {
-                            ConsultaCodigo = resultadoSQL["consultaCodigo"].ToString().Trim(),
-                            ConsultaFechaHoraFinal = resultadoSQL["consultaFechaHoraFinal"] != DBNull.Value
-                                ? Convert.ToDateTime(resultadoSQL["consultaFechaHoraFinal"])
-                                : DateTime.MinValue,
-                            ConsultaMotivo = resultadoSQL["consultaMotivo"]?.ToString().Trim(),
-                            Cita = new Cita
+                            ConsultaCodigo = resultadoSQL.GetString(0),
+                            Cita = new Cita() 
                             {
-                                CitaFechaHora = resultadoSQL["HoraCitaInicio"] != DBNull.Value
-                                    ? Convert.ToDateTime(resultadoSQL["HoraCitaInicio"])
-                                    : DateTime.MinValue,
-                                CitaEstado = resultadoSQL["EstadoCita"]?.ToString(),
-                                CitaPaciente = new Paciente
+                                CitaCodigo = resultadoSQL.GetString(1),
+                                CitaFechaHora = resultadoSQL.GetDateTime(2),
+                                CitaPaciente = new Paciente()
                                 {
-                                    PacienteCodigo = resultadoSQL["PacienteCodigo"].ToString().Trim()
+                                    PacienteCodigo = resultadoSQL.GetString(3)
                                 },
-                                CitaMedico = new Medico
+                                CitaMedico = new Medico()
                                 {
-                                    MedicoCodigo = resultadoSQL["MedicoCodigo"].ToString().Trim()
-                                }
-                            }
+                                    MedicoCodigo = resultadoSQL.GetString(4),
+                                },
+                                CitaEstado = resultadoSQL.GetString(5)
+                            },
+                            ConsultaFechaHoraFinal = resultadoSQL.GetDateTime(6),
+                            ConsultaMotivo = resultadoSQL.GetString(7)
                         };
 
                         consultas.Add(consulta);

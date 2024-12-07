@@ -109,11 +109,6 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
             {
                 throw new ArgumentException("La cita no existe");
             }
-            if (cita.EsCancelacionValida())
-            {
-                throw new ArgumentException("La cita es urgente");
-            }
-
 
             cita.CitaEstado = "Cancelada";
 

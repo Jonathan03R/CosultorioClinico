@@ -1,8 +1,6 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Consultas";
 }
-
 
 @section customStyles {
     <link rel="stylesheet" href="~/Content/Estilos-GestionarPacientes/ListasPacientes.css" />
@@ -11,10 +9,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 }
 
+<style>
+    .text-crema {
+        color: #f5f5dc; /* Color crema */
+    }
+</style>
+
 <h2>Consultas del día</h2>
 
-
-<div id="lista-pacientes-container" class="">
+<div id="lista-Citas-Container" class="">
 
     <div class="input-group rounded">
         <span class="input-group-text border-0" id="search-addon">
@@ -24,44 +27,47 @@
     </div>
 
     <div class="d-flex align-items-center my-3">
-        <ul class="nav ">
+        <ul class="nav">
             <li class="nav-item">
                 <a class="nav-link active" href="#" data-filter="all">All <span id="total-count" class="badge badge-custom">0</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#" data-filter="Activo">Pendiente <span id="active-count" class="badge badge-custom">0</span></a>
+                <a class="nav-link" href="#" data-filter="Pendiente">Pendiente <span id="pending-count" class="badge badge-custom">0</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#" data-filter="Inactivo">No Asistieron <span id="inactive-count" class="badge badge-custom">0</span></a>
+                <a class="nav-link" href="#" data-filter="No asistio">No Asistieron <span id="no-show-count" class="badge badge-custom">0</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#" data-filter="Atendidos">Atendidos<span id="inactive-count" class="badge badge-custom">0</span></a>
+                <a class="nav-link" href="#" data-filter="Atendido">Atendidos <span id="attended-count" class="badge badge-custom">0</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#" data-filter="Atendidos">No Asistieron <span id="inactive-count" class="badge badge-custom">0</span></a>
+                <a class="nav-link" href="#" data-filter="Cancelado">Cancelados <span id="cancelled-count" class="badge badge-custom">0</span></a>
             </li>
         </ul>
-        <a class="text-primary ms-3 px-4 agregar-btn " style="text-decoration: none; cursor: pointer; " data-bs-toggle="modal" data-bs-target="#modalAgregarPaciente">
+        <a class="text-primary ms-3 px-4 agregar-btn" style="text-decoration: none; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#modalAgregarPaciente">
             <i class="fas fa-plus-circle"></i> Consultas Adicionales
         </a>
     </div>
     <hr />
 
-    <table id="tabla_pacientes" class="table table-hover" data-url-listar-pacientes="@Url.Action("ListarCosultas", "Atender Consultas")">
+    <table id="tabla_consultas" class="table table-hover" data-url-listar-consulta="@Url.Action("ListarConsultas", "AtenderConsultas")">
         <thead>
             <tr>
                 <th></th>
-                <th>DNI</th>
-                <th>NOMBRES PACIENTES</th>
-                <th>ESTADO</th>
-                <th>EXPEDIENTE</th>
-                <th>CONTACTO</th>
-                <th>SEGURO</th>
-                <th>Tipo Consulta</th>
+                <th>Cita Codigo</th>
+                <th>Paciente</th>
+                <th>Fecha Cita</th>
+                <th>Hora</th>
+                <th>Medico</th>
+                <th>Estado</th>
             </tr>
         </thead>
         <tbody></tbody>
     </table>
-
-
 </div>
+
+@section scripts {
+    <script src="~/Scripts/AtenderConsultasScripts/tablaConsultas.js"></script>
+    <script src="~/Scripts/AtenderConsultasScripts/DetallesCita.js"></script>
+    <script src="~/Scripts/AtenderConsultasScripts/filtrar.js"></script>
+}

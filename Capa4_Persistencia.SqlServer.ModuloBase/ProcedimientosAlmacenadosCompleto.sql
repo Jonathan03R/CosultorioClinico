@@ -689,6 +689,7 @@ begin
 
     select 
         c.consultaCodigo,
+		c.consultacitaCodigo,
         ct.citaFechaHora as HoraCitaInicio,
 		ct.citaPacienteCodigo as PacienteCodigo,
 		ct.citaMedicoCodigo as MedicoCodigo,
@@ -703,6 +704,8 @@ begin
     set nocount off;
 end;
 go
+
+
 
 
 

@@ -42,8 +42,8 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
 
                 foreach (var consulta in consultas)
                 {
-                    if (consulta.Cita.CitaFechaHora.Date == DateTime.Today) 
-                    {
+                    //if (consulta.Cita.CitaFechaHora.Date == DateTime.Today) 
+                    //{
                         Paciente paciente = pacienteSQL.MostrarPacientePorCodigo(consulta.Cita.CitaPaciente.PacienteCodigo);
                         consulta.Cita.CitaPaciente = paciente;
 
@@ -51,7 +51,7 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
                         consulta.Cita.CitaMedico = medico;
 
                         consultasDeHoy.Add(consulta); 
-                    }
+                    //}
                 }
 
                 accesoSQLServer.CerrarConexion(); 
