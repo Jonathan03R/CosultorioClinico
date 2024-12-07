@@ -8,35 +8,37 @@ namespace Capa3_Dominio.ModuloPrincipal.Entidad
 {
     public class Horario
     {
-        private string horarioCodigo, horarioDia;
-        private bool horarioDisponibilidad;
+        private string horarioCodigo;
+        private DiaSemana horarioDia;
         private TimeSpan horarioHoraInicio, horarioHoraFin;
-
-        public Horario(string horarioCodigo, string horarioDia, bool horarioDisponibilidad, TimeSpan horarioHoraInicio, TimeSpan horarioHoraFin)
-        {
-            this.horarioCodigo = horarioCodigo;
-            this.horarioDia = horarioDia;
-            this.horarioDisponibilidad = horarioDisponibilidad;
-            this.horarioHoraInicio = horarioHoraInicio;
-            this.horarioHoraFin = horarioHoraFin;
-        }
+        private Medico medico;
 
         public string HorarioCodigo { get => horarioCodigo; set => horarioCodigo = value; }
-        public string HorarioDia { get => horarioDia; set => horarioDia = value; }
-        public bool HorarioDisponibilidad { get => horarioDisponibilidad; set => horarioDisponibilidad = value; }
+        public DiaSemana HorarioDia { get => horarioDia; set => horarioDia = value; }
         public TimeSpan HorarioHoraInicio { get => horarioHoraInicio; set => horarioHoraInicio = value; }
         public TimeSpan HorarioHoraFin { get => horarioHoraFin; set => horarioHoraFin = value; }
+        public Medico Medico { get => medico; set => medico = value; }
 
-
-        
-        public bool EsDisponible(DateTime fechaHora)
+        public bool EstaDisponible(DateTime fechaHora)
         {
-            var diaSemana = fechaHora.ToString("dddd");
-            var hora = fechaHora.TimeOfDay;
+            DayOfWeek diaDeSemana = (DayOfWeek)(int)horarioDia;  // Mapear DiaSemana a DayOfWeek
 
-            return HorarioDisponibilidad && HorarioDia.Equals(diaSemana, StringComparison.OrdinalIgnoreCase) &&
-                   hora >= HorarioHoraInicio && hora <= HorarioHoraFin;
+            return fechaHora.DayOfWeek == diaDeSemana &&
+                   fechaHora.TimeOfDay >= horarioHoraInicio &&
+                   fechaHora.TimeOfDay <= horarioHoraFin;
         }
+    }
+
+    // Enum para representar los días de la semana
+    public enum DiaSemana
+    {
+        Lunes = 0,
+        Martes = 1,
+        Miércoles = 2,
+        Jueves = 3,
+        Viernes = 4,
+        Sábado = 5,
+        Domingo = 6
     }
 
 }

@@ -36,7 +36,7 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             }
             catch (SqlException ex)
             {
-                throw new Exception($"Error al guardar la consulta: {ex.Message}");
+                throw new Exception($"Error al guardar la consulta: {ex.Message}"); 
             }
         }
 

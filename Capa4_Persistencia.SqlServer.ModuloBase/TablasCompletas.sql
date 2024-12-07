@@ -76,6 +76,20 @@ create table Administracion.Medico
 ) on gestionPacientes;
 go
 
+-- Crear tabla horario
+create table Gestion.horario
+    (
+		horarioCodigo nchar(10),
+		horarioDia nvarchar(15),
+		horarioHoraInicio time,
+		horarioHoraFin time,
+		medicoCodigo nchar(10),  
+
+		constraint medicosFK foreign key (medicoCodigo) references Administracion.Medico(medicoCodigo),
+		constraint horarioCodigoPK primary key (horarioCodigo)
+    )
+go
+
 
 -- Tabla HistoriaClinica (almacena el historial médico de los pacientes)
 create table Salud.HistoriaClinica
@@ -142,19 +156,6 @@ create table Gestion.notificacion
     notificacionDestinatario nvarchar(50),
     notificacionfechaDeEnvio datetime not null,
     constraint notificacionCodigoPK primary key (notificacionCodigo)
-    )
-go
-
-
--- Crear tabla horario
-create table Gestion.horario
-    (
-    horarioCodigo nchar(6),
-    horarioDia nvarchar(15),
-    horarioDisponibilidad bit,
-    horarioHoraInicio time,
-    horarioHoraFin time,
-    constraint horarioCodigoPK primary key (horarioCodigo)
     )
 go
 
@@ -254,8 +255,30 @@ go
 
 insert into Administracion.Medico (medicoCodigo, medicoApellido, medicoNombre, medicoCorreo, medicoDNI, medicoTelefono, especialidadCodigo)
 values
-('MED0000001', 'García', 'Roberto', 'roberto.garcia@example.com', '12345679', '987111222', 'ESP0000001'),
-('MED0000002', 'Martínez', 'Sofía', 'sofia.martinez@example.com', '98765432', '987333444', 'ESP0000002');
+('MED0000001', 'Johny', 'ruiz', 'Johny@example.com', '12345679', '987111222', 'ESP0000001'),
+('MED0000002', 'Maritza', 'De la cruz', 'maritza@example.com', '98765432', '987333444', 'ESP0000002'),
+('MED0000003', 'Yanmir', 'Guerrero', 'yanmir@example.com', '98765433', '987333466', 'ESP0000002'),
+('MED0000004', 'Daniel', 'Asmat', 'Daniel@example.com', '98765434', '987333488', 'ESP0000002'),
+('MED0000005', 'Jonathan', 'Roque', 'Jona@example.com', '98765435', '987333411', 'ESP0000001');
+go
+
+
+insert into Gestion.horario (horarioCodigo, horarioDia, horarioHoraInicio , horarioHoraFin, medicoCodigo )
+	values 
+	('HRA0000001', 'MONDAY', '09:00', '17:00', 'MED0000001'),  --lunes
+	('HRA0000002', 'TUESDAY', '09:00', '17:00', 'MED0000001'), --martes
+	('HRA0000003', 'WEDNESDAY', '09:00', '17:00', 'MED0000001'), -- miercoles
+	('HRA0000004', 'MONDAY', '09:00', '17:00', 'MED0000002'), -- lunes
+	('HRA0000005', 'WEDNESDAY', '09:00', '17:00', 'MED0000002'), -- miercoles
+	('HRA0000006', 'FRIDAY', '09:00', '12:00', 'MED0000002'), -- viernes
+	('HRA0000007', 'FRIDAY', '12:00', '17:00', 'MED0000003'), -- viernes
+	('HRA0000008', 'TUESDAY', '01:00', '17:00', 'MED0000003'), -- martes
+	('HRA0000009', 'THURSDAY', '12:00', '17:00', 'MED0000003'), -- jueves
+	('HRA0000010', 'FRIDAY', '12:00', '17:00', 'MED0000004'), -- viernes
+	('HRA0000011', 'SATURDAY', '12:00', '17:00', 'MED0000004'), -- sabado
+	('HRA0000012', 'THURSDAY', '12:00', '17:00', 'MED0000005'),-- Jueves 
+	('HRA0000013', 'FRIDAY', '12:00', '17:00', 'MED0000005'), -- viernes
+	('HRA0000014', 'SATURDAY', '12:00', '17:00', 'MED0000005'); -- sdabado
 go
 
 insert into Gestion.tipoConsulta (tipoConsultaCodigo, tipoConsultaDescripcion)
@@ -265,10 +288,12 @@ values
 go
 insert into Gestion.cita (citaCodigo, citaFechaHora, citaPacienteCodigo, citaTipoConsultaCodigo, citaMedicoCodigo)
 values
-('CIT0000001', '2024-11-20 10:30:00', 'PAC0000001', 'TDC0000001', 'MED0000001'),
-('CIT0000002', '2024-11-21 15:00:00', 'PAC0000002', 'TDC0000002', 'MED0000002'),
-('CIT0000003', '2024-11-22 09:00:00', 'PAC0000003', 'TDC0000001', 'MED0000001'),
-('CIT0000004', '2024-11-23 11:00:00', 'PAC0000004', 'TDC0000002', 'MED0000002');
+('CIT0000001', '2024-12-16 10:00:00', 'PAC0000001', 'TDC0000001', 'MED0000001'),
+('CIT0000006', '2024-12-20 09:00:00', 'PAC0000002', 'TDC0000002', 'MED0000002'),
+('CIT0000002', '2024-12-19 15:00:00', 'PAC0000002', 'TDC0000002', 'MED0000002'),
+('CIT0000003', '2024-12-20 09:00:00', 'PAC0000003', 'TDC0000001', 'MED0000003'),
+('CIT0000004', '2024-12-21 12:00:00', 'PAC0000004', 'TDC0000002', 'MED0000004'),
+('CIT0000005', '2024-12-21 14:00:00', 'PAC0000005', 'TDC0000002', 'MED0000004');
 go
 
 

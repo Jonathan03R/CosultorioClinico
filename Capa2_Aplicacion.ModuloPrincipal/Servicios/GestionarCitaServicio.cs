@@ -76,12 +76,6 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
         public void ActualizarCita(Cita cita)
         {
 
-
-            if (!cita.EsValida())
-            {
-                throw new Exception("Los datos no son validos");
-            }
-
             accesoSQLServer.IniciarTransaccion();
             try
             {

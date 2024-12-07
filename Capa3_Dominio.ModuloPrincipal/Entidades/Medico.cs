@@ -17,7 +17,7 @@ namespace Capa3_Dominio.ModuloPrincipal
         private string medicoTelefono;
         private string medicoEstado;
         private Especialidad especialidad;
-        private List<Horario> medicoHorarios;
+        private List<Horario> horarios;
 
         public string MedicoCodigo { get => medicoCodigo; set => medicoCodigo = value; }
         public string MedicoApellido { get => medicoApellido; set => medicoApellido = value; }
@@ -27,24 +27,13 @@ namespace Capa3_Dominio.ModuloPrincipal
         public string MedicoTelefono { get => medicoTelefono; set => medicoTelefono = value; }
         public string MedicoEstado { get => medicoEstado; set => medicoEstado = value; }
         public Especialidad Especialidad { get => especialidad; set => especialidad = value; }
-        public List<Horario> MedicoHorarios { get => medicoHorarios; set => medicoHorarios = value; }
+        public List<Horario> Horarios { get => horarios; set => horarios = value; }
 
+        // Verifica si el médico tiene disponibilidad en la fecha y hora indicadas
         public bool TieneHorarioDisponible(DateTime fechaHora)
         {
-            foreach (var horario in MedicoHorarios)
-            {
-                if (horario.EsDisponible(fechaHora))
-                {
-                    return true;
-                }
-            }
-            return false;
+            return Horarios.Any(h => h.EstaDisponible(fechaHora));
         }
 
-        
-        public bool EsEspecialistaCompatible(Especialidad especialidad)
-        {
-            return Especialidad == especialidad;
-        }
     }
 }

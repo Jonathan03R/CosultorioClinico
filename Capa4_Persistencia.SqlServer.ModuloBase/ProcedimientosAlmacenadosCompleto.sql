@@ -549,8 +549,8 @@ begin
 		m.medicoCodigo,
         m.medicoNombre,
         m.medicoApellido,
-		e.especialidadNombre,
 		e.especialidadCodigo,
+		e.especialidadNombre,
 		p.pacienteCodigo,
 		p.pacienteNombreCompleto
     from 
@@ -773,12 +773,35 @@ end
 go
 
 /******************************************************************************************
+Descripción de procedimiento almacenado: Verificar si la cita existe
+---------------------------------------------------------------------------------------------
+**************************************************************************************/
+
+
+
+CREATE or alter PROCEDURE pro_Verificar_Cita_Existente
+		@fechaHora DATETIME,
+		@medicoCodigo VARCHAR(50)
+	AS
+	BEGIN
+		IF EXISTS (SELECT 1 FROM Gestion.cita WHERE CitaFechaHora = @fechaHora AND CitaMedicoCodigo = @medicoCodigo)
+		BEGIN
+			SELECT 1;  -- La cita ya existe
+		END
+		ELSE
+		BEGIN
+			SELECT 0;  -- No hay cita existente
+		END
+	END
+go
+/******************************************************************************************
 Descripción de procedimiento almacenado: Genera un código único basado en un prefijo y la secuencia en una columna específica.
 ---------------------------------------------------------------------------------------------
  Fecha     Usuario      Descripción de cambio
 ---------------------------------------------------------------------------------------------
  12/11/2024  Usuario       Creación del procedimiento con ajuste a nchar(10)
 **************************************************************************************/
+
 
 create or alter procedure spGenerarCodigoUnico
     @prefijo nvarchar(3),         
@@ -801,3 +824,94 @@ as
 
 set nocount off;
 go
+
+
+/******************************************************************************************
+Descripción de procedimiento almacenado: 
+Este procedimiento me lista la agenda de un medico en una fecha elegida 
+---------------------------------------------------------------------------------------------
+ Fecha     Usuario      Descripción de cambio
+---------------------------------------------------------------------------------------------
+ 12/11/2024  Usuario       Creación del procedimiento con ajuste a nchar(10)
+**************************************************************************************/
+--EXEC pro_Listar_AgendaMedico @medicoCodigo = 'MED0000004', @fecha = '2024-12-21';
+
+
+CREATE OR ALTER PROCEDURE pro_Listar_AgendaMedico
+    @medicoCodigo nchar(10),
+    @fecha date
+AS
+BEGIN
+    -- Variables para almacenar las horas de inicio y fin del horario
+    DECLARE @horaInicio time;
+    DECLARE @horaFin time;
+    
+    -- Seleccionar el horario del médico para el día especificado
+    SELECT 
+        @horaInicio = h.horarioHoraInicio,
+        @horaFin = h.horarioHoraFin
+    FROM 
+        Gestion.horario h
+    WHERE 
+        h.medicoCodigo = @medicoCodigo
+        AND UPPER(h.horarioDia) = UPPER(DATENAME(weekday, @fecha));
+
+    -- Validar si se encontró el horario
+    IF @horaInicio IS NULL OR @horaFin IS NULL
+    BEGIN
+        PRINT 'No se encontró horario para el médico en el día especificado.';
+        RETURN;
+    END
+
+    -- Crear una tabla temporal para los intervalos de tiempo
+    CREATE TABLE #IntervalosTiempo (
+        HoraInicio time,
+        HoraFin time
+    );
+    
+    -- Insertar intervalos de tiempo basados en el horario del médico
+    DECLARE @intervaloMinutos int = 60; -- Intervalo de 1 hora (60 minutos)
+    DECLARE @currentInicio time = @horaInicio;
+    DECLARE @currentFin time;
+
+    WHILE @currentInicio < @horaFin
+    BEGIN
+        SET @currentFin = DATEADD(minute, @intervaloMinutos, @currentInicio);
+        
+        IF @currentFin <= @horaFin
+        BEGIN
+            INSERT INTO #IntervalosTiempo (HoraInicio, HoraFin)
+            VALUES (@currentInicio, @currentFin);
+        END
+        
+        SET @currentInicio = @currentFin;
+    END;
+    
+    -- Seleccionar la agenda del médico
+    SELECT 
+        i.HoraInicio,
+        i.HoraFin,
+        COALESCE(c.citaEstado, 'Libre') AS estado,
+        c.citaCodigo,
+        c.citaPacienteCodigo,
+        c.citaMedicoCodigo,
+        ISNULL(m.medicoNombre + ' ' + m.medicoApellido, 'N/A') AS nombreMedico,
+        ISNULL(p.pacienteNombreCompleto, 'N/A') AS pacienteNombreCompleto
+    FROM 
+        #IntervalosTiempo i
+    LEFT JOIN 
+        Gestion.cita c ON c.citaMedicoCodigo = @medicoCodigo 
+                       AND CONVERT(date, c.citaFechaHora) = @fecha
+                       AND CONVERT(time, c.citaFechaHora) >= i.HoraInicio
+                       AND CONVERT(time, c.citaFechaHora) < DATEADD(minute, @intervaloMinutos, i.HoraInicio)
+    LEFT JOIN 
+        Administracion.Medico m ON c.citaMedicoCodigo = m.medicoCodigo
+    LEFT JOIN 
+        Salud.Pacientes p ON c.citaPacienteCodigo = p.pacienteCodigo
+    ORDER BY 
+        i.HoraInicio;
+
+    -- Eliminar la tabla temporal
+    DROP TABLE #IntervalosTiempo;
+END
+GO
