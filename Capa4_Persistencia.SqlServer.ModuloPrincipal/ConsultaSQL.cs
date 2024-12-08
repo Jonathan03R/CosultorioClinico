@@ -72,8 +72,8 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                                 },
                                 CitaEstado = resultadoSQL.GetString(5)
                             },
-                            ConsultaFechaHoraFinal = resultadoSQL.GetDateTime(6),
-                            ConsultaMotivo = resultadoSQL.GetString(7)
+                            ConsultaFechaHoraFinal = resultadoSQL.IsDBNull(6) ? (DateTime?)null : resultadoSQL.GetDateTime(6),
+                            ConsultaMotivo = resultadoSQL.IsDBNull(7) ? "No hay motivo 🤡" : resultadoSQL.GetString(7) 
                         };
 
                         consultas.Add(consulta);
@@ -87,11 +87,5 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
 
             return consultas;
         }
-
-
-        
-
-
-
     }
 }

@@ -136,15 +136,22 @@ function agregarEventosFiltros(table) {
     });
 
     // Resetear filtros
-    $('#resetFilter').on('click', function () {
-        $('#inputSelectEspecialidad').val('');
-        $('#inputSelectMedico').val('');
-        $('#inputSelectEstado').val('');
-        $('#inputFecha').val('');
+    //$('#resetFilter').on('click', function () {
+    //    $('#inputSelectEspecialidad').val('');
+    //    $('#inputSelectMedico').val('');
+    //    $('#inputSelectEstado').val('');
+    //    $('#inputFecha').val('');
 
-        // Limpiar búsqueda en todas las columnas
-        table.search('').columns().search('').draw();
+    //    // Limpiar búsqueda en todas las columnas
+    //    table.search('').columns().search('').draw();
+    //});
+
+    // Resetear solo el filtro de fecha
+    $('#resetFilter').on('click', function () {
+        $('#inputFechaCitas').val(''); 
+        table.column(7).search('').draw();
     });
 }
+
 
 
