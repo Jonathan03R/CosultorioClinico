@@ -1,5 +1,4 @@
-﻿
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
@@ -15,10 +14,10 @@
     <style>
         body {
             margin: 0;
-            font-family:"Poppins", sans-serif;
+            font-family: "Poppins", sans-serif;
         }
 
-        .navbar {
+        .custom-navbar {
             background-color: #63b2ff;
             display: flex;
             align-items: center;
@@ -26,7 +25,7 @@
             padding: 10px;
         }
 
-            .navbar .container {
+            .custom-navbar .container {
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -34,58 +33,57 @@
                 max-width: 1200px;
             }
 
-        .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #fff;
-            left: 100px
-            /*          display: flex;
-            align-items: center;*/
-        }
-
-            .navbar-brand img {
-                width: 30px;
-                margin-right: 8px;
-            }
-
-        .navbar-nav {
-            display: inline-flex;
-            gap: 20px;
-            background-color: #b3d4fc;
-            padding: 5px 20px;
-            border-radius: 25px;
-        }
-
-            .navbar-nav li {
-                list-style-type: none;
-            }
-
-            .navbar-nav .nav-link {
-                text-decoration: none;
-                color: #000;
-                font-size: 1rem;
+            .custom-navbar .navbar-brand {
+                font-size: 1.5rem;
                 font-weight: bold;
-                padding: 8px 16px;
-                border-radius: 20px;
-                transition: background-color 0.3s, color 0.3s;
-                display: inline-block; /* Asegura que cada enlace esté en línea */
+                color: #fff;
+                position: absolute; /* Asegurar la posición del logo */
+                left: 100px;
             }
 
-                .navbar-nav .nav-link.active {
-                    background-color: #fff;
-                    color: #007bff;
+                .custom-navbar .navbar-brand img {
+                    width: 30px;
+                    margin-right: 8px;
                 }
 
-                .navbar-nav .nav-link:hover {
-                    background-color: #e0f0ff;
-                    color: #007bff;
+            .custom-navbar .navbar-nav {
+                display: inline-flex;
+                gap: 20px;
+                background-color: #b3d4fc;
+                padding: 5px 20px;
+                border-radius: 25px;
+            }
+
+                .custom-navbar .navbar-nav li {
+                    list-style-type: none;
                 }
 
-        .search-icon {
-            font-size: 1.2rem;
-            color: #000;
-            margin-left: 15px;
-        }
+                .custom-navbar .navbar-nav .nav-link {
+                    text-decoration: none;
+                    color: #000;
+                    font-size: 1rem;
+                    font-weight: bold;
+                    padding: 8px 16px;
+                    border-radius: 20px;
+                    transition: background-color 0.3s, color 0.3s;
+                    display: inline-block;
+                }
+
+                    .custom-navbar .navbar-nav .nav-link.active {
+                        background-color: #fff;
+                        color: #007bff;
+                    }
+
+                    .custom-navbar .navbar-nav .nav-link:hover {
+                        background-color: #e0f0ff;
+                        color: #007bff;
+                    }
+
+            .custom-navbar .search-icon {
+                font-size: 1.2rem;
+                color: #000;
+                margin-left: 15px;
+            }
     </style>
 </head>
 <body>
@@ -93,9 +91,9 @@
         var currentController = ViewContext.RouteData.Values["controller"] as string;
         var currentAction = ViewContext.RouteData.Values["action"] as string;
     }
-    <nav class="navbar">
-        <div class="container ">
-            <a class="navbar-brand position-absolute" href="@Url.Action("GestionCita", "GestionarCitas")">
+    <nav class="navbar custom-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="@Url.Action("GestionCita", "GestionarCitas")">
                 <svg width="162" height="44" viewBox="0 0 162 44" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                     <rect width="162" height="44" fill="url(#pattern0_303_367)" />
                     <defs>
@@ -110,35 +108,42 @@
                 <li>
                     @Html.ActionLink("Citas", "GestionCita", "GestionarCitas", null, new
                    {
-                       @class = "nav-link " + (currentController == "GestionarCitas" && currentAction == "GestionCita" ? "active" : "")
+                       @class = "nav-link",
+                       data_controller = "GestionarCitas",
+                       data_action = "GestionCita"
                    })
                 </li>
 
                 <li>
                     @Html.ActionLink("Pacientes", "ListaPacientes", "GestionarPacientes", null, new
                     {
-                        @class = "nav-link " + (currentController == "GestionarPacientes" && currentAction == "ListaPacientes" ? "active" : "")
+                        @class = "nav-link",
+                        data_controller = "GestionarPacientes",
+                        data_action = "ListaPacientes"
                     })
                 </li>
 
                 <li>
                     @Html.ActionLink("Consultas", "Consultas", "AtenderConsultas", null, new
                     {
-                        @class = "nav-link " + (currentController == "AtenderConsultas" && currentAction == "Consultas" ? "active" : "")
+                        @class = "nav-link",
+                        data_controller = "AtenderConsultas",
+                        data_action = "Consultas"
                     })
                 </li>
                 <li>
                     @Html.ActionLink("PruebasCIE-11", "Buscar", "Cie11", null, new
                     {
-                        @class = "nav-link " + (currentController == "Cie11" && currentAction == "Buscar" ? "active" : "")
+                        @class = "nav-link",
+                        data_controller = "Cie11",
+                        data_action = "Buscar"
                     })
                 </li>
             </ul>
         </div>
-
     </nav>
 
-    <div class=" container body-content">
+    <div class="container body-content">
         <div>
             @RenderBody()
         </div>
@@ -152,5 +157,40 @@
     <script src="~/Scripts/bootstrap.bundle.js"></script>
     @Scripts.Render("~/bundles/complementos")
     @RenderSection("scripts", required: false)
+    <script>
+    $(document).ready(function () {
+        // Mantener la clase 'active' en el navbar principal
+        function maintainActiveClass() {
+            var currentController = '@ViewContext.RouteData.Values["controller"]';
+            var currentAction = '@ViewContext.RouteData.Values["action"]';
+
+            // Agregar clase 'active' al enlace correspondiente del navbar principal
+            $('.navbar-nav .nav-link').each(function () {
+                var linkController = $(this).data('controller');
+                var linkAction = $(this).data('action');
+                if (currentController === linkController) { // Solo verificar el controlador
+                    $(this).addClass('active');
+                } else {
+                    $(this).removeClass('active');
+                }
+            });
+        }
+
+        maintainActiveClass();
+
+        // Añadir evento de clic a los enlaces de subsecciones
+        $('#sub-nav .nav-link').on('click', function (event) {
+            event.preventDefault();
+            $('#sub-nav .nav-link').removeClass('active');
+            $(this).addClass('active');
+        });
+    });
+    </script>
+
+
 </body>
 </html>
+
+
+
+

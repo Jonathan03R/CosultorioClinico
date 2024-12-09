@@ -87,5 +87,6 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
 
             return consultas;
         }
+
     }
 }

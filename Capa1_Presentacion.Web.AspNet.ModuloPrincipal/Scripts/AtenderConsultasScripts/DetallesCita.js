@@ -35,7 +35,7 @@ function formatearDetalles(data) {
                 <p>Motivo de la consulta : ${data.ConsultaMotivo}</p>
                 <p>
                     ¿Quieres Iniciar la consulta? 
-                    <button class="btn btn-link p-0" onclick='abrirFormModalConsulta(${JSON.stringify(data)})'>Iniciar</button>
+                   <button class="btn btn-link p-0" onclick='mostrarModalConfirmacion(${JSON.stringify(data)})'>Iniciar</button>
                 </p>
             `;
             break;
@@ -72,6 +72,12 @@ function formatearDetalles(data) {
 }
 
 
+function mostrarModalConfirmacion(data) {
+    $('#confirmacionModal').modal('show');
+    $('#confirmarIniciarConsulta').off('click').on('click', function () {
+        window.location.href = '/AtenderConsultas/Atendiendo';
+    });
+}
 
 function obtenerClaseEstado(estado) {
     switch (estado) {

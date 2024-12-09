@@ -23,6 +23,10 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
             return View();
         }
 
+        public ActionResult Atendiendo()
+        {
+            return View();
+        }
 
         // Listar las consultas del día
         [HttpGet]
@@ -63,6 +67,29 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
 
             // Retornar el resultado como JSON
             return Json(new { data = listaConsultasFormatada, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+        }
+
+        // Métodos para las vistas parciales
+        public ActionResult Portadas() { 
+            return PartialView("_Portadas"); 
+        } 
+        public ActionResult Citas() { 
+            return PartialView("_Citas"); 
+        } 
+        public ActionResult Recetas() {
+            return PartialView("_Recetas"); 
+        } 
+        public ActionResult Inicio() { 
+            return PartialView("_Inicio"); 
+        } 
+        public ActionResult Diagnosticos() { 
+            return PartialView("_Diagnosticos"); 
+        } 
+        public ActionResult Tratamiento() { 
+            return PartialView("_Tratamiento"); 
+        } 
+        public ActionResult Finalizacion() {
+            return PartialView("_Finalizacion"); 
         }
 
         private string GetEstadoCita(string estado)

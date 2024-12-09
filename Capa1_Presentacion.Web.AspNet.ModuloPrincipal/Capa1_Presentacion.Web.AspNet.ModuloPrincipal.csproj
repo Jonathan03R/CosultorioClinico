@@ -298,6 +298,7 @@
     <Content Include="Content\DataTables\images\sort_desc.png" />
     <Content Include="Content\DataTables\images\sort_desc_disabled.png" />
     <Content Include="Content\DataTables\swf\flashExport.swf" />
+    <Content Include="Content\Estilos-AtenderConsultas\Atendiendo.css" />
     <Content Include="Content\Estilos-GestionarPacientes\ModalActualizarPacientes.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
@@ -305,6 +306,7 @@
     <Content Include="Content\DataTables\css\semanticui.scss" />
     <Content Include="Content\DataTables\css\mixins.scss" />
     <Content Include="Content\DataTables\css\common.scss" />
+    <Content Include="Scripts\AtenderConsultasScripts\Atendiendo.js" />
     <Content Include="Scripts\AtenderConsultasScripts\DetallesCita.js" />
     <Content Include="Scripts\AtenderConsultasScripts\filtrar.js" />
     <Content Include="Scripts\AtenderConsultasScripts\tablaConsultas.js" />
@@ -458,6 +460,14 @@
     <Content Include="Views\GestionarCitas\modals\_CrearCitasModal.cshtml" />
     <Content Include="Views\GestionarCitas\modals\_AgregarPaciente.cshtml" />
     <Content Include="Views\GestionarCitas\modals\_Filters.cshtml" />
+    <Content Include="Views\AtenderConsultas\Atendiendo.cshtml" />
+    <Content Include="Views\AtenderConsultas\_Portadas.cshtml" />
+    <Content Include="Views\AtenderConsultas\_Citas.cshtml" />
+    <Content Include="Views\AtenderConsultas\_Recetas.cshtml" />
+    <Content Include="Views\AtenderConsultas\_Inicio.cshtml" />
+    <Content Include="Views\AtenderConsultas\_Diagnosticos.cshtml" />
+    <Content Include="Views\AtenderConsultas\_Tratamiento.cshtml" />
+    <Content Include="Views\AtenderConsultas\_Finalizacion.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
