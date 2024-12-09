@@ -55,6 +55,7 @@ create table Administracion.Especialidad
     especialidadCodigo nchar(10) not null,
     especialidadNombre nvarchar(100) not null,
     especialidadDescripcion nvarchar(255),
+
     constraint EspecialidadPK primary key (especialidadCodigo)
 ) on gestionPacientes;
 go
@@ -95,9 +96,7 @@ go
 create table Salud.HistoriaClinica
 (
     historialClinicoCodigo nchar(10) not null,
-    antecedentesMedicos nvarchar(255), 
-    alergias nvarchar(255),
-    fechaCreacion date not null,
+    HistoriaClinicafechaCreacion date default getdate(),
     constraint HistoriaClinicaPK primary key (historialClinicoCodigo),
 ) on gestionConsultas;
 go
@@ -166,15 +165,15 @@ create table Gestion.cita
     citaEstado nchar(1) default 'P',
     citaFechaHora datetime not null,
     citaNotificacionCodigo nchar(8),
-    citaPacienteCodigo nchar(10),
-    citaTipoConsultaCodigo nchar(10),
-	citaMedicoCodigo nchar(10),
+    --citaPacienteCodigo nchar(10),
+    --citaTipoConsultaCodigo nchar(10),
+	--citaMedicoCodigo nchar(10),
 
     constraint CitaPK primary key (citaCodigo),
-    constraint CitaPacienteFK foreign key (citaPacienteCodigo) references Salud.pacientes(pacienteCodigo),
+    --constraint CitaPacienteFK foreign key (citaPacienteCodigo) references Salud.pacientes(pacienteCodigo),
     constraint CitaNotificacionFK foreign key (citaNotificacionCodigo) references Gestion.notificacion(notificacionCodigo),
-	constraint CitaMedicoFK foreign key (citaMedicoCodigo) references Administracion.medico(medicoCodigo),
-    constraint CitaTipoConsultaFK foreign key (citaTipoConsultaCodigo) references Gestion.tipoConsulta(tipoConsultaCodigo),
+	--constraint CitaMedicoFK foreign key (citaMedicoCodigo) references Administracion.medico(medicoCodigo),
+    --constraint CitaTipoConsultaFK foreign key (citaTipoConsultaCodigo) references Gestion.tipoConsulta(tipoConsultaCodigo),
     constraint CitaEstadoCK check (citaEstado in ('P', 'N', 'A', 'C', 'T')),-- P: pendiente, N: No Asistida, A: atendida, C: cancelada , T:'Atendiendo'
     )
 go
@@ -187,9 +186,16 @@ create table Gestion.Consulta (
     consultacitaCodigo nchar(10),
     consultaFechaHoraFinal datetime null,
     consultaMotivo nvarchar(255) null,
-    --consultaEstado nchar(1) default 'P', 
+	--HistorialClinicoCodigo nchar(10),
+	medicoCodigo nchar(10),
+	tipoConsultaCodigo nchar(10),
+	pacienteCodigo NCHAR(10)
     constraint ConsultaPK primary key (consultaCodigo),
     constraint consultacitaCodigoFK foreign key (consultacitaCodigo) references  Gestion.cita(citaCodigo),
+	--constraint HistorialClinicoCodigoFK foreign key (HistorialClinicoCodigo) references Salud.HistoriaClinica(historialClinicoCodigo),
+	constraint medicoCodigo foreign key(medicoCodigo) references Administracion.medico(medicoCodigo),
+	constraint tipoConsultaCodigo foreign key(tipoConsultaCodigo) references Gestion.tipoConsulta(tipoConsultaCodigo),
+	constraint pacienteCodigoFK foreign key (pacienteCodigo) references Salud.pacientes(pacienteCodigo),
 ) on gestionConsultas
 go
 
@@ -197,7 +203,6 @@ create table Salud.Diagnostico (
     diagnosticoCodigo nchar(10),
     diagnosticoconsultaCodigo nchar(10),
     diagnosticoDescripcion nvarchar(255) not null,
-    diagnosticoFecha date not null,
     constraint DiagnosticoPK primary key (diagnosticoCodigo),
     constraint DiagnosticoConsultaFK foreign key (diagnosticoconsultaCodigo) references Gestion.Consulta(consultaCodigo)
 ) on gestionConsultas
@@ -207,7 +212,6 @@ create table Salud.RecetaMedica (
     recetaCodigo nchar(10),
     recetaConsultaCodigo nchar(10),
     recetaDescripcion nvarchar(255) not null,
-    recetaFecha date not null,
 	recetaTratamiento nvarchar(100) not null,
 	recetaRecomendaciones nvarchar(100) not null,
     constraint RecetaMedicaPK primary key (recetaCodigo),
@@ -217,13 +221,13 @@ go
 
 --insert para hacer pruebas
 
-insert into Salud.HistoriaClinica([historialClinicoCodigo], [fechaCreacion])
+insert into Salud.HistoriaClinica([historialClinicoCodigo])
 values 
-('HIS0000001','2024-11-20' ),
-('HIS0000002','2024-11-20' ),
-('HIS0000003','2024-11-20' ),
-('HIS0000004','2024-11-20' ),
-('HIS0000005','2024-11-20' )
+('HIS0000001'),
+('HIS0000002' ),
+('HIS0000003' ),
+('HIS0000004' ),
+('HIS0000005' )
 
 go
 
@@ -286,39 +290,39 @@ values
 ('TDC0000001', 'Consulta General'),
 ('TDC0000002', 'Consulta Especializada');
 go
-insert into Gestion.cita (citaCodigo, citaFechaHora, citaPacienteCodigo, citaTipoConsultaCodigo, citaMedicoCodigo)
+insert into Gestion.cita (citaCodigo, citaFechaHora)
 values
-('CIT0000001', '2024-11-18 10:00:00', 'PAC0000001', 'TDC0000001', 'MED0000001'),
-('CIT0000006', '2024-12-20 09:00:00', 'PAC0000002', 'TDC0000002', 'MED0000002'),
-('CIT0000002', '2024-12-19 15:00:00', 'PAC0000002', 'TDC0000002', 'MED0000002'),
-('CIT0000003', '2024-12-20 09:00:00', 'PAC0000003', 'TDC0000001', 'MED0000003'),
-('CIT0000004', '2024-12-21 12:00:00', 'PAC0000004', 'TDC0000002', 'MED0000004'),
-('CIT0000005', '2024-12-21 14:00:00', 'PAC0000005', 'TDC0000002', 'MED0000004');
+('CIT0000001', '2024-11-18 10:00:00'),
+('CIT0000002', '2024-12-19 15:00:00'),
+('CIT0000003', '2024-12-20 09:00:00'),
+('CIT0000004', '2024-12-21 12:00:00'),
+('CIT0000005', '2024-12-21 14:00:00'),
+('CIT0000006', '2024-12-20 09:00:00');
 go
 
 
-insert into Gestion.Consulta (consultaCodigo,consultacitaCodigo, consultaFechaHoraFinal, consultaMotivo)
+insert into Gestion.Consulta (consultaCodigo,consultacitaCodigo, consultaFechaHoraFinal, consultaMotivo,[pacienteCodigo], [medicoCodigo], [tipoConsultaCodigo])
 values
-('CON0000001','CIT0000001', '2024-12-1 10:00:00', 'Dolor en el pecho'),
-('CON0000002','CIT0000002', '2024-12-1 11:30:00', 'Revisión pediátrica'),
-('CON0000003','CIT0000003', '2024-12-1 09:00:00', 'Control de presión arterial'),
-('CON0000004','CIT0000004', '2024-12-1 14:00:00', 'Consulta de crecimiento'),
-('CON0000005','CIT0000005', '2024-11-1 09:00:00', 'Control de presión arterial'),
-('CON0000006','CIT0000006', '2024-11-1 14:00:00', 'Consulta de crecimiento');
+('CON0000001','CIT0000001', '2024-12-1 10:00:00', 'Dolor en el pecho' , 'PAC0000001', 'MED0000001', 'TDC0000001'),
+('CON0000002','CIT0000002', '2024-12-1 11:30:00', 'Revisión pediátrica', 'PAC0000002', 'MED0000002', 'TDC0000002'),
+('CON0000003','CIT0000003', '2024-12-1 09:00:00', 'Control de presión arterial', 'PAC0000003', 'MED0000003', 'TDC0000002'),
+('CON0000004','CIT0000004', '2024-12-1 14:00:00', 'Consulta de crecimiento', 'PAC0000004', 'MED0000004', 'TDC0000001'),
+('CON0000005','CIT0000005', '2024-11-1 09:00:00', 'Control de presión arterial', 'PAC0000005' , 'MED0000004', 'TDC0000001' ),
+('CON0000006','CIT0000006', '2024-11-1 14:00:00', 'Consulta de crecimiento', 'PAC0000002', 'MED0000002', 'TDC0000002');
 
 
 
-insert into Salud.Diagnostico (diagnosticoCodigo, diagnosticoconsultaCodigo, diagnosticoDescripcion, diagnosticoFecha)
+insert into Salud.Diagnostico (diagnosticoCodigo, diagnosticoconsultaCodigo, diagnosticoDescripcion)
 values
-('DIA0000001', 'CON0000001', 'Angina de pecho', '2024-11-25'),
-('DIA0000002', 'CON0000002', 'Peso dentro del rango normal', '2024-11-25'),
-('DIA0000003', 'CON0000003', 'Hipertensión controlada', '2024-11-26'),
-('DIA0000004', 'CON0000004', 'Crecimiento adecuado', '2024-11-26');
+('DIA0000001', 'CON0000001', 'Angina de pecho'),
+('DIA0000002', 'CON0000002', 'Peso dentro del rango normal'),
+('DIA0000003', 'CON0000003', 'Hipertensión controlada'),
+('DIA0000004', 'CON0000004', 'Crecimiento adecuado');
 
-insert into Salud.RecetaMedica (recetaCodigo, recetaConsultaCodigo, recetaDescripcion, recetaFecha, recetaTratamiento, recetaRecomendaciones)
+insert into Salud.RecetaMedica (recetaCodigo, recetaConsultaCodigo, recetaDescripcion, recetaTratamiento, recetaRecomendaciones)
 values
-('REC0000001', 'CON0000001', 'Nitroglicerina sublingual', '2024-11-25', '1 tableta al día', 'Evitar esfuerzos físicos'),
-('REC0000002', 'CON0000002', 'Multivitamínicos pediátricos', '2024-11-25', '1 por día', 'Mantener dieta equilibrada'),
-('REC0000003', 'CON0000003', 'Losartán 50mg', '2024-11-26', '1 tableta al día', 'Medir presión arterial diariamente'),
-('REC0000004', 'CON0000004', 'Suplemento de calcio', '2024-11-26', '1 tableta al día', 'Seguir dieta rica en calcio');
+('REC0000001', 'CON0000001', 'Nitroglicerina sublingual', '1 tableta al día', 'Evitar esfuerzos físicos'),
+('REC0000002', 'CON0000002', 'Multivitamínicos pediátricos', '1 por día', 'Mantener dieta equilibrada'),
+('REC0000003', 'CON0000003', 'Losartán 50mg', '1 tableta al día', 'Medir presión arterial diariamente'),
+('REC0000004', 'CON0000004', 'Suplemento de calcio', '1 tableta al día', 'Seguir dieta rica en calcio');
 

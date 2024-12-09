@@ -64,7 +64,11 @@ function formatearDetalles(data) {
         case "Atendiendo":
             detallesHTML += `Esta Consulta esta actualmente atendiensoe</p>
                 <p>Responsable: ${data.MedicoNombre}</p>
-                <p>Continuar atencion: ${data.ConsultaMotivo}</p>
+                 <p>
+                    ¿Quieres reprogramar la cita?
+                    <button class="btn btn-link p-0" onclick='ContinuarCita(${JSON.stringify(data)})'>Continuar</button>
+                </p>
+               
             `;
             break;
         default:
@@ -82,34 +86,42 @@ function mostrarModalConfirmacion(data) {
     console.log('Datos recibidos para la consulta:', data);  // Mensaje de depuración
 
     $('#confirmacionModal').modal('show');
-    $('#confirmarIniciarConsulta').off('click').on('click', function () {
-        console.log('Valor de consultaCodigo:', data.ConsultaCodigo);  // Mensaje de depuración
+    configurarBotonConfirmacion(data);
+}
 
-        // Llamar al endpoint para actualizar el estado
-        $.ajax({
-            url: '/AtenderConsultas/ActualizarEstadoConsulta',
-            type: 'POST',
-            data: {
-                consultaCodigo: data.CitaCodigo,
-            },
-            success: function (response) {
-                console.log('Respuesta del servidor:', response);  // Mensaje de depuración
-                console.log('Valor de consultaCodigo2:', data.CitaCodigo); 
-                if (response.transaccionExitosa) {
-                    window.location.href = '/AtenderConsultas/Atendiendo';
-                } else {
-                    alert('Error al actualizar el estado: ' + response.mensaje);
-                }
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.error('Error en la solicitud AJAX:', textStatus, errorThrown);  // Mensaje de depuración
-                alert('Error al actualizar el estado.');
-            }
-        });
+function configurarBotonConfirmacion(data) {
+    $('#confirmarIniciarConsulta').off('click').on('click', function () {
+        console.log('Valor de consultaCodigo:', data.CitaCodigo);  
+        actualizarEstadoConsultaprocesandoCita(data.CitaCodigo);
     });
 }
 
+function actualizarEstadoConsultaprocesandoCita(citaCodigo) {
+    // Llamar al endpoint para actualizar el estado
+    $.ajax({
+        url: '/AtenderConsultas/ActualizarEstadoConsultaProceso',
+        type: 'POST',
+        data: {
+            consultaCodigo: citaCodigo,
+        },
+        success: function (response) {
+            if (response.transaccionExitosa) {
+                window.location.href = '/AtenderConsultas/Atendiendo';
+            } else {
+                alert('Error al actualizar el estado: ' + response.mensaje);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error('Error en la solicitud AJAX:', textStatus, errorThrown);  // Mensaje de depuración
+            alert('Error al actualizar el estado.');
+        }
+    });
+}
 
+function ContinuarCita(data) {
+    console.log('Continuando con la consulta:', data.CitaCodigo); 
+    window.location.href = '/AtenderConsultas/Atendiendo';
+}
 
 
 function obtenerClaseEstado(estado) {

@@ -29,9 +29,11 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                 comandoSQL.Parameters.Add(new SqlParameter("@consultaCodigo", consulta.ConsultaCodigo));
                 comandoSQL.Parameters.Add(new SqlParameter("@consultacitaCodigo", consulta.Cita.CitaCodigo));
                 comandoSQL.Parameters.Add(new SqlParameter("@consultaFechaHoraFinal", consulta.ConsultaFechaHoraFinal));
-                comandoSQL.Parameters.Add(new SqlParameter("@consultaMedicoCodigo", consulta.Cita.CitaMedico.MedicoCodigo));
-                comandoSQL.Parameters.Add(new SqlParameter("@consultaPacienteCodigo", consulta.Cita.CitaPaciente.PacienteCodigo));
                 comandoSQL.Parameters.Add(new SqlParameter("@consultaMotivo", consulta.ConsultaMotivo));
+
+                comandoSQL.Parameters.Add(new SqlParameter("@medicoCodigo", consulta.Medico.MedicoCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@tipoConsultaCodigo", consulta.TipoConsulta.TipoConsultaCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@pacienteCodigo", consulta.Paciente.PacienteCodigo));
                 comandoSQL.ExecuteNonQuery();
             }
             catch (SqlException ex)
@@ -55,25 +57,34 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                 {
                     while (resultadoSQL.Read())
                     {
+
                         Consulta consulta = new Consulta()
                         {
                             ConsultaCodigo = resultadoSQL.GetString(0),
+                            
+                            ConsultaMotivo = resultadoSQL.IsDBNull(2) ? "No hay motivo 🤡" : resultadoSQL.GetString(2) ,
+                            ConsultaFechaHoraFinal = resultadoSQL.IsDBNull(5) ? (DateTime?)null : resultadoSQL.GetDateTime(5),
                             Cita = new Cita() 
                             {
                                 CitaCodigo = resultadoSQL.GetString(1),
-                                CitaFechaHora = resultadoSQL.GetDateTime(2),
-                                CitaPaciente = new Paciente()
-                                {
-                                    PacienteCodigo = resultadoSQL.GetString(3)
-                                },
-                                CitaMedico = new Medico()
-                                {
-                                    MedicoCodigo = resultadoSQL.GetString(4),
-                                },
-                                CitaEstado = resultadoSQL.GetString(5)
+                                CitaFechaHora = resultadoSQL.GetDateTime(3),
+                                CitaEstado = resultadoSQL.GetString(4)
                             },
-                            ConsultaFechaHoraFinal = resultadoSQL.IsDBNull(6) ? (DateTime?)null : resultadoSQL.GetDateTime(6),
-                            ConsultaMotivo = resultadoSQL.IsDBNull(7) ? "No hay motivo 🤡" : resultadoSQL.GetString(7) 
+                            Paciente = new Paciente() 
+                            {
+                                PacienteCodigo = resultadoSQL.GetString(6),
+                                PacienteNombreCompleto = resultadoSQL.GetString(7)
+                            },
+                            Medico = new Medico() 
+                            {
+                                MedicoCodigo = resultadoSQL.GetString(8),
+                                MedicoNombre = resultadoSQL.GetString(9),
+                                MedicoApellido = resultadoSQL.GetString(10) 
+                            },
+                            TipoConsulta = new TipoConsulta() 
+                            {
+                                TipoConsultaCodigo = resultadoSQL.GetString(11)
+                            }
                         };
 
                         consultas.Add(consulta);

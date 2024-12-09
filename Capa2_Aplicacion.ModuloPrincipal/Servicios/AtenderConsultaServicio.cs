@@ -54,11 +54,11 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
                 {
                     //if (consulta.Cita.CitaFechaHora.Date == DateTime.Today) 
                     //{
-                       Paciente paciente = pacienteSQL.MostrarPacientePorCodigo(consulta.Cita.CitaPaciente.PacienteCodigo);
-                        consulta.Cita.CitaPaciente = paciente;
+                       Paciente paciente = pacienteSQL.MostrarPacientePorCodigo(consulta.Paciente.PacienteCodigo);
+                        consulta.Paciente = paciente;
 
-                        Medico medico = medicoSQL.ObtenerMedicoPorCodigo(consulta.Cita.CitaMedico.MedicoCodigo);
-                        consulta.Cita.CitaMedico = medico;
+                        Medico medico = medicoSQL.ObtenerMedicoPorCodigo(consulta.Medico.MedicoCodigo);
+                        consulta.Medico = medico;
 
                         consultasDeHoy.Add(consulta); 
                     //}
@@ -78,7 +78,7 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
         {
                 accesoSQLServer.AbrirConexion();
                 var todasLasCitas = citaSQL.MostrarCitas();
-                var consultaEnAtencion = todasLasCitas.FirstOrDefault(c => c.CitaEstado == "T");
+                var consultaEnAtencion = todasLasCitas.FirstOrDefault(c => c.Cita.CitaEstado == "T");
                 if (consultaEnAtencion != null)
                 {
                     throw new ArgumentException("Hay una cita que esta siendo atendida.");

@@ -25,10 +25,6 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                 comandoSQL.Parameters.Add(new SqlParameter("@citaCodigo", cita.CitaCodigo));
                 comandoSQL.Parameters.Add(new SqlParameter("@citaEstado", cita.CitaEstado));
                 comandoSQL.Parameters.Add(new SqlParameter("@citaFechaHora", cita.CitaFechaHora));
-                comandoSQL.Parameters.Add(new SqlParameter("@citaNotificacionCodigo", cita.CitaNotificacion?.NotificacionCodigo));
-                comandoSQL.Parameters.Add(new SqlParameter("@citaPacienteCodigo", cita.CitaPaciente.PacienteCodigo));
-                comandoSQL.Parameters.Add(new SqlParameter("@citaTipoConsultaCodigo", cita.CitaTipoConsulta.TipoConsultaCodigo));
-                comandoSQL.Parameters.Add(new SqlParameter("@citaMedicoCodigo", cita.CitaMedico.MedicoCodigo));
                 comandoSQL.ExecuteNonQuery();
             }
             catch (SqlException EX)
@@ -52,9 +48,9 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             }
         }
 
-        public List<Cita> MostrarCitasPaciente(string pacienteCodigo)
+        public List<Consulta> MostrarCitasPaciente(string pacienteCodigo)
         {
-            List<Cita> listaCitas = new List<Cita>();
+            List<Consulta> listaCitas = new List<Consulta>();
             string procedimientoSQL = "pro_VisualizarCitasPaciente";
             try
             {
@@ -63,8 +59,27 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                 SqlDataReader resultadoSQL = comandoSQL.ExecuteReader();
                 while (resultadoSQL.Read())
                 {
-                    Cita cita = ObtenerCita(resultadoSQL);
-                    listaCitas.Add(cita);
+                    Consulta consulta = new Consulta()
+                    {
+                        Cita = new Cita() 
+                        {
+                            CitaCodigo = resultadoSQL.GetString(0),
+                            CitaEstado = resultadoSQL.GetString(1),
+                            CitaFechaHora = resultadoSQL.GetDateTime(2),
+                        },
+                        TipoConsulta = new TipoConsulta() 
+                        {
+                            TipoConsultaDescripcion = resultadoSQL.GetString(3)
+                        },
+                        Medico = new Medico() 
+                        {
+                            MedicoNombre = resultadoSQL.GetString(4), 
+                            MedicoApellido = resultadoSQL.GetString(5), 
+                        },
+                        ConsultaMotivo = resultadoSQL.GetString(6),
+                        ConsultaFechaHoraFinal = resultadoSQL.GetDateTime(8),
+                    }; 
+                    listaCitas.Add(consulta);
                 }
             }
             catch (SqlException)
@@ -74,33 +89,7 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             return listaCitas;
         }
 
-        private Cita ObtenerCita(SqlDataReader resultadoSQL)
-        {
-            Cita cita = new Cita();
-
-            cita.CitaCodigo = resultadoSQL.GetString(0);  
-            cita.CitaEstado = resultadoSQL.GetString(1);   
-            cita.CitaFechaHora = resultadoSQL.GetDateTime(2);
-            cita.CitaTipoConsulta = new TipoConsulta
-            {
-                TipoConsultaCodigo = resultadoSQL.GetString(3) 
-            };
-
-            if (!resultadoSQL.IsDBNull(4))
-            {
-                cita.CitaNotificacion = new Notificacion
-                {
-                    NotificacionCodigo = resultadoSQL.GetString(4)
-                };
-            }
-            cita.CitaMedico = new Medico
-            {
-                MedicoNombre = resultadoSQL.GetString(5), 
-                MedicoApellido = resultadoSQL.GetString(6) 
-            };
-
-            return cita;
-        }
+      
 
         public List<TipoConsulta> ListarTiposDeConsulta()
         {
@@ -132,9 +121,9 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
         }
 
 
-        public List<Cita> MostrarCitas()
+        public List<Consulta> MostrarCitas()
         {
-            List<Cita> listaCitas = new List<Cita>();
+            List<Consulta> listaCitas = new List<Consulta>();
             string procedimientoSQL = "pro_Mostrar_Citas";
 
             try
@@ -144,35 +133,36 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
 
                 while (resultadoSQL.Read())
                 {
-                    Cita cita = new Cita()
+                    Consulta consulta = new Consulta()
                     {
-                        CitaCodigo = resultadoSQL.GetString(0),
-                        CitaEstado = resultadoSQL.GetString(1),
-                        CitaFechaHora = resultadoSQL.GetDateTime(2),
-                        CitaTipoConsulta = new TipoConsulta
+                        Cita = new Cita()
                         {
-                            TipoConsultaCodigo = resultadoSQL.GetString(3), 
+                            CitaCodigo = resultadoSQL.GetString(0),
+                            CitaEstado = resultadoSQL.GetString(1),
+                            CitaFechaHora = resultadoSQL.GetDateTime(2),
                         },
-                        CitaMedico = new Medico
+                        TipoConsulta = new TipoConsulta() 
                         {
-                            MedicoCodigo = resultadoSQL.GetString(4),   
+                            TipoConsultaDescripcion = resultadoSQL.GetString(3),    
+                        },
+                        Medico = new Medico() { 
+                            MedicoCodigo = resultadoSQL.GetString(4),
                             MedicoNombre = resultadoSQL.GetString(5),
                             MedicoApellido = resultadoSQL.GetString(6),
-                            Especialidad = new Especialidad 
+                            Especialidad = new Especialidad()
                             {
                                 EspecialidadCodigo = resultadoSQL.GetString(7),
-                                EspecialidadNombre = resultadoSQL.GetString(8)
-                            }
+                                EspecialidadNombre = resultadoSQL.GetString(8), 
+                            },
                         },
-
-                        CitaPaciente = new Paciente 
+                        Paciente = new Paciente() 
                         {
-                            PacienteCodigo = resultadoSQL.GetString(9), 
-                            PacienteNombreCompleto = resultadoSQL.GetString(10)
+                            PacienteCodigo = resultadoSQL .GetString(9),
+                            PacienteNombreCompleto = resultadoSQL .GetString(10),   
                         }
-
-                    }; 
-                    listaCitas.Add(cita);
+                    };
+                    
+                    listaCitas.Add(consulta);
                 }
                 resultadoSQL.Close();
             }

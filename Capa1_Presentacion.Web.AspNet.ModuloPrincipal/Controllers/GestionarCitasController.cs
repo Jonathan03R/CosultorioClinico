@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web.Mvc;
 using Capa2_Aplicacion.ModuloPrincipal.Servicio;
@@ -23,8 +24,6 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
         {
             return View();
         }
-
-
         [HttpGet]
         public JsonResult ListarMedicosConEspecialidad()
         {
@@ -70,16 +69,16 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
             {
                 var listaCitas = gestionarCitaServicio.ObtenerTodasCitas();
                 listaCitaFormateada = listaCitas.Select(c => new{
-                    CitaCodigo = c.CitaCodigo,
-                    Fecha = c.CitaFechaHora.ToString("dd-MM-yyyy HH:mm:ss"),
-                    TipoConsulta = c.CitaTipoConsulta.TipoConsultaCodigo,
-                    MedicoNombre = $"Dr. {c.CitaMedico.MedicoNombre} {c.CitaMedico.MedicoApellido}",
-                    Especialidad = c.CitaMedico.Especialidad.EspecialidadNombre,
-                    Estado = GetEstadoDescripcion(c.CitaEstado), 
-                    CodigoPaciente = c.CitaPaciente.PacienteCodigo,
-                    NombrePaciente = c.CitaPaciente.PacienteNombreCompleto,
-                    EspecialidadCod = c.CitaMedico.Especialidad.EspecialidadCodigo,
-                    MedicoCodigo = c.CitaMedico.MedicoCodigo
+                    CitaCodigo = c.Cita.CitaCodigo,
+                    Fecha = c.Cita.CitaFechaHora.ToString("dd-MM-yyyy HH:mm:ss"),
+                    TipoConsulta = c.TipoConsulta.TipoConsultaDescripcion,
+                    MedicoNombre = $"Dr. {c.Medico.MedicoNombre} {c.Medico.MedicoApellido}",
+                    Especialidad = c.Medico.Especialidad.EspecialidadNombre,
+                    Estado = GetEstadoDescripcion(c.Cita.CitaEstado), 
+                    CodigoPaciente = c.Paciente.PacienteCodigo,
+                    NombrePaciente = c.Paciente.PacienteNombreCompleto,
+                    EspecialidadCod =c.Medico.Especialidad.EspecialidadCodigo,
+                    MedicoCodigo = c.Medico.MedicoCodigo
                 }).ToList<object>();
                 accionExitosa = true;
                 mensajeRetorno = "Consulta exitosa.";
@@ -116,7 +115,7 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
         {
             bool accionExitosa;
             string mensajeRetorno;
-            List<Cita> listaCitas;
+            List<Consulta> listaCitas;
 
             try
             {
@@ -143,20 +142,33 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
 
             try
             {
-                var cita = new Cita
+                if (citaDTO.CitaFechaHora == default(DateTime) || citaDTO.CitaFechaHora < new DateTime(1753, 1, 1))
                 {
-                    //CitaCodigo = citaDTO.CitaCodigo,
-                    CitaFechaHora = citaDTO.CitaFechaHora,
-                    CitaEstado = "P" 
+                    throw new ArgumentException("La fecha y hora de la cita es inválida.");
+                }
+
+                var consulta = new Consulta
+                {
+                    Cita = new Cita()
+                    {
+                        CitaFechaHora = citaDTO.CitaFechaHora,
+                        CitaEstado = "P"// por seacaso le puse p pero no es necasrio por default es P 
+                    },
+                    Paciente = new Paciente()
+                    {
+                        PacienteCodigo = citaDTO.PacienteCodigo,
+                    },
+                    Medico = new Medico()
+                    {
+                        MedicoCodigo = citaDTO.MedicoCodigo,
+                    },
+                    TipoConsulta = new TipoConsulta()
+                    {
+                        TipoConsultaCodigo = citaDTO.TipoConsultaCodigo
+                    }
                 };
 
-                // Crear las instancias de los objetos relacionados
-                cita.CitaPaciente = new Paciente { PacienteCodigo = citaDTO.PacienteCodigo };
-                cita.CitaMedico = new Medico { MedicoCodigo = citaDTO.MedicoCodigo };
-                cita.CitaTipoConsulta = new TipoConsulta { TipoConsultaCodigo = citaDTO.TipoConsultaCodigo };
-
-
-                gestionarCitaServicio.RegistrarCita(cita);
+                gestionarCitaServicio.RegistrarCita(consulta);
                 accionExitosa = true;
                 mensajeRetorno = "Cita registrada exitosamente.";
             }
@@ -197,22 +209,22 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
         {
             bool accionExitosa;
             string mensajeRetorno;
-            Cita cita;
+            Consulta consulta;
 
             try
             {
-                cita = gestionarCitaServicio.ObtenerCitaPorId(citaCodigo);
+                consulta = gestionarCitaServicio.ObtenerCitaPorId(citaCodigo);
                 accionExitosa = true;
                 mensajeRetorno = "";
             }
             catch (Exception ex)
             {
-                cita = null;
+                consulta = null;
                 accionExitosa = false;
                 mensajeRetorno = ex.Message;
             }
 
-            return Json(new { data = cita, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+            return Json(new { data = consulta, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]

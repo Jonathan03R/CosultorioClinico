@@ -22,14 +22,11 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
         // Método para agregar una historia clínica a la base de datos
         public void AgregarHistoriaClinica(HistoriaClinica historiaClinica)
         {
-            string procedimientoSQL = "pro_Agregar_HistoriaClinica";
+            string procedimientoSQL = "pro_Crear_HistoriaClinica";
             try
             {
                 SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
                 comandoSQL.Parameters.Add(new SqlParameter("@historialClinicoCodigo", historiaClinica.HistorialClinicoCodigo));
-                comandoSQL.Parameters.Add(new SqlParameter("@antecedentesMedicos", (object)historiaClinica.AntecedentesMedicos ?? DBNull.Value));
-                comandoSQL.Parameters.Add(new SqlParameter("@alergias", (object)historiaClinica.Alergias ?? DBNull.Value));
-                comandoSQL.Parameters.Add(new SqlParameter("@fechaCreacion", historiaClinica.FechaCreacion));
                 comandoSQL.ExecuteNonQuery();
             }
             catch (SqlException ex)
@@ -55,9 +52,6 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                     historiaClinica = new HistoriaClinica
                     {
                         HistorialClinicoCodigo = resultadoSQL.GetString(0),
-                        AntecedentesMedicos = resultadoSQL.IsDBNull(2) ? null : resultadoSQL.GetString(2),
-                        Alergias = resultadoSQL.IsDBNull(3) ? null : resultadoSQL.GetString(3),
-                        FechaCreacion = resultadoSQL.GetDateTime(4)
                     };
                 }
                 else

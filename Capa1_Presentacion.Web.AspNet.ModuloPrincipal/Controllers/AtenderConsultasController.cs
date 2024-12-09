@@ -49,8 +49,8 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
                     ConsultaFechaHoraFinal = c.ConsultaFechaHoraFinal.HasValue
                     ? c.ConsultaFechaHoraFinal.Value.ToString("dd-MM-yyyy HH:mm:ss")
                     : null,
-                    MedicoNombre = $"{c.Cita.CitaMedico.MedicoNombre} {c.Cita.CitaMedico.MedicoApellido}",
-                    PacienteNombre = c.Cita.CitaPaciente.PacienteNombreCompleto,
+                    MedicoNombre = $"{c.Medico.MedicoNombre} {c.Medico.MedicoApellido}",
+                    PacienteNombre = c.Paciente.PacienteNombreCompleto,
                     ConsultaMotivo = c.ConsultaMotivo,
                     ConsultaEstado = GetEstadoCita(c.Cita.CitaEstado),
                     FechaCitaFilter = c.Cita.CitaFechaHora.ToString("dd-MM-yyyy HH:mm:ss"),
@@ -73,7 +73,7 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
 
         // Actualizar una cita existente
         [HttpPost]
-        public JsonResult ActualizarEstadoConsulta(string consultaCodigo)
+        public JsonResult ActualizarEstadoConsultaProceso(string consultaCodigo)
         {
             bool accionExitosa;
             string mensajeRetorno;

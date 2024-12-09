@@ -31,7 +31,7 @@ function guardarCita() {
             if (response.transaccionExitosa) {
                 alert(response.mensaje);
                 $('#ModalNuevaCita').modal('hide');
-                $('#tablaCitas').DataTable().ajax.reload();
+                table.ajax.reload(null, false);
 
             } else {
                 alert('Error al registrar la cita: ' + response.mensaje);
@@ -43,6 +43,7 @@ function guardarCita() {
     });
 }
 
+//aqui obtengo el valor de cada input
 function obtenerDatosFormularioCita() {
     return {
         CitaFechaHora: $('#inputFechaHora').val(),

@@ -25,12 +25,9 @@
     $('.links-nav:first .nav-link').on('click', function (event) {
         handleNavClick(event, 'navbar-content-top');
     });
-
-    // Agregar eventos a los enlaces del segundo navbar
     $('.links-nav:last .nav-link').on('click', function (event) {
         handleNavClick(event, 'navbar-content-bottom');
     });
-
     // Cargar contenido por defecto al cargar la página
     function loadDefaultContent() {
         // Cargar contenido por defecto para el primer navbar

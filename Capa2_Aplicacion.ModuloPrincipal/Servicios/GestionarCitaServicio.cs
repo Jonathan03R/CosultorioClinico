@@ -47,21 +47,19 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
         }
 
 
-        public void RegistrarCita(Cita cita)
+        public void RegistrarCita(Consulta consulta)
         {
             accesoSQLServer.IniciarTransaccion();
             try
             {
                 // Generar códigos únicos para la cita y la consulta
-                cita.CitaCodigo = codigoSQL.GenerarCodigoUnico("CIT", "Gestion.cita", "citaCodigo");
-                Consulta consulta = new Consulta
-                {
-                    ConsultaCodigo = codigoSQL.GenerarCodigoUnico("CON", "Gestion.Consulta", "consultaCodigo"),
-                    Cita = cita,
-                    ConsultaFechaHoraFinal = null, 
-                    ConsultaMotivo = null, 
-                };
-                citaSQL.CrearCita(cita);
+                consulta.ConsultaCodigo = codigoSQL.GenerarCodigoUnico("CON", "Gestion.Consulta", "consultaCodigo");
+                consulta.ConsultaFechaHoraFinal = null;
+                consulta.ConsultaMotivo = null;
+                consulta.Cita.CitaCodigo = codigoSQL.GenerarCodigoUnico("CIT", "Gestion.cita", "citaCodigo");
+                
+               
+                citaSQL.CrearCita(consulta.Cita);
                 consultaSQL.CrearConsulta(consulta);
 
                 accesoSQLServer.TerminarTransaccion();
@@ -72,6 +70,7 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
                 throw new Exception($"Error al registrar la cita y la consulta: {ex.Message}", ex);
             }
         }
+
 
         public void ActualizarCita(Cita cita)
         {
@@ -89,14 +88,14 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
             }
         }
 
-        public Cita ObtenerCitaPorId(string citaCodigo)
+        public Consulta ObtenerCitaPorId(string citaCodigo)
         {
 
             var citas = citaSQL.MostrarCitasPaciente(citaCodigo);
-            return citas.FirstOrDefault(c => c.CitaCodigo == citaCodigo);
+            return citas.FirstOrDefault(c => c.Cita.CitaCodigo == citaCodigo);
         }
 
-        public List<Cita> ObtenerCitasPorPaciente(string pacienteCodigo)
+        public List<Consulta> ObtenerCitasPorPaciente(string pacienteCodigo)
         {
             return citaSQL.MostrarCitasPaciente(pacienteCodigo);
         }
@@ -110,12 +109,12 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
                 throw new ArgumentException("La cita no existe");
             }
 
-            cita.CitaEstado = "Cancelada";
+            cita.Cita.CitaEstado = "Cancelada";
 
             accesoSQLServer.IniciarTransaccion();
             try
             {
-                citaSQL.CrearCita(cita);
+                citaSQL.CrearCita(cita.Cita);
                 accesoSQLServer.TerminarTransaccion();
             }
             catch (Exception ex)
@@ -172,12 +171,12 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
 
         //Segun las reglas solo debo obtener las citas de dia de hoy como indico el profesor ,
         //no nos sirve de nada conocer las citas de ayer o de mañana, nos interesa saber pero este metodo retorna todas las citas 
-        public List<Cita> ObtenerTodasCitas()
+        public List<Consulta> ObtenerTodasCitas()
         {
             try
             {
                 accesoSQLServer.IniciarTransaccion();
-                List<Cita> todasLasCitas = citaSQL.MostrarCitas();
+                List<Consulta> todasLasCitas = citaSQL.MostrarCitas();
                 accesoSQLServer.TerminarTransaccion();
                 return todasLasCitas;   
             }

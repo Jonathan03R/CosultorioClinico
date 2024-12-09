@@ -54,9 +54,6 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
                 HistoriaClinica nuevaHistoriaClinica = new HistoriaClinica
                 {
                     HistorialClinicoCodigo = codigoSQL.GenerarCodigoUnico("HIS", "Salud.HistoriaClinica", "historialClinicoCodigo"),
-                    FechaCreacion = DateTime.Now,
-                    AntecedentesMedicos = paciente.HistoriaClinica?.AntecedentesMedicos,
-                    Alergias = paciente.HistoriaClinica?.Alergias
                 };
 
                 historiaClinicaSQL.AgregarHistoriaClinica(nuevaHistoriaClinica);

@@ -12,13 +12,7 @@ namespace Capa3_Dominio.ModuloPrincipal
     {
 
         private string historialClinicoCodigo;
-        private string antecedentesMedicos;
-        private string alergias;
-        private DateTime fechaCreacion;
-
+  
         public string HistorialClinicoCodigo { get => historialClinicoCodigo; set => historialClinicoCodigo = value; }
-        public string AntecedentesMedicos { get => antecedentesMedicos; set => antecedentesMedicos = value; }
-        public string Alergias { get => alergias; set => alergias = value; }
-        public DateTime FechaCreacion { get => fechaCreacion; set => fechaCreacion = value; }
     }
 }
