@@ -1,6 +1,7 @@
 ﻿using Capa2_Aplicacion.ModuloPrincipal.Servicio;
 using Capa2_Aplicacion.ModuloPrincipal.Servicios;
 using Capa3_Dominio.ModuloPrincipal;
+using Capa3_Dominio.ModuloPrincipal.Entidad;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,6 +70,29 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
             return Json(new { data = listaConsultasFormatada, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
         }
 
+
+        // Actualizar una cita existente
+        [HttpPost]
+        public JsonResult ActualizarEstadoConsulta(string consultaCodigo)
+        {
+            bool accionExitosa;
+            string mensajeRetorno;
+
+            try
+            {
+                atenderConsultaServicio.cambiarEstadoAtencionEnProceso(consultaCodigo);
+                accionExitosa = true;
+                mensajeRetorno = "Atendiendo Citas";
+            }
+            catch (Exception ex)
+            {
+                accionExitosa = false;
+                mensajeRetorno = ex.Message;
+            }
+
+            return Json(new { transaccionExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+        }
+
         // Métodos para las vistas parciales
         public ActionResult Portadas() { 
             return PartialView("_Portadas"); 
@@ -102,6 +126,8 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
                 return "Atendido";
             else if (estado == "C")
                 return "Cancelado";
+            else if (estado == "T")
+                return "Atendiendo";
             else
                 return "Desconocido";
         }

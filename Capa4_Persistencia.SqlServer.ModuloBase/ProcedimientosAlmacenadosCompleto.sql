@@ -777,6 +777,21 @@ begin
 end
 go
 
+create or alter procedure pro_Actualizar_Estado_CitaAtendiendose
+    @citaCodigo nchar(10)
+as
+begin
+    set nocount on;
+
+    update Gestion.cita
+    set citaEstado = 'T'
+    where citaCodigo = @citaCodigo;
+
+    set nocount off;
+end
+go
+
+
 /******************************************************************************************
 Descripción de procedimiento almacenado: Verificar si la cita existe
 ---------------------------------------------------------------------------------------------

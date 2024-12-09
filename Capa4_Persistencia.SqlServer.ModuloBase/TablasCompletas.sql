@@ -175,7 +175,7 @@ create table Gestion.cita
     constraint CitaNotificacionFK foreign key (citaNotificacionCodigo) references Gestion.notificacion(notificacionCodigo),
 	constraint CitaMedicoFK foreign key (citaMedicoCodigo) references Administracion.medico(medicoCodigo),
     constraint CitaTipoConsultaFK foreign key (citaTipoConsultaCodigo) references Gestion.tipoConsulta(tipoConsultaCodigo),
-    constraint CitaEstadoCK check (citaEstado in ('P', 'N', 'A', 'C')) -- P: pendiente, N: No Asistida, A: atendida, C: cancelada
+    constraint CitaEstadoCK check (citaEstado in ('P', 'N', 'A', 'C', 'T')),-- P: pendiente, N: No Asistida, A: atendida, C: cancelada , T:'Atendiendo'
     )
 go
 

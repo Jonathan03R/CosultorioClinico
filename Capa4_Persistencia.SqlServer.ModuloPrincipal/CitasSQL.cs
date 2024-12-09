@@ -266,6 +266,30 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
         }
 
 
+        //estado Cuando se esta atendendo un paciente
+
+        public void CambiarEstadoAtencionProceso(string consultaCodigo)
+        {
+            string procedimientoSQL = "pro_Actualizar_Estado_CitaAtendiendose";
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+                comandoSQL.Parameters.Add(new SqlParameter("@citaCodigo", consultaCodigo));
+                comandoSQL.ExecuteNonQuery();
+            }
+            catch (SqlException sqlEx)
+            {
+                //throw new Exception($"Error al cambiar el estado a pendiente: {sqlEx.Message}");
+                throw sqlEx;
+            }
+            catch (Exception ex)
+            {
+                //throw new Exception($"Error inesperado: {ex.Message}");
+                throw ex;
+            }
+        }
+
+
 
     }
 }

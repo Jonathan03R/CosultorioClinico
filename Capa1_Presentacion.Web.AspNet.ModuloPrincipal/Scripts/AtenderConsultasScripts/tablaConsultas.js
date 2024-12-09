@@ -90,7 +90,7 @@ function actualizarContadoresFiltros(data) {
 
     var totalCount = data.length; 
     var pendienteCount = data.filter(function (item) {
-        return item.ConsultaEstado === 'Pendiente';
+        return item.ConsultaEstado === 'Pendiente' || item.ConsultaEstado === 'Atendiendo';
     }).length; 
     var noAsistioCount = data.filter(function (item) {
         return item.ConsultaEstado === 'No asistio';
@@ -120,10 +120,13 @@ function aplicarFiltroPorDefecto(table, filterValue) {
     $('.nav-link[data-filter="' + filterValue + '"]').addClass('active');
     if (filterValue === 'all') {
         table.column(6).search('').draw();
+    } else if (filterValue === 'Pendiente') {
+        table.column(6).search('^(Pendiente|Atendiendo)$', true, false).draw();  
     } else {
         table.column(6).search('^' + filterValue + '$', true, false).draw();
     }
 }
+
 
 
 

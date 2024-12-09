@@ -61,6 +61,12 @@ function formatearDetalles(data) {
                 <p>Motivo de la cancelación : ${data.ConsultaMotivo}</p>
             `;
             break;
+        case "Atendiendo":
+            detallesHTML += `Esta Consulta esta actualmente atendiensoe</p>
+                <p>Responsable: ${data.MedicoNombre}</p>
+                <p>Continuar atencion: ${data.ConsultaMotivo}</p>
+            `;
+            break;
         default:
             detallesHTML += `Estado desconocido. Por favor, contacte al soporte.</p>
             `;
@@ -73,11 +79,38 @@ function formatearDetalles(data) {
 
 
 function mostrarModalConfirmacion(data) {
+    console.log('Datos recibidos para la consulta:', data);  // Mensaje de depuración
+
     $('#confirmacionModal').modal('show');
     $('#confirmarIniciarConsulta').off('click').on('click', function () {
-        window.location.href = '/AtenderConsultas/Atendiendo';
+        console.log('Valor de consultaCodigo:', data.ConsultaCodigo);  // Mensaje de depuración
+
+        // Llamar al endpoint para actualizar el estado
+        $.ajax({
+            url: '/AtenderConsultas/ActualizarEstadoConsulta',
+            type: 'POST',
+            data: {
+                consultaCodigo: data.CitaCodigo,
+            },
+            success: function (response) {
+                console.log('Respuesta del servidor:', response);  // Mensaje de depuración
+                console.log('Valor de consultaCodigo2:', data.CitaCodigo); 
+                if (response.transaccionExitosa) {
+                    window.location.href = '/AtenderConsultas/Atendiendo';
+                } else {
+                    alert('Error al actualizar el estado: ' + response.mensaje);
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.error('Error en la solicitud AJAX:', textStatus, errorThrown);  // Mensaje de depuración
+                alert('Error al actualizar el estado.');
+            }
+        });
     });
 }
+
+
+
 
 function obtenerClaseEstado(estado) {
     switch (estado) {
@@ -85,7 +118,9 @@ function obtenerClaseEstado(estado) {
         case "No asistio": return "bg-secondary";
         case "Atendido": return "bg-success";
         case "Cancelado": return "bg-danger";
+        case "Atendiendo": return "custom-bg-yellow";
         default: return "bg-dark"; // Clase para estado desconocido 
     } 
 }
+
 

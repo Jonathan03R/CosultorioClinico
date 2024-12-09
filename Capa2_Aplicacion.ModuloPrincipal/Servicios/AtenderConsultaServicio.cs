@@ -74,7 +74,18 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
           
             
         }
-
+        public void cambiarEstadoAtencionEnProceso(string codigoConsulta)
+        {
+                accesoSQLServer.AbrirConexion();
+                var todasLasCitas = citaSQL.MostrarCitas();
+                var consultaEnAtencion = todasLasCitas.FirstOrDefault(c => c.CitaEstado == "T");
+                if (consultaEnAtencion != null)
+                {
+                    throw new ArgumentException("Hay una cita que esta siendo atendida.");
+                }
+                citaSQL.CambiarEstadoAtencionProceso(codigoConsulta);
+                accesoSQLServer.CerrarConexion();
+        }
 
         public void cambiarEstadoConsultaPendientree(string codigoConsulta)
         {
