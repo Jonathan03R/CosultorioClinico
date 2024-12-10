@@ -2,6 +2,8 @@
 using Capa2_Aplicacion.ModuloPrincipal.Servicios;
 using Capa3_Dominio.ModuloPrincipal;
 using Capa3_Dominio.ModuloPrincipal.Entidad;
+using Capa3_Dominio.ModuloPrincipal.Entidades;
+using Capa3_Dominio.ModuloPrincipal.TransferenciaDatos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,7 +53,6 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
                     : null,
                     MedicoNombre = $"{c.Medico.MedicoNombre} {c.Medico.MedicoApellido}",
                     PacienteNombre = c.Paciente.PacienteNombreCompleto,
-                    ConsultaMotivo = c.ConsultaMotivo,
                     ConsultaEstado = GetEstadoCita(c.Cita.CitaEstado),
                     FechaCitaFilter = c.Cita.CitaFechaHora.ToString("dd-MM-yyyy HH:mm:ss"),
                     HistoriaClinica = c.HistoriaClinica.HistorialClinicoCodigo, 
@@ -108,7 +109,6 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
                 listaConsultasFormateada = listaConsultas.Select(a => new { 
                     consultaCodigo = a.ConsultaCodigo,
                     consultaFechaFinal = a.ConsultaFechaHoraFinal,
-                    consultaMotivo = a.ConsultaMotivo,
                     Cita = new 
                     {
                         citaCodigo = a.Cita.CitaCodigo,
@@ -228,7 +228,6 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
                     CitaHora = c.Cita.CitaFechaHora.ToString("hh:mm tt"),
                     MedicoNombre = $"{c.Medico.MedicoNombre} {c.Medico.MedicoApellido}",
                     TipoConsulta = c.TipoConsulta.TipoConsultaDescripcion,
-                    ConsultaMotivo = c.ConsultaMotivo
                 }).ToList<object>();
 
                 accionExitosa = true;
@@ -244,6 +243,108 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
             // Retornar el resultado como JSON
             return Json(new { data = listaCitasPreviasFormatada, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
         }
+
+
+        [HttpPost]
+        public JsonResult RegistrarDetallesConsulta(DetallesConsultaDTO detallesConsulta)
+        {
+            bool accionExitosa;
+            string mensajeRetorno;
+
+            try
+            {
+                var detaConsulta = new DetallesConsulta()
+                {
+                    DetallesConsultaEvaluacionPsico1 = detallesConsulta.DetallesConsultaEvaluacionPsico,
+                    DetallesConsultaHistoriaEnfermedad1 = detallesConsulta.DetallesConsultaHistoriaEnfermedad,
+                    DetallesConsultaMotivoConsulta1 = detallesConsulta.DetallesConsultaMotivoConsulta,
+                    DetallesConsultaRevisiones1 = detallesConsulta.DetallesConsultaRevisiones,
+                    Consulta = new Consulta() {
+                        ConsultaCodigo = detallesConsulta.CodigoConsulta,
+                    }
+                };
+
+                atenderConsultaServicio.RegistrarDetallesConsulta(detaConsulta);
+
+
+                accionExitosa = true;
+                mensajeRetorno = "Detalles de consulta registrados exitosamente.";
+            }
+            catch (Exception ex)
+            {
+                accionExitosa = false;
+                mensajeRetorno = ex.Message;
+            }
+            return Json(new { transaccionExitosa = accionExitosa, mensaje = mensajeRetorno });
+        }
+
+
+        [HttpPost]
+        public JsonResult RegistrarRecetaMedica(RecetaMedicaDTO registrarRecetaMedica)
+        {
+            bool accionExitosa;
+            string mensajeRetorno;
+
+            try
+            {
+                var registrarRec = new RecetaMedica()
+                {
+                    RecetaDescripcion = registrarRecetaMedica.recetaDescripcion,
+                    RecetaTratamiento = registrarRecetaMedica.recetaTratamiento,
+                    RecetaRecomendaciones = registrarRecetaMedica.recetaRecomendaciones,
+                    Consulta = new Consulta()
+                    {
+                        ConsultaCodigo = registrarRecetaMedica.codigoConsulta,
+                    }
+                };
+
+                atenderConsultaServicio.RegistrarRecetasMedicas(registrarRec);
+
+
+                accionExitosa = true;
+                mensajeRetorno = "Receta medica registrada exitosamente.";
+            }
+            catch (Exception ex)
+            {
+                accionExitosa = false;
+                mensajeRetorno = ex.Message;
+            }
+            return Json(new { transaccionExitosa = accionExitosa, mensaje = mensajeRetorno });
+        }
+
+
+
+        [HttpPost]
+        public JsonResult RegistrarDiagnostico(DiagnosticoDTO  diagnosticoDTO )
+        {
+            bool accionExitosa;
+            string mensajeRetorno;
+
+            try
+            {
+                var dataDiagnostico = new Diagnostico()
+                {
+                    DiagnosticoCie11 = diagnosticoDTO.DiagnosticoCie11,
+                    DiagnosticoDescripcion = diagnosticoDTO.DiagnosticoDescripcion,
+                    Consulta = new Consulta() {
+                        ConsultaCodigo = diagnosticoDTO.DiagnosticoconsultaCodigo
+                    }
+                };
+
+                atenderConsultaServicio.RegistrarDiagnostico(dataDiagnostico);
+
+
+                accionExitosa = true;
+                mensajeRetorno = "Ya se registro !!";
+            }
+            catch (Exception ex)
+            {
+                accionExitosa = false;
+                mensajeRetorno = ex.Message;
+            }
+            return Json(new { transaccionExitosa = accionExitosa, mensaje = mensajeRetorno });
+        }
+
 
 
         // Métodos para las vistas parciales
@@ -265,9 +366,7 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
         public ActionResult Tratamiento() { 
             return PartialView("_Tratamiento"); 
         } 
-        public ActionResult Finalizacion() {
-            return PartialView("_Finalizacion"); 
-        }
+
 
         private string GetEstadoCita(string estado)
         {

@@ -24,25 +24,31 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
             return View();
         }
 
-        // POST: Realiza la búsqueda en la API y retorna resultados
+        
+
+        // POST: Filtra los datos mientras el usuario escribe
         [HttpPost]
-        public async Task<JsonResult> BuscarTermino(string termino)
+        public async Task<JsonResult> FiltrarDatos(string termino)
         {
             try
             {
+                // Valida que no sea nulo o vacío
                 if (string.IsNullOrWhiteSpace(termino))
                 {
-                    return Json(new { success = false, message = "El término de búsqueda no puede estar vacío." });
+                    return Json(new { success = false, message = "Por favor, ingrese un término para filtrar." });
                 }
 
-                // Llama a la capa de aplicación para buscar el término
+                // Busca el término utilizando la capa de aplicación
                 var resultados = await cie11Servicio.BuscarTermino(termino);
 
-                return Json(new { success = true, data = resultados });
+                // Devuelve solo los primeros 50 resultados para optimizar el rendimiento
+                var resultadosLimitados = resultados.Take(50).ToList();
+
+                return Json(new { success = true, data = resultadosLimitados });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = $"Error en la capa de presentación: {ex.Message}" });
+                return Json(new { success = false, message = $"Error al filtrar los datos: {ex.Message}" });
             }
         }
     }

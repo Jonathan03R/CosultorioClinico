@@ -45,6 +45,7 @@
     <Compile Include="Entidades\Cita.cs" />
     <Compile Include="Entidades\Consulta.cs" />
     <Compile Include="Entidades\ContactoEmergencia.cs" />
+    <Compile Include="Entidades\DetallesConsulta.cs" />
     <Compile Include="Entidades\Diagnostico.cs" />
     <Compile Include="Entidades\Especialidad.cs" />
     <Compile Include="Entidades\HistoriaClinica.cs" />
@@ -56,6 +57,9 @@
     <Compile Include="Entidades\RecetaMedica.cs" />
     <Compile Include="Entidades\TipoConsulta.cs" />
     <Compile Include="TransferenciaDatos\CitaDTO.cs" />
+    <Compile Include="TransferenciaDatos\DetallesConsultaDTO.cs" />
+    <Compile Include="TransferenciaDatos\DiagnosticoDTO.cs" />
+    <Compile Include="TransferenciaDatos\RecetaMedicaDTO.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

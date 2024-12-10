@@ -1,23 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Capa3_Dominio.ModuloPrincipal
+namespace Capa3_Dominio.ModuloPrincipal.TransferenciaDatos
 {
-    public class Diagnostico
+    public class DiagnosticoDTO
     {
-        private string diagnosticoCodigo;
+        private string diagnosticoconsultaCodigo;
         private string diagnosticoDescripcion;
         private string diagnosticoCie11;
 
-        private Consulta consulta;
-
-        public string DiagnosticoCodigo { get => diagnosticoCodigo; set => diagnosticoCodigo = value; }
+        public string DiagnosticoconsultaCodigo { get => diagnosticoconsultaCodigo; set => diagnosticoconsultaCodigo = value; }
         public string DiagnosticoDescripcion { get => diagnosticoDescripcion; set => diagnosticoDescripcion = value; }
         public string DiagnosticoCie11 { get => diagnosticoCie11; set => diagnosticoCie11 = value; }
-        public Consulta Consulta { get => consulta; set => consulta = value; }
     }
 }
-

@@ -75,7 +75,6 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
             try
             {
               
-
                 gestionarPacienteServicio.RegistrarPacienteConHistoria(paciente, contactoEmergencia);
                 accionExitosa = true;
                 mensajeRetorno = "Paciente registrado exitosamente.";

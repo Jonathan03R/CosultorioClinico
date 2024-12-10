@@ -92,21 +92,20 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                         Cita = new Cita()
                         {
                             CitaCodigo = resultadoSQL.IsDBNull(1) ? null : resultadoSQL.GetString(1),
-                            CitaEstado = resultadoSQL.GetString(7),
+                            CitaEstado = resultadoSQL.GetString(6),
                         },
                         ConsultaFechaHoraFinal = resultadoSQL.IsDBNull(2) ? (DateTime?)null : resultadoSQL.GetDateTime(2),
-                        ConsultaMotivo = resultadoSQL.IsDBNull(3) ? null : resultadoSQL.GetString(3),
                         TipoConsulta = new TipoConsulta()
                         {
-                            TipoConsultaCodigo = resultadoSQL.IsDBNull(4) ? null : resultadoSQL.GetString(4)
+                            TipoConsultaCodigo = resultadoSQL.IsDBNull(3) ? null : resultadoSQL.GetString(3)
                         },
                         Medico = new Medico()
                         {
-                            MedicoCodigo = resultadoSQL.IsDBNull(5) ? null : resultadoSQL.GetString(5),
+                            MedicoCodigo = resultadoSQL.IsDBNull(4) ? null : resultadoSQL.GetString(4),
                         },
                         Paciente = new Paciente()
                         {
-                            PacienteCodigo = resultadoSQL.IsDBNull(6) ? null : resultadoSQL.GetString(6)
+                            PacienteCodigo = resultadoSQL.IsDBNull(5) ? null : resultadoSQL.GetString(5)
                         }
                     };
 

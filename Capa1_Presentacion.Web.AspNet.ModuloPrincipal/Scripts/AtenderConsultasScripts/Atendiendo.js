@@ -42,7 +42,6 @@
             type: 'GET',
             success: function (result) {
                 $('#navbar-content-top').html(result);
-                // Llamar a la función para llenar los datos del paciente cuando se carga el contenido
                 llenarDatosPaciente();
             },
             error: function () {

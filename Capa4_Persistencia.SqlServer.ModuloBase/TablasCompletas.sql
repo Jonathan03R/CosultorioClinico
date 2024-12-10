@@ -185,7 +185,7 @@ create table Gestion.Consulta (
     consultaCodigo nchar(10),
     consultacitaCodigo nchar(10),
     consultaFechaHoraFinal datetime null,
-    consultaMotivo nvarchar(255) null,
+    --consultaMotivo nvarchar(255) null,
 	--HistorialClinicoCodigo nchar(10),
 	medicoCodigo nchar(10),
 	tipoConsultaCodigo nchar(10),
@@ -199,15 +199,29 @@ create table Gestion.Consulta (
 ) on gestionConsultas
 go
 
+
+create table Gestion.DetallesConsulta(
+	detallesConsultaCodigo nchar(10),
+	detallesConsultaHistoriaEnfermedad nvarchar(500) null,
+	detallesConsultaRevisiones nvarchar(500) null,
+	detallesConsultaEvaluacionPsico nvarchar(500) null,
+	detallesConsultaMotivoConsulta nvarchar(500) null,
+	consultaCodigo nchar(10),
+	constraint DetallesConsultaCodigoPK primary	key	(DetallesConsultaCodigo),
+	constraint consultaCodigoFK foreign key (consultaCodigo) references Gestion.Consulta(consultaCodigo)
+)on gestionConsultas
+go
+
 create table Salud.Diagnostico (
     diagnosticoCodigo nchar(10),
     diagnosticoconsultaCodigo nchar(10),
     diagnosticoDescripcion nvarchar(255) not null,
+    diagnosticosCodigoCie11 nvarchar(50)
     constraint DiagnosticoPK primary key (diagnosticoCodigo),
     constraint DiagnosticoConsultaFK foreign key (diagnosticoconsultaCodigo) references Gestion.Consulta(consultaCodigo)
 ) on gestionConsultas
 go 
-
+--aquioi esta la receta checa
 create table Salud.RecetaMedica (
     recetaCodigo nchar(10),
     recetaConsultaCodigo nchar(10),
@@ -301,14 +315,14 @@ values
 go
 
 
-insert into Gestion.Consulta (consultaCodigo,consultacitaCodigo, consultaFechaHoraFinal, consultaMotivo,[pacienteCodigo], [medicoCodigo], [tipoConsultaCodigo])
+insert into Gestion.Consulta (consultaCodigo,consultacitaCodigo, consultaFechaHoraFinal,[pacienteCodigo], [medicoCodigo], [tipoConsultaCodigo])
 values
-('CON0000001','CIT0000001', '2024-12-1 10:00:00', 'Dolor en el pecho' , 'PAC0000001', 'MED0000001', 'TDC0000001'),
-('CON0000002','CIT0000002', '2024-12-1 11:30:00', 'Revisión pediátrica', 'PAC0000002', 'MED0000002', 'TDC0000002'),
-('CON0000003','CIT0000003', '2024-12-1 09:00:00', 'Control de presión arterial', 'PAC0000003', 'MED0000003', 'TDC0000002'),
-('CON0000004','CIT0000004', '2024-12-1 14:00:00', 'Consulta de crecimiento', 'PAC0000004', 'MED0000004', 'TDC0000001'),
-('CON0000005','CIT0000005', '2024-11-1 09:00:00', 'Control de presión arterial', 'PAC0000005' , 'MED0000004', 'TDC0000001' ),
-('CON0000006','CIT0000006', '2024-11-1 14:00:00', 'Consulta de crecimiento', 'PAC0000002', 'MED0000002', 'TDC0000002');
+('CON0000001','CIT0000001', '2024-12-1 10:00:00', 'PAC0000001', 'MED0000001', 'TDC0000001'),
+('CON0000002','CIT0000002', '2024-12-1 11:30:00', 'PAC0000002', 'MED0000002', 'TDC0000002'),
+('CON0000003','CIT0000003', '2024-12-1 09:00:00', 'PAC0000003', 'MED0000003', 'TDC0000002'),
+('CON0000004','CIT0000004', '2024-12-1 14:00:00', 'PAC0000004', 'MED0000004', 'TDC0000001'),
+('CON0000005','CIT0000005', '2024-11-1 09:00:00', 'PAC0000005' , 'MED0000004', 'TDC0000001' ),
+('CON0000006','CIT0000006', '2024-11-1 14:00:00', 'PAC0000002', 'MED0000002', 'TDC0000002');
 
 
 

@@ -5,14 +5,14 @@
         console.log('data', data);
         $('#HistoriaClinica').text(data.HistoriaClinica || 'No disponible');
         $('#fechaCita').text(data.ConsultaFechaCita || 'No disponible');
-        $('#TipoConsulta').text(data.ConsultaHoraFecha || 'No disponible');
-        $('#medico').text(data.MedicoNombre || 'No disponible');
-        $('#Motivo').text(data.ConsultaMotivo || 'No disponible');
+        $('#Hora').text(data.ConsultaHoraFecha || 'No disponible');
+        $('#medico').text(data.MedicoNombre || 'No disponible'); 
+        $('#CodigoConsulta').text(data.ConsultaCodigo || 'No disponible');
+        $('#CodigoConsultaInput').val(data.ConsultaCodigo);
 
 
         obtenerDatosConsulta(data.HistoriaClinica);
     } else {
-        console.error('No se encontró el código de la historia clínica en sessionStorage.');
         alert('No se encontró la información necesaria para completar la solicitud.');
     } 
 }
@@ -26,10 +26,8 @@ function obtenerDatosConsulta(HistoriaCodigo) {
         },
         success: function (response) {
             if (response.transaccionExitosa) {
-                console.log('Datos recibidos:', response.data);
 
                 response.data.forEach(consulta => {
-                    console.log('paciente codigo:', consulta.pacienteCodigo);
                     obtenerDatosPaciente(consulta.Paciente.pacienteCodigo);
                     CitasAnteriores(consulta.Paciente.pacienteCodigo);
                     mostrarRecetas(consulta.recetas);
@@ -80,7 +78,6 @@ function obtenerDatosPaciente(pacienteCodigo) {
         success: function (response) {
             if (response.transaccionExitosa) {
                 const paciente = response.data;
-                console.log(paciente)
                 // Aquí se actualizan los elementos del DOM con los datos del paciente
                 $('#nombrePaciente').text(paciente.nombreCompleto || 'No disponible');
                 $('#edad').text(`Edad: ${paciente.edad || 'No disponible'}`);
@@ -108,7 +105,6 @@ function CitasAnteriores(pacienteCodigo) {
         success: function (response) {
             if (response.consultaExitosa) {
                 const citas = response.data;
-                console.log("y mis citas?", citas);
 
                 $('#listaCitas').empty(); // Limpiar la lista antes de agregar las citas
 

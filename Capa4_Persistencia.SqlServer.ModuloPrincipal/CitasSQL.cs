@@ -76,9 +76,8 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                             MedicoNombre = resultadoSQL.IsDBNull(4) ? string.Empty : resultadoSQL.GetString(4),
                             MedicoApellido = resultadoSQL.IsDBNull(5) ? string.Empty : resultadoSQL.GetString(5),
                         },
-                        ConsultaMotivo = resultadoSQL.IsDBNull(6) ? string.Empty : resultadoSQL.GetString(6),
 
-                        ConsultaFechaHoraFinal = resultadoSQL.IsDBNull(7) ? (DateTime?)null : resultadoSQL.GetDateTime(7),
+                        ConsultaFechaHoraFinal = resultadoSQL.IsDBNull(6) ? (DateTime?)null : resultadoSQL.GetDateTime(6),
                     };
 
                     listaCitas.Add(consulta);

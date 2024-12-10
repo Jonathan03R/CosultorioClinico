@@ -47,5 +47,27 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             }
             return ListarDiagnosticos;
         }
+        public void CrearDiagnostico(Diagnostico diagnostico)
+        {
+            string procedimientoSQL = "pro_registrar_Diagnostico";
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+
+                // Agregar parámetros al procedimiento almacenado
+                comandoSQL.Parameters.Add(new SqlParameter("@DiagnosticoCodigo", diagnostico.DiagnosticoCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@DiagnosticoConsultaCodigo", diagnostico.Consulta.ConsultaCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@DiagnosticoDescripcion", diagnostico.DiagnosticoDescripcion));
+                comandoSQL.Parameters.Add(new SqlParameter("@DiagnosticoCodigoCie11",
+                             diagnostico.DiagnosticoCie11 ?? (object)DBNull.Value));
+
+                comandoSQL.ExecuteNonQuery();
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception($"Error al registrar el diagnóstico: {ex.Message}");
+            }
+        }
+
     }
 }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using Capa3_Dominio.ModuloPrincipal.Entidades;
 namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
 {
     public class AtenderConsultaServicio
@@ -20,7 +21,8 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
         private readonly CitaSQL citaSQL;
         private readonly HistoriaClinicaSQL historiaClinicaSQL;
         private readonly DiagnosticoSQL diagnosticoSQL; 
-        private readonly RecetasMedicasSQL recetasMedicasSQL;   
+        private readonly RecetasMedicasSQL recetasMedicasSQL;
+        private readonly DetallesConsultaSQL detallesConsultaSQL;
 
         public AtenderConsultaServicio()
         {
@@ -32,7 +34,8 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
             citaSQL = new CitaSQL(accesoSQLServer);
             historiaClinicaSQL = new HistoriaClinicaSQL(accesoSQLServer);   
             recetasMedicasSQL = new RecetasMedicasSQL(accesoSQLServer);
-            diagnosticoSQL = new DiagnosticoSQL(accesoSQLServer);   
+            diagnosticoSQL = new DiagnosticoSQL(accesoSQLServer);
+            detallesConsultaSQL = new DetallesConsultaSQL(accesoSQLServer);
         }
 
 
@@ -114,6 +117,83 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
             consulta = consulta.Where(c => c.Cita.CitaEstado != "P" && c.Cita.CitaEstado != "T").ToList();
             return consulta;
         }
+
+
+        //Registrar Detalle Consulta
+
+        public void RegistrarDetallesConsulta(DetallesConsulta detallesConsulta)
+        {
+            accesoSQLServer.IniciarTransaccion();
+            try
+            {
+                detallesConsulta.DetallesConsultaCodigo1 = codigoSQL.GenerarCodigoUnico("DET", "Gestion.DetallesConsulta", "detallesConsultaCodigo");
+
+                detallesConsultaSQL.RegistrarDetallesConsulta(detallesConsulta);
+
+                accesoSQLServer.TerminarTransaccion(); 
+            }
+            catch (Exception ex)
+            {
+                accesoSQLServer.CancelarTransaccion(); 
+                throw new Exception($"Error al registrar los detalles de la consulta: {ex.Message}", ex);
+            }
+        }
+
+
+        public void RegistrarDiagnostico(Diagnostico diagnostico)
+        {
+            accesoSQLServer.IniciarTransaccion();
+            try
+            {
+                diagnostico.DiagnosticoCodigo = codigoSQL.GenerarCodigoUnico("DIG", "Salud.Diagnostico", "diagnosticoCodigo");
+
+                diagnosticoSQL.CrearDiagnostico(diagnostico);
+
+                accesoSQLServer.TerminarTransaccion();
+            }
+            catch (Exception ex)
+            {
+                accesoSQLServer.CancelarTransaccion();
+                //throw new Exception($"Error al registrar los detalles de la consulta: {ex.Message}", ex);
+                throw ex;
+            }
+        }
+
+        public void RegistrarRecetasMedicas(RecetaMedica recetaMedicas)
+        {
+            accesoSQLServer.IniciarTransaccion();
+            try
+            {
+                recetaMedicas.RecetaCodigo = codigoSQL.GenerarCodigoUnico("REC", "Salud.RecetaMedica", "recetaCodigo");
+
+                recetasMedicasSQL.CrearRecetaMedica(recetaMedicas); 
+
+                accesoSQLServer.TerminarTransaccion();
+            }
+            catch (Exception ex)
+            {
+                accesoSQLServer.CancelarTransaccion();
+                //throw new Exception($"Error al registrar los detalles de la consulta: {ex.Message}", ex);
+                throw ex;
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

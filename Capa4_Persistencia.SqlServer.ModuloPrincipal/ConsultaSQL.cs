@@ -29,7 +29,6 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                 comandoSQL.Parameters.Add(new SqlParameter("@consultaCodigo", consulta.ConsultaCodigo));
                 comandoSQL.Parameters.Add(new SqlParameter("@consultacitaCodigo", consulta.Cita.CitaCodigo));
                 comandoSQL.Parameters.Add(new SqlParameter("@consultaFechaHoraFinal", consulta.ConsultaFechaHoraFinal));
-                comandoSQL.Parameters.Add(new SqlParameter("@consultaMotivo", consulta.ConsultaMotivo));
 
                 comandoSQL.Parameters.Add(new SqlParameter("@medicoCodigo", consulta.Medico.MedicoCodigo));
                 comandoSQL.Parameters.Add(new SqlParameter("@tipoConsultaCodigo", consulta.TipoConsulta.TipoConsultaCodigo));
@@ -62,33 +61,32 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                         {
                             ConsultaCodigo = resultadoSQL.GetString(0),
                             
-                            ConsultaMotivo = resultadoSQL.IsDBNull(2) ? "No hay motivo 🤡" : resultadoSQL.GetString(2) ,
-                            ConsultaFechaHoraFinal = resultadoSQL.IsDBNull(5) ? (DateTime?)null : resultadoSQL.GetDateTime(5),
+                            ConsultaFechaHoraFinal = resultadoSQL.IsDBNull(4) ? (DateTime?)null : resultadoSQL.GetDateTime(4),
                             Cita = new Cita() 
                             {
                                 CitaCodigo = resultadoSQL.GetString(1),
-                                CitaFechaHora = resultadoSQL.GetDateTime(3),
-                                CitaEstado = resultadoSQL.GetString(4)
+                                CitaFechaHora = resultadoSQL.GetDateTime(2),
+                                CitaEstado = resultadoSQL.GetString(3)
                             },
                             Paciente = new Paciente() 
                             {
-                                PacienteCodigo = resultadoSQL.GetString(6),
-                                PacienteNombreCompleto = resultadoSQL.GetString(7),
+                                PacienteCodigo = resultadoSQL.GetString(5),
+                                PacienteNombreCompleto = resultadoSQL.GetString(6),
                                 
                             },
                             Medico = new Medico() 
                             {
-                                MedicoCodigo = resultadoSQL.GetString(8),
-                                MedicoNombre = resultadoSQL.GetString(9),
-                                MedicoApellido = resultadoSQL.GetString(10) 
+                                MedicoCodigo = resultadoSQL.GetString(7),
+                                MedicoNombre = resultadoSQL.GetString(8),
+                                MedicoApellido = resultadoSQL.GetString(9) 
                             },
                             TipoConsulta = new TipoConsulta() 
                             {
-                                TipoConsultaCodigo = resultadoSQL.GetString(11)
+                                TipoConsultaCodigo = resultadoSQL.GetString(10)
                             },
                             HistoriaClinica = new HistoriaClinica()
                             {
-                                HistorialClinicoCodigo = resultadoSQL.GetString(12),
+                                HistorialClinicoCodigo = resultadoSQL.GetString(11),
                             }
                         };
 

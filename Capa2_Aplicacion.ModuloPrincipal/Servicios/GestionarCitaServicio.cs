@@ -55,7 +55,6 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
                 // Generar códigos únicos para la cita y la consulta
                 consulta.ConsultaCodigo = codigoSQL.GenerarCodigoUnico("CON", "Gestion.Consulta", "consultaCodigo");
                 consulta.ConsultaFechaHoraFinal = null;
-                consulta.ConsultaMotivo = null;
                 consulta.Cita.CitaCodigo = codigoSQL.GenerarCodigoUnico("CIT", "Gestion.cita", "citaCodigo");
                 
                

@@ -11,7 +11,6 @@ namespace Capa3_Dominio.ModuloPrincipal
     {
         private string consultaCodigo;
         private DateTime? consultaFechaHoraFinal;
-        private string consultaMotivo;
 
         private Cita cita;
         private Medico medico;
@@ -23,7 +22,6 @@ namespace Capa3_Dominio.ModuloPrincipal
         private List<RecetaMedica> RecetasMedicas;
         public string ConsultaCodigo { get => consultaCodigo; set => consultaCodigo = value; }
         public DateTime? ConsultaFechaHoraFinal { get => consultaFechaHoraFinal; set => consultaFechaHoraFinal = value; }
-        public string ConsultaMotivo { get => consultaMotivo; set => consultaMotivo = value; }
         public Cita Cita { get => cita; set => cita = value; }
         public Medico Medico { get => medico; set => medico = value; }
         public Paciente Paciente { get => paciente; set => paciente = value; }

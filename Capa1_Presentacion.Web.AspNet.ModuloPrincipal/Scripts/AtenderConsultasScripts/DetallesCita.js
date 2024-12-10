@@ -32,7 +32,7 @@ function formatearDetalles(data) {
         case "Pendiente":
             detallesHTML += `Tiene cita ${fechaActivacion}.</p>
                 <p>Estado actual: <span class="badge ${estadoClase}">${data.ConsultaEstado}</span></p>
-                <p>Motivo de la consulta : ${data.ConsultaMotivo}</p>
+                
                 <p>
                     ¿Quieres Iniciar la consulta? 
                    <button class="btn btn-link p-0" onclick='mostrarModalConfirmacion(${JSON.stringify(data)})'>Iniciar</button>
@@ -42,7 +42,6 @@ function formatearDetalles(data) {
         case "No asistio":
             detallesHTML += `Su cita fue para la fecha ${fechaActivacion}.</p>
                 <p>Estado actual: <span class="badge ${estadoClase}">${data.ConsultaEstado}</span></p>
-                <p>Motivo de la consulta : ${data.ConsultaMotivo}</p>
                 <p>
                     ¿Quieres reprogramar la cita? 
                     <button class="btn btn-link p-0" onclick='reprogramarCita(${JSON.stringify(data)})'>Reprogramar</button>
@@ -52,13 +51,11 @@ function formatearDetalles(data) {
         case "Atendido":
             detallesHTML += `Fue atendido el ${fechaActivacion}.</p>
                 <p>Estado actual: <span class="badge ${estadoClase}">${data.ConsultaEstado}</span></p>
-                <p>Motivo de la consulta : ${data.ConsultaMotivo}</p>
                 <p>Notas adicionales: ${data.NotasAdicionales || "Sin notas adicionales"}</p>
             `;
             break;
         case "Cancelado":
             detallesHTML += `La consulta ha sido cancelada.</p>
-                <p>Motivo de la cancelación : ${data.ConsultaMotivo}</p>
             `;
             break;
         case "Atendiendo":

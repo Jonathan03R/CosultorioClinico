@@ -497,7 +497,6 @@ BEGIN
         tc.tipoConsultaDescripcion,
         m.medicoNombre,
         m.medicoApellido,
-        con.consultaMotivo,
         con.consultaFechaHoraFinal
     FROM 
         Gestion.cita c
@@ -607,7 +606,6 @@ BEGIN
         c.consultaCodigo,
         c.consultacitaCodigo,
         c.consultaFechaHoraFinal,
-        c.consultaMotivo,
         c.tipoConsultaCodigo,
         c.medicoCodigo,
         c.pacienteCodigo,
@@ -712,7 +710,6 @@ create or alter procedure pro_Crear_Consulta
     @consultaCodigo nchar(10),
     @consultaCitaCodigo nchar(10),
     @consultaFechaHoraFinal datetime = null,
-    @consultaMotivo nvarchar(255) = null,
 
 	@medicoCodigo nchar(10),
     @tipoConsultaCodigo nchar(10),
@@ -723,13 +720,12 @@ create or alter procedure pro_Crear_Consulta
 
     -- Inserción directa en la tabla Gestion.Consulta
     insert into Gestion.Consulta (
-		[consultaCodigo], [consultacitaCodigo], [consultaFechaHoraFinal], [consultaMotivo], [medicoCodigo], [tipoConsultaCodigo], [pacienteCodigo]
+		[consultaCodigo], [consultacitaCodigo], [consultaFechaHoraFinal], [medicoCodigo], [tipoConsultaCodigo], [pacienteCodigo]
     )
     values (
         @consultaCodigo,
         @consultaCitaCodigo,
         @consultaFechaHoraFinal,
-        @consultaMotivo,
 		@medicoCodigo,
 		@tipoConsultaCodigo,
 		@pacienteCodigo
@@ -758,7 +754,6 @@ BEGIN
     SELECT 
         C.consultaCodigo,
 		C.consultacitaCodigo,
-		C.consultaMotivo,
 		ci.citaFechaHora,
 		ci.citaEstado,
 		C.consultaFechaHoraFinal,
@@ -1009,4 +1004,92 @@ BEGIN
     -- Eliminar la tabla temporal
     DROP TABLE #IntervalosTiempo;
 END
+GO
+
+--EXEC pro_Listar_AgendaMedico @medicoCodigo = 'MED0000004', @fecha = '2024-12-21';
+
+
+/******************************************************************************************
+Descripción de procedimiento almacenado: 
+Procedimiento para crear detaññes de ima comsulta
+
+**************************************************************************************/
+CREATE or alter PROCEDURE pro_registrar_DetallesConsulta
+    @DetallesConsultaCodigo NCHAR(10),
+    @DetallesConsultaHistoriaEnfermedad NVARCHAR(500) = NULL,
+    @DetallesConsultaRevisiones NVARCHAR(500) = NULL,
+    @DetallesConsultaEvaluacionPsico NVARCHAR(500) = NULL,
+    @DetallesConsultaMotivoConsulta NVARCHAR(500) = NULL,
+    @ConsultaCodigo NCHAR(10)
+AS
+BEGIN
+        -- Insertar en la tabla DetallesConsulta
+        INSERT INTO Gestion.DetallesConsulta (
+            detallesConsultaCodigo,
+            detallesConsultaHistoriaEnfermedad,
+            detallesConsultaRevisiones,
+            detallesConsultaEvaluacionPsico,
+            detallesConsultaMotivoConsulta,
+            consultaCodigo
+        )
+        VALUES (
+            @DetallesConsultaCodigo,
+            @DetallesConsultaHistoriaEnfermedad,
+            @DetallesConsultaRevisiones,
+            @DetallesConsultaEvaluacionPsico,
+            @DetallesConsultaMotivoConsulta,
+            @ConsultaCodigo
+        );
+END;
+GO
+
+--procedimiento aqui oe
+CREATE OR ALTER PROCEDURE pro_registrar_RecetaMedica
+        @RecetaCodigo NCHAR(10),
+        @RecetaConsultaCodigo NCHAR(10),
+        @RecetaDescripcion NVARCHAR(500),
+        @RecetaTratamiento NVARCHAR(500),
+        @RecetaRecomendaciones NVARCHAR(500)
+AS
+BEGIN
+        -- Insertar en la tabla RecetaMedica
+        INSERT INTO Salud.RecetaMedica (
+            recetaCodigo,
+            recetaConsultaCodigo,
+            recetaDescripcion,
+            recetaTratamiento,
+            recetaRecomendaciones
+        )
+        VALUES (
+            @RecetaCodigo,
+            @RecetaConsultaCodigo,
+            @RecetaDescripcion,
+            @RecetaTratamiento,
+            @RecetaRecomendaciones
+    );
+END;
+GO
+
+
+CREATE OR ALTER PROCEDURE pro_registrar_Diagnostico
+    @DiagnosticoCodigo NCHAR(10),
+    @DiagnosticoConsultaCodigo NCHAR(10),
+    @DiagnosticoDescripcion NVARCHAR(255),
+    @DiagnosticoCodigoCie11  nvarchar(50) NULL
+AS
+BEGIN
+    INSERT INTO Salud.Diagnostico (
+        diagnosticoCodigo,
+        diagnosticoconsultaCodigo,
+        diagnosticoDescripcion,
+        diagnosticosCodigoCie11
+    )
+    VALUES (
+        @DiagnosticoCodigo,
+        @DiagnosticoConsultaCodigo,
+        @DiagnosticoDescripcion,
+        @DiagnosticoCodigoCie11
+
+    );
+END;
 GO

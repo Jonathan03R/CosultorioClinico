@@ -49,7 +49,29 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             return listaRecetasMedicas;
         }
 
-        //Necesito insertar recetas medicas a una consulta 
+        public void CrearRecetaMedica(RecetaMedica recetaMedica)
+        {
+            string procedimientoSQL = "pro_registrar_RecetaMedica";
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+
+                // Agregar parámetros al procedimiento almacenado
+                comandoSQL.Parameters.Add(new SqlParameter("@RecetaCodigo", recetaMedica.RecetaCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@RecetaConsultaCodigo", recetaMedica.Consulta.ConsultaCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@RecetaDescripcion", recetaMedica.RecetaDescripcion));
+                comandoSQL.Parameters.Add(new SqlParameter("@RecetaTratamiento", recetaMedica.RecetaTratamiento));
+                comandoSQL.Parameters.Add(new SqlParameter("@RecetaRecomendaciones", recetaMedica.RecetaTratamiento));
+
+                // Ejecutar el comando
+                comandoSQL.ExecuteNonQuery();
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception($"Error al registrar la receta médica: {ex.Message}");
+            }
+        }
+
 
     }
 }
