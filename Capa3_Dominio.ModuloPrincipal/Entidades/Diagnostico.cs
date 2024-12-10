@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Capa3_Dominio.ModuloPrincipal
 {
-    internal class Diagnostico
+    public class Diagnostico
     {
         private string diagnosticoCodigo;
         private string diagnosticoconsultaCodigo;

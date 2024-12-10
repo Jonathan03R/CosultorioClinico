@@ -73,7 +73,8 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                             Paciente = new Paciente() 
                             {
                                 PacienteCodigo = resultadoSQL.GetString(6),
-                                PacienteNombreCompleto = resultadoSQL.GetString(7)
+                                PacienteNombreCompleto = resultadoSQL.GetString(7),
+                                
                             },
                             Medico = new Medico() 
                             {
@@ -84,6 +85,10 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                             TipoConsulta = new TipoConsulta() 
                             {
                                 TipoConsultaCodigo = resultadoSQL.GetString(11)
+                            },
+                            HistoriaClinica = new HistoriaClinica()
+                            {
+                                HistorialClinicoCodigo = resultadoSQL.GetString(12),
                             }
                         };
 

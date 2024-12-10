@@ -18,7 +18,9 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
         private readonly PacienteSQL pacienteSQL;
         private readonly MedicoSQL medicoSQL;
         private readonly CitaSQL citaSQL;
-
+        private readonly HistoriaClinicaSQL historiaClinicaSQL;
+        private readonly DiagnosticoSQL diagnosticoSQL; 
+        private readonly RecetasMedicasSQL recetasMedicasSQL;   
 
         public AtenderConsultaServicio()
         {
@@ -28,6 +30,9 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
             pacienteSQL = new PacienteSQL(accesoSQLServer);
             medicoSQL = new MedicoSQL(accesoSQLServer);
             citaSQL = new CitaSQL(accesoSQLServer);
+            historiaClinicaSQL = new HistoriaClinicaSQL(accesoSQLServer);   
+            recetasMedicasSQL = new RecetasMedicasSQL(accesoSQLServer);
+            diagnosticoSQL = new DiagnosticoSQL(accesoSQLServer);   
         }
 
 
@@ -74,6 +79,45 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
           
             
         }
+        //Obtener informacion de su historia clinica
+
+        public List<Consulta> historiaClinicaDetalles(string HistorialClinicaCodigo ) 
+        {
+            accesoSQLServer.AbrirConexion();
+            List<Consulta> listaHistorial  = historiaClinicaSQL.MostrasDetallesHistoriaClinica(HistorialClinicaCodigo);
+
+            foreach (var consulta in listaHistorial)
+            {
+                consulta.Diagnosticos1 = diagnosticoSQL.MostrasDiagnosticosPorConsulta(consulta.ConsultaCodigo);
+
+                consulta.RecetasMedicas1 = recetasMedicasSQL.MostrasRecetasMedicasPorConsulta(consulta.ConsultaCodigo);
+            }
+            accesoSQLServer.CerrarConexion();
+            return listaHistorial;  
+        }
+
+        public Paciente DatosPaciente(string PacienteCodigo) {
+
+            accesoSQLServer.AbrirConexion();
+            Paciente DataPaciente = pacienteSQL.MostrarPacientePorCodigo(PacienteCodigo);
+            accesoSQLServer.CerrarConexion();
+            return DataPaciente;
+        }
+
+        public List<Consulta> ConsultasPrevias(string PacienteCodigo)
+        {
+            accesoSQLServer.AbrirConexion();
+            List<Consulta> consulta = citaSQL.MostrarCitasPaciente(PacienteCodigo);
+            accesoSQLServer.CerrarConexion();
+
+            // Filtrar las citas donde CitaEstado != "P"
+            consulta = consulta.Where(c => c.Cita.CitaEstado != "P" && c.Cita.CitaEstado != "T").ToList();
+            return consulta;
+        }
+
+
+
+
         public void cambiarEstadoAtencionEnProceso(string codigoConsulta)
         {
                 accesoSQLServer.AbrirConexion();

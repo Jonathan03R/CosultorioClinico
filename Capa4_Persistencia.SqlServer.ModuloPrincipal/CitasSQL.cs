@@ -61,30 +61,32 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                 {
                     Consulta consulta = new Consulta()
                     {
-                        Cita = new Cita() 
+                        Cita = new Cita()
                         {
-                            CitaCodigo = resultadoSQL.GetString(0),
-                            CitaEstado = resultadoSQL.GetString(1),
-                            CitaFechaHora = resultadoSQL.GetDateTime(2),
+                            CitaCodigo = resultadoSQL.IsDBNull(0) ? string.Empty : resultadoSQL.GetString(0),
+                            CitaEstado = resultadoSQL.IsDBNull(1) ? string.Empty : resultadoSQL.GetString(1),
+                            CitaFechaHora = resultadoSQL.IsDBNull(2) ? DateTime.MinValue : resultadoSQL.GetDateTime(2),
                         },
-                        TipoConsulta = new TipoConsulta() 
+                        TipoConsulta = new TipoConsulta()
                         {
-                            TipoConsultaDescripcion = resultadoSQL.GetString(3)
+                            TipoConsultaDescripcion = resultadoSQL.IsDBNull(3) ? string.Empty : resultadoSQL.GetString(3)
                         },
-                        Medico = new Medico() 
+                        Medico = new Medico()
                         {
-                            MedicoNombre = resultadoSQL.GetString(4), 
-                            MedicoApellido = resultadoSQL.GetString(5), 
+                            MedicoNombre = resultadoSQL.IsDBNull(4) ? string.Empty : resultadoSQL.GetString(4),
+                            MedicoApellido = resultadoSQL.IsDBNull(5) ? string.Empty : resultadoSQL.GetString(5),
                         },
-                        ConsultaMotivo = resultadoSQL.GetString(6),
-                        ConsultaFechaHoraFinal = resultadoSQL.GetDateTime(8),
-                    }; 
+                        ConsultaMotivo = resultadoSQL.IsDBNull(6) ? string.Empty : resultadoSQL.GetString(6),
+
+                        ConsultaFechaHoraFinal = resultadoSQL.IsDBNull(7) ? (DateTime?)null : resultadoSQL.GetDateTime(7),
+                    };
+
                     listaCitas.Add(consulta);
                 }
             }
-            catch (SqlException)
+            catch (SqlException ex)
             {
-                throw new ExcepcionCitaInvalida(ExcepcionCitaInvalida.ERROR_DE_CONSULTA);
+                throw ex;
             }
             return listaCitas;
         }

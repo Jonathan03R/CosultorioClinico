@@ -309,6 +309,7 @@
     <Content Include="Scripts\AtenderConsultasScripts\Atendiendo.js" />
     <Content Include="Scripts\AtenderConsultasScripts\DetallesCita.js" />
     <Content Include="Scripts\AtenderConsultasScripts\filtrar.js" />
+    <Content Include="Scripts\AtenderConsultasScripts\llenarDatosPaciente.js" />
     <Content Include="Scripts\AtenderConsultasScripts\tablaConsultas.js" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />

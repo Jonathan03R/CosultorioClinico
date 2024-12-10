@@ -1,2 +1,59 @@
-﻿
-<p>Contenido de Diagnostico
+﻿<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Formulario para Agregar Diagnóstico -->
+            <form id="formularioDiagnostico">
+                <div class="card shadow-sm">
+
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Descripción del Diagnóstico -->
+                            <div class="col-md-8 mb-3">
+                                <label for="descripcionDiagnostico" class="form-label">Descripción del Diagnóstico</label>
+                                <textarea id="descripcionDiagnostico" class="form-control" rows="4" placeholder="Escribe la descripción del diagnóstico aquí..."></textarea>
+                            </div>
+
+                            <!-- Botón para Seleccionar CIE-11 -->
+                            <div class="col-md-4 mb-3 d-flex align-items-end">
+                                <button type="button" id="btnSeleccionarCIE11" class="btn btn-info w-100">Seleccionar CIE-11</button>
+                            </div>
+                        </div>
+
+                        <!-- Campo oculto para almacenar el código CIE-11 seleccionado -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <input type="hidden" id="cie11Codigo" name="cie11Codigo" />
+                            </div>
+                        </div>
+
+                        <!-- Botón para Guardar el Diagnóstico -->
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-success mt-3">Guardar Diagnóstico</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal CIE-11 -->
+<div class="modal fade" id="modalCIE11" tabindex="-1" aria-labelledby="modalCIE11Label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalCIE11Label">Seleccionar CIE-11</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Aquí puedes agregar la lógica de búsqueda de CIE-11 o una lista -->
+                <ul class="list-group">
+                    <li class="list-group-item" data-cie11="A00" onclick="seleccionarCIE11('A00', 'Cólera')">Cólera (A00)</li>
+                    <li class="list-group-item" data-cie11="B00" onclick="seleccionarCIE11('B00', 'Herpes Simplex')">Herpes Simplex (B00)</li>
+                    <li class="list-group-item" data-cie11="C01" onclick="seleccionarCIE11('C01', 'Neoplasia de la boca')">Neoplasia de la boca (C01)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+

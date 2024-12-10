@@ -14,6 +14,9 @@
             type: 'GET',
             success: function (result) {
                 contentContainer.html(result);
+
+                // Llamar a la función para llenar los datos del paciente después de cargar el contenido
+                llenarDatosPaciente();
             },
             error: function () {
                 contentContainer.html('<p>Error al cargar el contenido</p>');
@@ -25,9 +28,11 @@
     $('.links-nav:first .nav-link').on('click', function (event) {
         handleNavClick(event, 'navbar-content-top');
     });
+
     $('.links-nav:last .nav-link').on('click', function (event) {
         handleNavClick(event, 'navbar-content-bottom');
     });
+
     // Cargar contenido por defecto al cargar la página
     function loadDefaultContent() {
         // Cargar contenido por defecto para el primer navbar
@@ -37,6 +42,8 @@
             type: 'GET',
             success: function (result) {
                 $('#navbar-content-top').html(result);
+                // Llamar a la función para llenar los datos del paciente cuando se carga el contenido
+                llenarDatosPaciente();
             },
             error: function () {
                 $('#navbar-content-top').html('<p>Error al cargar el contenido</p>');

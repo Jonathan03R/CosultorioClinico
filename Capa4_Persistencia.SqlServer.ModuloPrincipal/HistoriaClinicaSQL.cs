@@ -1,8 +1,10 @@
 ﻿using Capa3_Dominio.ModuloPrincipal;
+using Capa3_Dominio.ModuloPrincipal.Entidad;
 using Capa4_Persistencia.SqlServer.ModuloBase;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -68,6 +70,59 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
 
             return historiaClinica;
         }
+
+
+        public List<Consulta> MostrasDetallesHistoriaClinica(string HistoriaCodigo) 
+        {
+
+            List<Consulta> listaConsultasHistoria = new List<Consulta>();   
+
+            string procedimientoSql = "pro_listar_HistoriaClinica";
+
+            try
+            { 
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSql);
+                comandoSQL.Parameters.Add(new SqlParameter("@historialClinicoCodigo", HistoriaCodigo));
+                SqlDataReader resultadoSQL = comandoSQL.ExecuteReader();
+                while (resultadoSQL.Read())
+                {
+                    Consulta consulta = new Consulta()
+                    {
+                        ConsultaCodigo = resultadoSQL.IsDBNull(0) ? null : resultadoSQL.GetString(0),
+                        Cita = new Cita()
+                        {
+                            CitaCodigo = resultadoSQL.IsDBNull(1) ? null : resultadoSQL.GetString(1),
+                            CitaEstado = resultadoSQL.GetString(7),
+                        },
+                        ConsultaFechaHoraFinal = resultadoSQL.IsDBNull(2) ? (DateTime?)null : resultadoSQL.GetDateTime(2),
+                        ConsultaMotivo = resultadoSQL.IsDBNull(3) ? null : resultadoSQL.GetString(3),
+                        TipoConsulta = new TipoConsulta()
+                        {
+                            TipoConsultaCodigo = resultadoSQL.IsDBNull(4) ? null : resultadoSQL.GetString(4)
+                        },
+                        Medico = new Medico()
+                        {
+                            MedicoCodigo = resultadoSQL.IsDBNull(5) ? null : resultadoSQL.GetString(5),
+                        },
+                        Paciente = new Paciente()
+                        {
+                            PacienteCodigo = resultadoSQL.IsDBNull(6) ? null : resultadoSQL.GetString(6)
+                        }
+                    };
+
+                    listaConsultasHistoria.Add(consulta);
+                }
+
+                resultadoSQL.Close();
+            }
+            catch (SqlException ex) 
+            {
+                throw ex;
+            }
+            return listaConsultasHistoria; 
+        }
+
+        
 
     }
 }

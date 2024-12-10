@@ -91,7 +91,8 @@ function mostrarModalConfirmacion(data) {
 
 function configurarBotonConfirmacion(data) {
     $('#confirmarIniciarConsulta').off('click').on('click', function () {
-        console.log('Valor de consultaCodigo:', data.CitaCodigo);  
+        console.log('Continuando con la consulta:', data.HistoriaClinica); 
+        console.log('Valor de consultaCodigo:', data.CitaCodigo); 
         actualizarEstadoConsultaprocesandoCita(data.CitaCodigo);
     });
 }
@@ -119,7 +120,9 @@ function actualizarEstadoConsultaprocesandoCita(citaCodigo) {
 }
 
 function ContinuarCita(data) {
+    console.log('Continuando con la consulta:', data.HistoriaClinica); 
     console.log('Continuando con la consulta:', data.CitaCodigo); 
+    sessionStorage.setItem('consultaData', JSON.stringify(data));
     window.location.href = '/AtenderConsultas/Atendiendo';
 }
 

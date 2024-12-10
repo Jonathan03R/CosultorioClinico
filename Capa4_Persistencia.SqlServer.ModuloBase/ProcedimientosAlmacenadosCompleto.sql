@@ -591,7 +591,89 @@ create or alter procedure pro_Crear_HistoriaClinica
 	end
 go
 
+/******************************************************************************************
+Descripción de procedimiento almacenado:
+---------------------------------------------------------------------------------------------
+listar la hostorial clinica de un paciente.
 
+**************************************************************************************/
+CREATE OR ALTER PROCEDURE pro_listar_HistoriaClinica
+    @historialClinicoCodigo NCHAR(10)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        c.consultaCodigo,
+        c.consultacitaCodigo,
+        c.consultaFechaHoraFinal,
+        c.consultaMotivo,
+        c.tipoConsultaCodigo,
+        c.medicoCodigo,
+        c.pacienteCodigo,
+		ci.citaEstado
+    FROM 
+        Gestion.Consulta AS c
+    INNER JOIN 
+        Salud.Pacientes AS p ON c.pacienteCodigo = p.pacienteCodigo
+	inner join
+		Gestion.cita as ci on c.consultacitaCodigo = ci.citaCodigo
+    WHERE 
+        p.historialClinicoCodigo = @historialClinicoCodigo;
+
+    SET NOCOUNT OFF;
+END;
+GO
+
+--exec pro_listar_HistoriaClinica @historialClinicoCodigo = HIS0000002
+--go
+/******************************************************************************************
+Descripción de procedimiento almacenado:
+---------------------------------------------------------------------------------------------
+Lista los diagnosticos por consulta
+**************************************************************************************/
+
+CREATE OR ALTER PROCEDURE pro_listar_DiagnosticosPorConsulta
+    @consultaCodigo NCHAR(10)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        diagnosticoCodigo,
+        diagnosticoDescripcion
+    FROM 
+        Salud.Diagnostico
+    WHERE 
+        diagnosticoconsultaCodigo = @consultaCodigo;
+
+    SET NOCOUNT OFF;
+END;
+GO
+
+CREATE OR ALTER PROCEDURE pro_listar_RecetasPorConsulta
+    @consultaCodigo NCHAR(10)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        recetaCodigo,
+        recetaDescripcion,
+        recetaTratamiento,
+        recetaRecomendaciones
+    FROM 
+        Salud.RecetaMedica
+    WHERE 
+        recetaConsultaCodigo = @consultaCodigo;
+
+    SET NOCOUNT OFF;
+END;
+GO
+
+
+--exec pro_listar_RecetasPorConsulta @consultaCodigo = CON0000002
+--go
 CREATE or alter PROCEDURE pro_Listar_Medicos
 AS
 BEGIN
@@ -685,7 +767,8 @@ BEGIN
 		c.medicoCodigo,
 		me.medicoNombre,
 		me.medicoApellido,
-		c.tipoConsultaCodigo
+		c.tipoConsultaCodigo,
+		p.historialClinicoCodigo
 		
     FROM 
         Gestion.Consulta AS c

@@ -1,2 +1,42 @@
-﻿
-<p>Contenido de tratanu</p>
+﻿<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Formulario para Agregar Receta Médica -->
+            <form id="formularioRecetaMedica">
+                <div class="card shadow-sm">
+                    
+                    <div class="card-body">
+                        
+
+                        <div class="row">
+                            <!-- Descripción de la Receta -->
+                            <div class="col-md-12 mb-3">
+                                <label for="recetaDescripcion" class="form-label">Descripción de la Receta</label>
+                                <textarea id="recetaDescripcion" class="form-control" rows="4" placeholder="Ingrese la descripción de la receta" required></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Tratamiento de la Receta -->
+                            <div class="col-md-6 mb-3">
+                                <label for="recetaTratamiento" class="form-label">Tratamiento</label>
+                                <textarea id="recetaTratamiento" class="form-control" rows="3" placeholder="Ingrese el tratamiento" required></textarea>
+                            </div>
+
+                            <!-- Recomendaciones de la Receta -->
+                            <div class="col-md-6 mb-3">
+                                <label for="recetaRecomendaciones" class="form-label">Recomendaciones</label>
+                                <textarea id="recetaRecomendaciones" class="form-control" rows="3" placeholder="Ingrese las recomendaciones" required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Botón para Guardar la Receta -->
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary mt-3">Guardar Receta</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
