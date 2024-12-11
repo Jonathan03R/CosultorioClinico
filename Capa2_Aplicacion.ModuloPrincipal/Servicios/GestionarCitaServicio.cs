@@ -5,6 +5,8 @@ using Capa3_Dominio.ModuloPrincipal;
 using Capa4_Persistencia.SqlServer.ModuloPrincipal;
 using Capa4_Persistencia.SqlServer.ModuloBase;
 using Capa3_Dominio.ModuloPrincipal.Entidad;
+using static Capa4_Persistencia.SqlServer.ModuloPrincipal.HorariosSQL;
+using Capa3_Dominio.ModuloPrincipal.TransferenciaDatos;
 
 namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
 {
@@ -17,6 +19,7 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
         private readonly MedicoSQL medicoSQL;
         private readonly CodigoSQL codigoSQL;
         private readonly ConsultaSQL consultaSQL;
+        private readonly HorariosSQL horariosSQL;
 
         public GestionarCitaServicio()
         {
@@ -27,6 +30,24 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
             medicoSQL = new MedicoSQL(accesoSQLServer);
             codigoSQL = new CodigoSQL(accesoSQLServer);
             consultaSQL = new ConsultaSQL(accesoSQLServer);
+            horariosSQL = new HorariosSQL(accesoSQLServer);
+        }
+
+        // Mostrar horarios con citas para una especialidad y fecha específica
+        public List<HorarioConCita> MostrarHorariosConCitas(string especialidadCodigo, DateTime fecha)
+        {
+            try
+            {
+                accesoSQLServer.AbrirConexion();
+                List<HorarioConCita> horariosConCitas = horariosSQL.ListarHorariosConCitas(especialidadCodigo, fecha);
+                accesoSQLServer.CerrarConexion();
+                return horariosConCitas;
+            }
+            catch (Exception ex)
+            {
+                accesoSQLServer.CancelarTransaccion();
+                throw new Exception($"Error al mostrar horarios con citas: {ex.Message}", ex);
+            }
         }
 
         public List<Medico> ObtenerMedicosConEspecialidad()

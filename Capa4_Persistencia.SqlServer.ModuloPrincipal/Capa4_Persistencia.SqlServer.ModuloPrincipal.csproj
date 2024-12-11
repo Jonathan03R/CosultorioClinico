@@ -50,6 +50,7 @@
     <Compile Include="DiagnosticoSQL.cs" />
     <Compile Include="EspecialidadSQL.cs" />
     <Compile Include="HistoriaClinicaSQL.cs" />
+    <Compile Include="HorariosSQL.cs" />
     <Compile Include="MedicoSQL.cs" />
     <Compile Include="PacienteSQL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

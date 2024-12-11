@@ -930,79 +930,123 @@ Este procedimiento me lista la agenda de un medico en una fecha elegida
 --EXEC pro_Listar_AgendaMedico @medicoCodigo = 'MED0000004', @fecha = '2024-12-21';
 --EXEC pro_Listar_AgendaMedico @medicoCodigo = 'MED0000004', @fecha = '2024-12-21'
 
-CREATE OR ALTER PROCEDURE pro_Listar_AgendaMedico
-    @medicoCodigo nchar(10),
+CREATE OR ALTER FUNCTION fn_Listar_HorariosEspecialidad (
+    @especialidadCodigo nchar(10),
+    @fecha date
+)
+RETURNS @IntervalosTiempo TABLE (
+    MedicoCodigo nchar(10),
+	MedicoNombre varchar(100),
+    HoraInicio time,
+    HoraFin time
+)
+AS
+BEGIN
+    -- Insertar intervalos de tiempo basados en los horarios de los médicos de la especialidad
+    INSERT INTO @IntervalosTiempo (MedicoCodigo, MedicoNombre , HoraInicio, HoraFin)
+    SELECT 
+        h.medicoCodigo,
+		CONCAT(m.medicoNombre, ' ', m.medicoApellido) as MedicoNombre, 
+        DATEADD(minute, (n.n * 60), h.horarioHoraInicio) AS HoraInicio,
+        DATEADD(minute, (n.n + 1) * 60, h.horarioHoraInicio) AS HoraFin
+    FROM 
+        (SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10 UNION ALL SELECT 11) n
+    JOIN 
+        Gestion.horario h ON n.n < DATEDIFF(minute, h.horarioHoraInicio, h.horarioHoraFin) / 60
+    JOIN
+        Administracion.Medico m ON h.medicoCodigo = m.medicoCodigo
+    WHERE 
+        m.especialidadCodigo = @especialidadCodigo
+        AND UPPER(h.horarioDia) = UPPER(DATENAME(weekday, @fecha))
+    ORDER BY 
+        h.horarioHoraInicio, h.medicoCodigo;
+
+    RETURN;
+END
+GO
+
+
+--SELECT * 
+--FROM fn_Listar_HorariosEspecialidad('ESP0000004', '2024-12-13')
+--ORDER BY HoraInicio, MedicoCodigo;
+
+CREATE OR ALTER PROCEDURE pro_Listar_HorariosEspecialidadConCitas
+    @especialidadCodigo nchar(10),
     @fecha date
 AS
 BEGIN
-    -- Variables para almacenar las horas de inicio y fin del horario
-    DECLARE @horaInicio time;
-    DECLARE @horaFin time;
-    
-    -- Seleccionar el horario del médico para el día especificado
-    SELECT 
-        @horaInicio = h.horarioHoraInicio,
-        @horaFin = h.horarioHoraFin
-    FROM 
-        Gestion.horario h
-    WHERE 
-        h.medicoCodigo = @medicoCodigo
-        AND UPPER(h.horarioDia) = UPPER(DATENAME(weekday, @fecha));
-
-    -- Validar si se encontró el horario
-    IF @horaInicio IS NULL OR @horaFin IS NULL
-    BEGIN
-        PRINT 'No se encontró horario para el médico en el día especificado.';
-        RETURN;
-    END
-
-    -- Crear una tabla temporal para los intervalos de tiempo
-    CREATE TABLE #IntervalosTiempo (
+    -- Crear una tabla temporal para almacenar los horarios y las citas
+    CREATE TABLE #HorariosConCitas (
+        MedicoCodigo nchar(10),
         HoraInicio time,
-        HoraFin time
+        HoraFin time,
+        ConsultaCodigo nchar(10) NULL,
+        CitaCodigo nchar(10) NULL,
+        PacienteCodigo nchar(10) NULL,
+        CitaEstado nchar(1) NULL,
+        MedicoNombre nvarchar(100) NULL,
+        PacienteNombre nvarchar(100) NULL
     );
-    
-    -- Insertar intervalos de tiempo basados en el horario del médico
-    DECLARE @intervaloMinutos int = 60; -- Intervalo de 1 hora (60 minutos)
-    DECLARE @currentInicio time = @horaInicio;
-    DECLARE @currentFin time;
 
-    WHILE @currentInicio < @horaFin
-    BEGIN
-        SET @currentFin = DATEADD(minute, @intervaloMinutos, @currentInicio);
-        
-        IF @currentFin <= @horaFin
-        BEGIN
-            INSERT INTO #IntervalosTiempo (HoraInicio, HoraFin)
-            VALUES (@currentInicio, @currentFin);
-        END
-        
-        SET @currentInicio = @currentFin;
-    END;
-    
-    -- Seleccionar la agenda del médico
+    -- Insertar los horarios desde la función
+    INSERT INTO #HorariosConCitas (MedicoCodigo, HoraInicio, HoraFin)
     SELECT 
-        i.HoraInicio,
-        i.HoraFin,
-        COALESCE(c.citaEstado, 'Libre') AS estado,
-        c.citaCodigo,
-        c.citaNotificacionCodigo,
-        ISNULL(m.medicoNombre + ' ' + m.medicoApellido, 'N/A') AS nombreMedico
+        MedicoCodigo,
+		MedicoNombre,
+        HoraInicio,
+        HoraFin
     FROM 
-        #IntervalosTiempo i
-    LEFT JOIN 
-        Gestion.cita c ON CONVERT(date, c.citaFechaHora) = @fecha
-                       AND CONVERT(time, c.citaFechaHora) >= i.HoraInicio
-                       AND CONVERT(time, c.citaFechaHora) < DATEADD(minute, @intervaloMinutos, i.HoraInicio)
-    LEFT JOIN 
-        Administracion.Medico m ON c.citaNotificacionCodigo = m.medicoCodigo
+        fn_Listar_HorariosEspecialidad(@especialidadCodigo, @fecha);
+
+    -- Actualizar la tabla con información de las citas y nombres solo para las filas con citas asignadas
+    UPDATE h
+    SET 
+        ConsultaCodigo = c.consultaCodigo,
+        CitaCodigo = ci.citaCodigo,
+        PacienteCodigo = c.pacienteCodigo,
+        CitaEstado = ci.citaEstado,
+        PacienteNombre = p.pacienteNombreCompleto
+    FROM 
+        #HorariosConCitas h
+    JOIN 
+        Gestion.Consulta c ON h.MedicoCodigo = c.medicoCodigo
+    JOIN 
+        Gestion.Cita ci ON c.consultacitaCodigo = ci.citaCodigo
+    JOIN
+        Administracion.Medico m ON h.MedicoCodigo = m.medicoCodigo
+    JOIN
+        Salud.Pacientes p ON c.pacienteCodigo = p.pacienteCodigo
+    WHERE 
+        ci.citaEstado = 'P' AND  -- Filtrar por estado de la cita (por ejemplo, 'P' para pendientes)
+        ci.citaFechaHora >= @fecha AND 
+        ci.citaFechaHora < DATEADD(day, 1, @fecha) AND 
+        ci.citaFechaHora >= CAST(CONVERT(datetime, CONCAT(CONVERT(date, @fecha), ' ', CAST(h.HoraInicio AS char(5)))) AS datetime) AND 
+        ci.citaFechaHora < CAST(CONVERT(datetime, CONCAT(CONVERT(date, @fecha), ' ', CAST(h.HoraFin AS char(5)))) AS datetime);
+
+    -- Seleccionar los horarios con información de las citas y nombres
+    SELECT 
+        MedicoCodigo,
+		MedicoNombre,
+        HoraInicio,
+        HoraFin,
+        ConsultaCodigo,
+        CitaCodigo,
+        PacienteCodigo,
+        CitaEstado,
+        MedicoNombre,
+        PacienteNombre
+    FROM 
+        #HorariosConCitas
     ORDER BY 
-        i.HoraInicio;
+        HoraInicio, MedicoCodigo;
 
     -- Eliminar la tabla temporal
-    DROP TABLE #IntervalosTiempo;
+    DROP TABLE #HorariosConCitas;
 END
 GO
+
+
+--EXEC pro_Listar_HorariosEspecialidadConCitas @especialidadCodigo = 'ESP0000004', @fecha = '2024-12-20';
 
 
 

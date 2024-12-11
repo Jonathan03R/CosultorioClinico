@@ -281,13 +281,13 @@ insert into Gestion.horario (horarioCodigo, horarioDia, horarioHoraInicio , hora
 	('HRA0000005', 'WEDNESDAY', '09:00', '17:00', 'MED0000002'), -- miercoles
 	('HRA0000006', 'FRIDAY', '09:00', '12:00', 'MED0000002'), -- viernes
 	('HRA0000007', 'FRIDAY', '12:00', '17:00', 'MED0000003'), -- viernes
-	('HRA0000008', 'TUESDAY', '01:00', '17:00', 'MED0000003'), -- martes
-	('HRA0000009', 'THURSDAY', '12:00', '17:00', 'MED0000003'), -- jueves
-	('HRA0000010', 'FRIDAY', '12:00', '17:00', 'MED0000004'), -- viernes
-	('HRA0000011', 'SATURDAY', '12:00', '17:00', 'MED0000004'), -- sabado
-	('HRA0000012', 'THURSDAY', '12:00', '17:00', 'MED0000005'),-- Jueves 
-	('HRA0000013', 'FRIDAY', '12:00', '17:00', 'MED0000005'), -- viernes
-	('HRA0000014', 'SATURDAY', '12:00', '17:00', 'MED0000005'); -- sdabado
+	('HRA0000008', 'TUESDAY', '13:00', '17:00', 'MED0000003'), -- martes
+	('HRA0000009', 'THURSDAY', '13:00', '17:00', 'MED0000003'), -- jueves
+	('HRA0000010', 'FRIDAY', '13:00', '17:00', 'MED0000004'), -- viernes
+	('HRA0000011', 'SATURDAY', '13:00', '17:00', 'MED0000004'), -- sabado
+	('HRA0000012', 'THURSDAY', '13:00', '17:00', 'MED0000005'),-- Jueves 
+	('HRA0000013', 'FRIDAY', '13:00', '17:00', 'MED0000005'), -- viernes
+	('HRA0000014', 'SATURDAY', '13:00', '17:00', 'MED0000005'); -- sdabado
 go
 
 insert into Gestion.tipoConsulta (tipoConsultaCodigo, tipoConsultaDescripcion)
@@ -331,3 +331,54 @@ values
 ('REC0000003', 'CON0000003', 'Losartán 50mg', '1 tableta al día', 'Medir presión arterial diariamente'),
 ('REC0000004', 'CON0000004', 'Suplemento de calcio', '1 tableta al día', 'Seguir dieta rica en calcio');
 
+
+
+
+-- Especialidades
+insert into Administracion.Especialidad (especialidadCodigo, especialidadNombre, especialidadDescripcion)
+values
+('ESP0000003', 'Dermatología', 'Tratamiento de enfermedades de la piel'),
+('ESP0000004', 'Neurología', 'Atención especializada en el sistema nervioso');
+
+go
+
+-- Médicos
+insert into Administracion.Medico (medicoCodigo, medicoApellido, medicoNombre, medicoCorreo, medicoDNI, medicoTelefono, especialidadCodigo)
+values
+('MED0000006', 'Gonzalez', 'María', 'maria@example.com', '12345678', '987654321', 'ESP0000003'), -- Dr. María Gonzalez, Dermatología
+('MED0000007', 'Perez', 'Carlos', 'carlos@example.com', '87654321', '987123456', 'ESP0000004'), -- Dr. Carlos Perez, Neurología
+('MED0000008', 'Lopez', 'Ana', 'ana@example.com', '56781234', '987321654', 'ESP0000004'), -- Dr. Ana Lopez, Dermatología
+('MED0000009', 'Ramirez', 'Jorge', 'jorge@example.com', '43215678', '987456789', 'ESP0000003'); -- Dr. Jorge Ramirez, Neurología
+
+go
+
+-- Horarios
+insert into Gestion.horario (horarioCodigo, horarioDia, horarioHoraInicio, horarioHoraFin, medicoCodigo)
+values
+('HRA0000015', 'FRIDAY', '09:00', '12:00', 'MED0000006'),  -- Dr. María Gonzalez, Dermatología -- viernes
+('HRA0000016', 'FRIDAY', '13:00', '17:00', 'MED0000007'),  -- Dr. Carlos Perez, Neurología
+('HRA0000017', 'FRIDAY', '09:00', '12:00', 'MED0000008'),  -- Dr. Ana Lopez, Dermatología
+('HRA0000018', 'FRIDAY', '13:00', '17:00', 'MED0000009');  -- Dr. Jorge Ramirez, Neurología
+
+go
+
+
+-- Insertar datos en Gestion.cita
+insert into Gestion.cita (citaCodigo, citaFechaHora)
+values
+('CIT0000007', '2024-12-20 13:30:00'); -- Cita a las 13:30
+
+-- Insertar datos en Gestion.Consulta
+insert into Gestion.Consulta (consultaCodigo, consultacitaCodigo, consultaFechaHoraFinal, medicoCodigo, tipoConsultaCodigo, pacienteCodigo)
+values
+('CON0000007', 'CIT0000007', '2024-12-20 14:00:00', 'MED0000007', 'TDC0000001', 'PAC0000001'); -- Consulta relacionada con la cita
+go
+
+select * from Gestion.Consulta
+go
+
+-- Comentarios:
+-- Dr. María Gonzalez, Dermatología, trabaja los viernes de 9:00 a 12:00.
+-- Dr. Carlos Perez, Neurología, trabaja los viernes de 13:00 a 17:00.
+-- Dr. Ana Lopez, Dermatología, trabaja los viernes de 9:00 a 12:00.
+-- Dr. Jorge Ramirez, Neurología, trabaja los viernes de 13:00 a 17:00.
