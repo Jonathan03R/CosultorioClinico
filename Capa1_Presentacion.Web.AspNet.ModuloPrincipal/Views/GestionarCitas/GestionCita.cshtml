@@ -32,8 +32,28 @@
 </div>
 
 
+<!-- Modal de Confirmación -->
+<div class="modal fade" id="confirmarCancelacionModal" tabindex="-1" aria-labelledby="confirmarCancelacionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmarCancelacionModalLabel">Confirmar Cancelación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas cancelar esta cita?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary " data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-danger" id="btnConfirmarCancelacion">Sí, cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @Html.Partial("modals/_CrearCitasModal")
+@Html.Partial("modals/_AgregarPaciente")
 
 
 @section Scripts {
@@ -49,6 +69,19 @@
     <script src="~/Scripts/GestionarCitasScripts/AgregarCita.js"></script>
     <script src="~/Scripts/GestionarCitasScripts/tablaCitas.js"></script>
     <script src="~/Scripts/GestionarCitasScripts/buscadorCustomCitas.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // Obtener la fecha actual
+            const today = new Date();
+            const day = ("0" + today.getDate()).slice(-2);
+            const month = ("0" + (today.getMonth() + 1)).slice(-2);
+            const dateString = today.getFullYear() + "-" + (month) + "-" + (day);
+
+            // Establecer la fecha mínima en el campo de fecha
+            document.getElementById("fechaSeleccionada").setAttribute("min", dateString);
+        });
+    </script>
 
     <script>
 $(document).ready(function() {
@@ -73,15 +106,29 @@ function cargarHorarios() {
             if (response.consultaExitosa) {
                 const horarios = response.data;
                 horarios.forEach(horario => {
-                    let buttonHTML;
+                    let contentHTML;
+
                     if (horario.NombrePaciente && horario.NombrePaciente !== 'N/A') {
-                        buttonHTML = `
-                            <button class="btn btn-secondary" type="button" disabled>
-                                No disponible
+                        contentHTML = `
+
+                            <div >
+                                <h5>${horario.HoraInicio} - ${horario.HoraFin}</h5>
+                                <p class="mb-1">Estado: <span class="badge bg-danger  text-white">Ocupada</span></p>
+                                <small>Médico: ${horario.NombreMedico}</small><br>
+                                <small>Paciente: ${horario.NombrePaciente}</small>
+                            </div>
+                            <button class="btn btn-danger cancelar-cita" type="button" data-cita-codigo="${horario.CitaCodigo}">
+                                Cancelar Cita
                             </button>`;
-                    } else {
-                        buttonHTML = `
-                            <button class="btn btn-primary abrir-modal" type="button"
+                                    } else {
+                                        contentHTML = `
+
+                            <div>
+                                <h5>Hora Libre: ${horario.HoraInicio} - ${horario.HoraFin}</h5>
+                                <p class="mb-1">Estado: <span class="badge bg-success  text-white">Disponible</span></p>
+                                <small>Médico: ${horario.NombreMedico}</small>
+                            </div>
+                            <button class="btn btn-success   abrir-modal" type="button"
                                 data-bs-toggle="modal"
                                 data-bs-target="#ModalNuevaCita"
                                 data-horainicio="${horario.HoraInicio}"
@@ -94,15 +141,11 @@ function cargarHorarios() {
                             </button>`;
                     }
 
+
+
                     const horarioElement = $(`
                         <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                            <div>
-                                <h5 class="mb-1">${horario.HoraInicio} - ${horario.HoraFin}</h5>
-                                <p class="mb-1">Estado: ${horario.CitaEstado}</p>
-                                <small>Médico: ${horario.NombreMedico}</small><br>
-                                <small>Paciente: ${horario.NombrePaciente || 'N/A'}</small>
-                            </div>
-                            ${buttonHTML}
+                            ${contentHTML}
                         </div>
                     `);
 
@@ -125,12 +168,46 @@ function cargarHorarios() {
                     modal.find('#inputFechaHora').val(fecha + 'T' + horaInicio);
                     modal.find('#inputEspecialidadModal').val(especialidad);
                 });
+
+                // Agregar manejador de eventos para botones de cancelar cita
+                $('.cancelar-cita').on('click', function() {
+                    const citaCodigo = $(this).data('cita-codigo');
+                    $('#btnConfirmarCancelacion').data('cita-codigo', citaCodigo);
+                    $('#confirmarCancelacionModal').modal('show');
+                });
+
+                // Manejar la confirmación de cancelación
+                $('#btnConfirmarCancelacion').on('click', function() {
+                    const citaCodigo = $(this).data('cita-codigo');
+                    cancelarCita(citaCodigo);
+                    $('#confirmarCancelacionModal').modal('hide');
+                });
             } else {
                 horariosDiv.append('<p>No se encontraron horarios disponibles.</p>');
             }
         },
         error: function() {
             $('#horariosDisponibles').html('<p>Error al cargar los horarios.</p>');
+        }
+    });
+}
+
+function cancelarCita(citaCodigo) {
+    $.ajax({
+        url: '@Url.Action("CancelarCita", "GestionarCitas")',
+        type: 'POST',
+        data: { citaCodigo: citaCodigo },
+        success: function(response) {
+            if (response.transaccionExitosa) {
+                alert(response.mensaje);
+                // Recargar los horarios para reflejar los cambios
+                cargarHorarios();
+            } else {
+                alert('Error al cancelar la cita: ' + response.mensaje);
+            }
+        },
+        error: function(xhr, status, error) {
+            alert('Error al realizar la solicitud: ' + error);
         }
     });
 }

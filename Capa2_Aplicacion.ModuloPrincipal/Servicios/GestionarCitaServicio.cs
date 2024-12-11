@@ -120,29 +120,14 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
             return citaSQL.MostrarCitasPaciente(pacienteCodigo);
         }
 
-        public void CancelarCita(string citaCodigo)
+        public void cambiarEstadoActivoConsultaCancelada(string condigoCita)
         {
 
-            var cita = ObtenerCitaPorId(citaCodigo);
-            if (cita == null)
-            {
-                throw new ArgumentException("La cita no existe");
-            }
-
-            cita.Cita.CitaEstado = "Cancelada";
-
-            accesoSQLServer.IniciarTransaccion();
-            try
-            {
-                citaSQL.CrearCita(cita.Cita);
-                accesoSQLServer.TerminarTransaccion();
-            }
-            catch (Exception ex)
-            {
-                accesoSQLServer.CancelarTransaccion();
-                throw ex;
-            }
+            accesoSQLServer.AbrirConexion();
+            citaSQL.CambiarEstadoCancelado(condigoCita);
+            accesoSQLServer.CerrarConexion();
         }
+
 
         public List<Especialidad> ListarEspecialidades()
         {

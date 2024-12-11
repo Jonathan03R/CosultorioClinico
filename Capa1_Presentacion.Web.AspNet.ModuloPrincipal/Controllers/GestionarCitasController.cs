@@ -135,7 +135,7 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
                     ConsultaCodigo = h.ConsultaCodigo,
                     CitaCodigo = h.CitaCodigo,
                     PacienteCodigo = h.PacienteCodigo,
-                    CitaEstado = h.CitaEstado,
+                    CitaEstado = GetEstadoDescripcion(h.CitaEstado) ,
                     NombreMedico = h.MedicoNombre,
                     NombrePaciente = h.PacienteNombre
                 }).ToList<object>();
@@ -337,7 +337,7 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
 
             try
             {
-                gestionarCitaServicio.CancelarCita(citaCodigo);
+                gestionarCitaServicio.cambiarEstadoActivoConsultaCancelada(citaCodigo);
                 accionExitosa = true;
                 mensajeRetorno = "Cita cancelada exitosamente.";
             }

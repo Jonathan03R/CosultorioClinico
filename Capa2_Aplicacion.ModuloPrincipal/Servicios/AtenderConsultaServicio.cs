@@ -229,11 +229,11 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
             citaSQL.CambiarEstadoAtendido(citaCodigo);
             accesoSQLServer.CerrarConexion();
         }
-        public void cambiarEstadoActivoConsultaCancelada(string codigoConsulta)
+        public void cambiarEstadoActivoConsultaCancelada(string condigoCita)
         {
 
             accesoSQLServer.AbrirConexion();
-            citaSQL.CambiarEstadoCancelado(codigoConsulta);
+            citaSQL.CambiarEstadoCancelado(condigoCita);
             accesoSQLServer.CerrarConexion();
         }
 

@@ -31,7 +31,7 @@ function guardarCita() {
             if (response.transaccionExitosa) {
                 alert(response.mensaje);
                 $('#ModalNuevaCita').modal('hide');
-                table.ajax.reload(null, false);
+                cargarHorarios();
 
             } else {
                 alert('Error al registrar la cita: ' + response.mensaje);

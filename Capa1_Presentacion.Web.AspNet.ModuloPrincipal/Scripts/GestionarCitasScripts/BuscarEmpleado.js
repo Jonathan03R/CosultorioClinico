@@ -14,7 +14,7 @@
     // Evento para agregar un nuevo paciente
     $('#btnAgregarPaciente').on('click', function () {
         $('#modalAgregarPaciente').modal('hide');
-        window.location.href = '/GestionarPacientes/Registrar'; // Redirige a la página de registro
+        window.location.href = '/GestionarPacientes/ListaPacientes'; // Redirige a la página de registro
     });
 });
 

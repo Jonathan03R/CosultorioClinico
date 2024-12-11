@@ -35,7 +35,7 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
 
         public void CancelarCita(string citaCodigo)
         {
-            string procedimientoSQL = "pro_Cancelar_Cita";
+            string procedimientoSQL = "pro_Actualizar_Estado_CitaCancelado";
             try
             {
                 SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
@@ -90,7 +90,7 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             return listaCitas;
         }
 
-      
+
 
         public List<TipoConsulta> ListarTiposDeConsulta()
         {
@@ -106,8 +106,8 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                 {
                     TipoConsulta tipoConsulta = new TipoConsulta
                     {
-                        TipoConsultaCodigo = resultadoSQL.GetString(0), 
-                        TipoConsultaDescripcion = resultadoSQL.GetString(1) 
+                        TipoConsultaCodigo = resultadoSQL.GetString(0),
+                        TipoConsultaDescripcion = resultadoSQL.GetString(1)
                     };
                     listaTiposConsulta.Add(tipoConsulta);
                 }
@@ -142,27 +142,27 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                             CitaEstado = resultadoSQL.GetString(1),
                             CitaFechaHora = resultadoSQL.GetDateTime(2),
                         },
-                        TipoConsulta = new TipoConsulta() 
+                        TipoConsulta = new TipoConsulta()
                         {
-                            TipoConsultaDescripcion = resultadoSQL.GetString(3),    
+                            TipoConsultaDescripcion = resultadoSQL.GetString(3),
                         },
-                        Medico = new Medico() { 
+                        Medico = new Medico() {
                             MedicoCodigo = resultadoSQL.GetString(4),
                             MedicoNombre = resultadoSQL.GetString(5),
                             MedicoApellido = resultadoSQL.GetString(6),
                             Especialidad = new Especialidad()
                             {
                                 EspecialidadCodigo = resultadoSQL.GetString(7),
-                                EspecialidadNombre = resultadoSQL.GetString(8), 
+                                EspecialidadNombre = resultadoSQL.GetString(8),
                             },
                         },
-                        Paciente = new Paciente() 
+                        Paciente = new Paciente()
                         {
-                            PacienteCodigo = resultadoSQL .GetString(9),
-                            PacienteNombreCompleto = resultadoSQL .GetString(10),   
+                            PacienteCodigo = resultadoSQL.GetString(9),
+                            PacienteNombreCompleto = resultadoSQL.GetString(10),
                         }
                     };
-                    
+
                     listaCitas.Add(consulta);
                 }
                 resultadoSQL.Close();
@@ -237,13 +237,13 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
         }
         //estado Cancelada
 
-        public void CambiarEstadoCancelado(string consultaCodigo)
+        public void CambiarEstadoCancelado(string condigoCita)
         {
             string procedimientoSQL = "pro_Actualizar_Estado_CitaCancelado";
             try
             {
                 SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
-                comandoSQL.Parameters.Add(new SqlParameter("@citaCodigo", consultaCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@citaCodigo", condigoCita));
                 comandoSQL.ExecuteNonQuery();
             }
             catch (SqlException sqlEx)
