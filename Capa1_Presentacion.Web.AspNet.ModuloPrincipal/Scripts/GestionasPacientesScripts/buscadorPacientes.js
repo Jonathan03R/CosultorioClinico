@@ -33,10 +33,10 @@ function filtrarPacientes(settings, data, dataIndex) {
 }
 
 function inicializarFiltrosEstado() {
-    $('#lista-pacientes-container .nav-link').on('click', function (e) {
+    $('#sub-nav .nav-link').on('click', function (e) {
         e.preventDefault();
 
-        $('.nav-link').removeClass('active');
+        $('#sub-nav .nav-link').removeClass('active');
         $(this).addClass('active');
 
         var filterValue = $(this).data('filter');
@@ -49,6 +49,7 @@ function inicializarFiltrosEstado() {
         }
     });
 }
+
 
 
 function inicializarValidacionDni() {

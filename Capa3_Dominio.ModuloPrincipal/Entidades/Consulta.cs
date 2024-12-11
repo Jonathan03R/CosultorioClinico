@@ -10,73 +10,25 @@ namespace Capa3_Dominio.ModuloPrincipal
     public class Consulta
     {
         private string consultaCodigo;
-        private DateTime consultaFechaHora;
-        private string consultaMedicoCodigo;
-        private string consultaPacienteCodigo;
-        private string consultaMotivo;
-        private string consultaEstado;
+        private DateTime? consultaFechaHoraFinal;
 
+        private Cita cita;
+        private Medico medico;
+        private Paciente paciente;
+        private TipoConsulta tipoConsulta;
+        private HistoriaClinica historiaClinica;
+
+        private List<Diagnostico> Diagnosticos;
+        private List<RecetaMedica> RecetasMedicas;
         public string ConsultaCodigo { get => consultaCodigo; set => consultaCodigo = value; }
-        public DateTime ConsultaFechaHora { get => consultaFechaHora; set => consultaFechaHora = value; }
-        public string ConsultaMedicoCodigo { get => consultaMedicoCodigo; set => consultaMedicoCodigo = value; }
-        public string ConsultaPacienteCodigo { get => consultaPacienteCodigo; set => consultaPacienteCodigo = value; }
-        public string ConsultaMotivo { get => consultaMotivo; set => consultaMotivo = value; }
-        public string ConsultaEstado { get => consultaEstado; set => consultaEstado = value; }
-
-        /*Regla 2:*/
-        public bool EsDatosValidosConsulta()
-        {
-            bool esCodigoValido = !string.IsNullOrEmpty(consultaCodigo);
-            bool esFechaValida = consultaFechaHora != DateTime.MinValue;
-            bool esMedicoCodigoValido = !string.IsNullOrEmpty(consultaMedicoCodigo);
-            bool esPacienteCodigoValido = !string.IsNullOrEmpty(consultaPacienteCodigo);
-            bool esMotivoValido = !string.IsNullOrEmpty(consultaMotivo);
-            bool esEstadoValido = !string.IsNullOrEmpty(consultaEstado);
-
-            // Retorna true si todos los datos son válidos
-            return esCodigoValido && esFechaValida && esMedicoCodigoValido && esPacienteCodigoValido && esMotivoValido && esEstadoValido;
-        }
-
-        /*Regla 4:*/
-        public bool ValidarEnvioHistorialClinico()
-        {
-            // Verifica si la consulta está finalizada, se envia los datos a la HistoriaClinica
-            if (ConsultaEstado == "finalizada")
-            {
-                return true;
-            }
-            else
-            {
-                // Si la consulta no está finalizada, no se pueden enviar los datos a la HistoriaClinica
-                return false;
-            }
-        }
-       
-        /*Regla 5:*/
-        public bool ModificarAsistencia(bool estaAsistiendo)
-        {
-            // Verificar si la consulta está finalizada
-            if (consultaEstado == "Finalizado")
-            {
-                return false; 
-            }
-
-            // Si la consulta no está finalizada, se puede modificar la asistencia
-            if (estaAsistiendo)
-            {
-                consultaEstado = "Asistencia"; 
-            }
-            else
-            {
-                consultaEstado = "Inasistencia"; 
-            }
-
-            return true;
-        }
-
-        /*Regla 6 en RecetaMedica: ValidarEmisionRecetaMedica*/
-
-        /*Regla 7 en Historia Clinica: RegistrarCambioHistorialClinico:*/
+        public DateTime? ConsultaFechaHoraFinal { get => consultaFechaHoraFinal; set => consultaFechaHoraFinal = value; }
+        public Cita Cita { get => cita; set => cita = value; }
+        public Medico Medico { get => medico; set => medico = value; }
+        public Paciente Paciente { get => paciente; set => paciente = value; }
+        public TipoConsulta TipoConsulta { get => tipoConsulta; set => tipoConsulta = value; }
+        public List<Diagnostico> Diagnosticos1 { get => Diagnosticos; set => Diagnosticos = value; }
+        public List<RecetaMedica> RecetasMedicas1 { get => RecetasMedicas; set => RecetasMedicas = value; }
+        public HistoriaClinica HistoriaClinica { get => historiaClinica; set => historiaClinica = value; }
     }
     
 }

@@ -1,0 +1,52 @@
+﻿@{
+    ViewBag.Title = "Buscar en CIE-11";
+}
+
+<h2>Buscar en CIE-11</h2>
+
+<div>
+    <label for="termino">Término de Búsqueda:</label>
+    <input type="text" id="termino" />
+    <button id="buscar-btn">Buscar</button>
+</div>
+
+<div id="resultado"></div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+           $('#btnSeleccionarCIE11').on('click', function () {
+    $.ajax({
+        url: '/Cie11/FiltrarDatos',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ termino: '' }), // Término vacío para precargar
+        success: function (response) {
+            if (response.success) {
+                $('#resultadosBusqueda').empty();
+                response.data.forEach(function (item) {
+                    $('#resultadosBusqueda').append(`
+                        <tr>
+                            <td>${item.Codigo}</td>
+                            <td>${item.Titulo}</td>
+                            <td>
+                                <button type="button" class="btn btn-primary btnSeleccionar" data-codigo="${item.Codigo}" data-titulo="${item.Titulo}">
+                                    Seleccionar
+                                </button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            } else {
+                alert(response.message);
+            }
+        },
+        error: function () {
+            alert("Error al precargar los datos.");
+        }
+    });
+});
+
+        });
+    </script>
+}

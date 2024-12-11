@@ -55,6 +55,7 @@ create table Administracion.Especialidad
     especialidadCodigo nchar(10) not null,
     especialidadNombre nvarchar(100) not null,
     especialidadDescripcion nvarchar(255),
+
     constraint EspecialidadPK primary key (especialidadCodigo)
 ) on gestionPacientes;
 go
@@ -76,6 +77,30 @@ create table Administracion.Medico
 ) on gestionPacientes;
 go
 
+-- Crear tabla horario
+create table Gestion.horario
+    (
+		horarioCodigo nchar(10),
+		horarioDia nvarchar(15),
+		horarioHoraInicio time,
+		horarioHoraFin time,
+		medicoCodigo nchar(10),  
+
+		constraint medicosFK foreign key (medicoCodigo) references Administracion.Medico(medicoCodigo),
+		constraint horarioCodigoPK primary key (horarioCodigo)
+    )
+go
+
+
+-- Tabla HistoriaClinica (almacena el historial médico de los pacientes)
+create table Salud.HistoriaClinica
+(
+    historialClinicoCodigo nchar(10) not null,
+    HistoriaClinicafechaCreacion date default getdate(),
+    constraint HistoriaClinicaPK primary key (historialClinicoCodigo),
+) on gestionConsultas;
+go
+
 -- Tabla Pacientes (almacena la información general de los pacientes)  --- necesario para la gestionar citas****************	
 create table Salud.Pacientes
 (
@@ -87,27 +112,12 @@ create table Salud.Pacientes
     pacienteTelefono nvarchar(15),
     pacienteCorreoElectronico nvarchar(100),
     pacienteEstado nchar(1) constraint pacienteEstadoDF default 'A', -- A = Activo, I = Inactivo
+
+	historialClinicoCodigo nchar(10) null unique,
     constraint PacientesPK primary key (pacienteCodigo),
-    constraint PacientesEstadoCK check (pacienteEstado = 'A' or pacienteEstado = 'I')
+    constraint PacientesEstadoCK check (pacienteEstado = 'A' or pacienteEstado = 'I'),
+	constraint historialClinicoCodigoFK foreign key (historialClinicoCodigo) references Salud.HistoriaClinica(historialClinicoCodigo), 
 ) on gestionPacientes;
-go
-
-
-
--- Tabla HistoriaClinica (almacena el historial médico de los pacientes)
-create table Salud.HistoriaClinica
-(
-    historialClinicoCodigo nchar(10) not null,
-    pacienteCodigo nchar(10) not null,
-    --medicoCodigo nchar(10) not null,
-    antecedentesMedicos nvarchar(255), 
-    alergias nvarchar(255),
-    fechaCreacion date not null,
-    fechaActualizacion date not null,
-    constraint HistoriaClinicaPK primary key (historialClinicoCodigo),
-    constraint HistoriaClinicaPacienteFK foreign key (pacienteCodigo) references Salud.Pacientes(pacienteCodigo),
-    --constraint HistoriaClinicaMedicoFK foreign key (medicoCodigo) references Administracion.Medico(medicoCodigo)
-) on gestionConsultas;
 go
 
 -- Tabla ContactosEmergencia (almacena información de contactos de emergencia de los pacientes)
@@ -117,11 +127,14 @@ create table Salud.ContactosEmergencia
     contactoEmergenciaNombre nvarchar(100) not null,
     contactoEmergenciaRelacion nvarchar(50) not null,
     contactoEmergenciaTelefono nvarchar(15) not null,
-    pacienteCodigo nchar(10) not null,
+	pacienteCodigo nchar(10) not null,
     constraint ContactosEmergenciaPK primary key (contactoEmergenciaCodigo),
-    constraint ContactosEmergenciaPacientesFK foreign key (pacienteCodigo) references Salud.Pacientes(pacienteCodigo)
+	constraint pacienteCodigoPk foreign key (pacienteCodigo) references Salud.Pacientes(pacienteCodigo)
 ) on gestionPacientes;
 go
+
+
+
 
 --- tablas necesarias para  gestionarCitas == responsable Jhony
 
@@ -145,19 +158,6 @@ create table Gestion.notificacion
     )
 go
 
-
--- Crear tabla horario
-create table Gestion.horario
-    (
-    horarioCodigo nchar(6),
-    horarioDia nvarchar(15),
-    horarioDisponibilidad bit,
-    horarioHoraInicio time,
-    horarioHoraFin time,
-    constraint horarioCodigoPK primary key (horarioCodigo)
-    )
-go
-
 -- Crear tabla cita
 create table Gestion.cita
     (
@@ -165,49 +165,67 @@ create table Gestion.cita
     citaEstado nchar(1) default 'P',
     citaFechaHora datetime not null,
     citaNotificacionCodigo nchar(8),
-    citaPacienteCodigo nchar(10),
-    citaTipoConsultaCodigo nchar(10),
-	citaMedicoCodigo nchar(10),
+    --citaPacienteCodigo nchar(10),
+    --citaTipoConsultaCodigo nchar(10),
+	--citaMedicoCodigo nchar(10),
+
     constraint CitaPK primary key (citaCodigo),
-    constraint CitaPacienteFK foreign key (citaPacienteCodigo) references Salud.pacientes(pacienteCodigo),
+    --constraint CitaPacienteFK foreign key (citaPacienteCodigo) references Salud.pacientes(pacienteCodigo),
     constraint CitaNotificacionFK foreign key (citaNotificacionCodigo) references Gestion.notificacion(notificacionCodigo),
-	constraint CitaMedicoFK foreign key (citaMedicoCodigo) references Administracion.medico(medicoCodigo),
-    constraint CitaTipoConsultaFK foreign key (citaTipoConsultaCodigo) references Gestion.tipoConsulta(tipoConsultaCodigo),
-    constraint CitaEstadoCK check (citaEstado in ('P', 'C', 'X')) -- P: pendiente, C: confirmada, X: cancelada
+	--constraint CitaMedicoFK foreign key (citaMedicoCodigo) references Administracion.medico(medicoCodigo),
+    --constraint CitaTipoConsultaFK foreign key (citaTipoConsultaCodigo) references Gestion.tipoConsulta(tipoConsultaCodigo),
+    constraint CitaEstadoCK check (citaEstado in ('P', 'N', 'A', 'C', 'T')),-- P: pendiente, N: No Asistida, A: atendida, C: cancelada , T:'Atendiendo'
     )
 go
 
 
 --tablas de gestión de consultas 
+
 create table Gestion.Consulta (
     consultaCodigo nchar(10),
-    consultaFechaHora datetime not null,
-    consultaMedicoCodigo nchar(10),
-    consultaPacienteCodigo nchar(10),
-    consultaMotivo nvarchar(255),
-    consultaEstado nchar(1) default 'P', 
+    consultacitaCodigo nchar(10),
+    consultaFechaHoraFinal datetime null,
+    --consultaMotivo nvarchar(255) null,
+	--HistorialClinicoCodigo nchar(10),
+	medicoCodigo nchar(10),
+	tipoConsultaCodigo nchar(10),
+	pacienteCodigo NCHAR(10)
     constraint ConsultaPK primary key (consultaCodigo),
-    constraint ConsultaMedicoFK foreign key (consultaMedicoCodigo) references Administracion.Medico(medicoCodigo),
-    constraint ConsultaPacienteFK foreign key (consultaPacienteCodigo) references Salud.Pacientes(pacienteCodigo),
-    constraint ConsultaEstadoCK check (consultaEstado in ('P', 'C', 'X'))
+    constraint consultacitaCodigoFK foreign key (consultacitaCodigo) references  Gestion.cita(citaCodigo),
+	--constraint HistorialClinicoCodigoFK foreign key (HistorialClinicoCodigo) references Salud.HistoriaClinica(historialClinicoCodigo),
+	constraint medicoCodigo foreign key(medicoCodigo) references Administracion.medico(medicoCodigo),
+	constraint tipoConsultaCodigo foreign key(tipoConsultaCodigo) references Gestion.tipoConsulta(tipoConsultaCodigo),
+	constraint pacienteCodigoFK foreign key (pacienteCodigo) references Salud.pacientes(pacienteCodigo),
 ) on gestionConsultas
+go
+
+
+create table Gestion.DetallesConsulta(
+	detallesConsultaCodigo nchar(10),
+	detallesConsultaHistoriaEnfermedad nvarchar(500) null,
+	detallesConsultaRevisiones nvarchar(500) null,
+	detallesConsultaEvaluacionPsico nvarchar(500) null,
+	detallesConsultaMotivoConsulta nvarchar(500) null,
+	consultaCodigo nchar(10),
+	constraint DetallesConsultaCodigoPK primary	key	(DetallesConsultaCodigo),
+	constraint consultaCodigoFK foreign key (consultaCodigo) references Gestion.Consulta(consultaCodigo)
+)on gestionConsultas
 go
 
 create table Salud.Diagnostico (
     diagnosticoCodigo nchar(10),
     diagnosticoconsultaCodigo nchar(10),
     diagnosticoDescripcion nvarchar(255) not null,
-    diagnosticoFecha date not null,
+    diagnosticosCodigoCie11 nvarchar(50)
     constraint DiagnosticoPK primary key (diagnosticoCodigo),
     constraint DiagnosticoConsultaFK foreign key (diagnosticoconsultaCodigo) references Gestion.Consulta(consultaCodigo)
 ) on gestionConsultas
 go 
-
+--aquioi esta la receta checa
 create table Salud.RecetaMedica (
     recetaCodigo nchar(10),
     recetaConsultaCodigo nchar(10),
     recetaDescripcion nvarchar(255) not null,
-    recetaFecha date not null,
 	recetaTratamiento nvarchar(100) not null,
 	recetaRecomendaciones nvarchar(100) not null,
     constraint RecetaMedicaPK primary key (recetaCodigo),
@@ -215,26 +233,35 @@ create table Salud.RecetaMedica (
 ) on gestionConsultas
 go
 
-
-
-
 --insert para hacer pruebas
 
-insert into Salud.Pacientes (pacienteCodigo, pacienteDNI, pacienteNombreCompleto, pacienteFechaNacimiento, pacienteDireccion, pacienteTelefono, pacienteCorreoElectronico)
+insert into Salud.HistoriaClinica([historialClinicoCodigo])
+values 
+('HIS0000001'),
+('HIS0000002' ),
+('HIS0000003' ),
+('HIS0000004' ),
+('HIS0000005' )
+
+go
+
+insert into Salud.Pacientes (pacienteCodigo, pacienteDNI, pacienteNombreCompleto, pacienteFechaNacimiento, pacienteDireccion, pacienteTelefono, pacienteCorreoElectronico,  historialClinicoCodigo)
 values
-('PAC0000001', '12345678', 'Juan Pérez', '1985-04-15', 'Av. Principal 123', '987654321', 'juan.perez@example.com'),
-('PAC0000002', '87654321', 'María Gómez', '1990-06-20', 'Calle Secundaria 45', '987123456', 'maria.gomez@example.com'),
-('PAC0000003', '23456789', 'Carlos López', '1982-11-10', 'Calle 3 de Abril 67', '987456123', 'carlos.lopez@example.com'),
-('PAC0000004', '34567891', 'Ana Torres', '1995-02-25', 'Pasaje Lima 8', '987789321', 'ana.torres@example.com'),
-('PAC0000005', '45678912', 'Luis Rojas', '1987-08-15', 'Jr. Ayacucho 342', '987963258', 'luis.rojas@example.com');
+('PAC0000001', '12345678', 'Juan Pérez', '1985-04-15', 'Av. Principal 123', '987654321', 'juan.perez@example.com','HIS0000001' ),
+('PAC0000002', '87654321', 'María Gómez', '1990-06-20', 'Calle Secundaria 45', '987123456', 'maria.gomez@example.com', 'HIS0000002'),
+('PAC0000003', '23456789', 'Carlos López', '1982-11-10', 'Calle 3 de Abril 67', '987456123', 'carlos.lopez@example.com', 'HIS0000003'),
+('PAC0000004', '34567891', 'Ana Torres', '1995-02-25', 'Pasaje Lima 8', '987789321', 'ana.torres@example.com', 'HIS0000004'),
+('PAC0000005', '45678912', 'Luis Rojas', '1987-08-15', 'Jr. Ayacucho 342', '987963258', 'luis.rojas@example.com', 'HIS0000005');
 go
 
 
 insert into Salud.ContactosEmergencia (contactoEmergenciaCodigo, contactoEmergenciaNombre, contactoEmergenciaRelacion, contactoEmergenciaTelefono, pacienteCodigo)
 values
-('CEM0000001', 'Pedro Pérez', 'Padre', '987654111', 'PAC0000001'),
-('CEM0000002', 'Lucía Gómez', 'Hermana', '987123111', 'PAC0000002');
+('CEM0000001', 'Pedro Pérez', 'Padre', '987654111' , 'PAC0000001'),
+('CEM0000002', 'Lucía Gómez', 'Hermana', '987123111' , 'PAC0000001');
 go
+
+
 
 insert into Administracion.Especialidad (especialidadCodigo, especialidadNombre, especialidadDescripcion)
 values
@@ -246,8 +273,30 @@ go
 
 insert into Administracion.Medico (medicoCodigo, medicoApellido, medicoNombre, medicoCorreo, medicoDNI, medicoTelefono, especialidadCodigo)
 values
-('MED0000001', 'García', 'Roberto', 'roberto.garcia@example.com', '12345679', '987111222', 'ESP0000001'),
-('MED0000002', 'Martínez', 'Sofía', 'sofia.martinez@example.com', '98765432', '987333444', 'ESP0000002');
+('MED0000001', 'Johny', 'ruiz', 'Johny@example.com', '12345679', '987111222', 'ESP0000001'),
+('MED0000002', 'Maritza', 'De la cruz', 'maritza@example.com', '98765432', '987333444', 'ESP0000002'),
+('MED0000003', 'Yanmir', 'Guerrero', 'yanmir@example.com', '98765433', '987333466', 'ESP0000002'),
+('MED0000004', 'Daniel', 'Asmat', 'Daniel@example.com', '98765434', '987333488', 'ESP0000002'),
+('MED0000005', 'Jonathan', 'Roque', 'Jona@example.com', '98765435', '987333411', 'ESP0000001');
+go
+
+
+insert into Gestion.horario (horarioCodigo, horarioDia, horarioHoraInicio , horarioHoraFin, medicoCodigo )
+	values 
+	('HRA0000001', 'MONDAY', '09:00', '17:00', 'MED0000001'),  --lunes
+	('HRA0000002', 'TUESDAY', '09:00', '17:00', 'MED0000001'), --martes
+	('HRA0000003', 'WEDNESDAY', '09:00', '17:00', 'MED0000001'), -- miercoles
+	('HRA0000004', 'MONDAY', '09:00', '17:00', 'MED0000002'), -- lunes
+	('HRA0000005', 'WEDNESDAY', '09:00', '17:00', 'MED0000002'), -- miercoles
+	('HRA0000006', 'FRIDAY', '09:00', '12:00', 'MED0000002'), -- viernes
+	('HRA0000007', 'FRIDAY', '12:00', '17:00', 'MED0000003'), -- viernes
+	('HRA0000008', 'TUESDAY', '01:00', '17:00', 'MED0000003'), -- martes
+	('HRA0000009', 'THURSDAY', '12:00', '17:00', 'MED0000003'), -- jueves
+	('HRA0000010', 'FRIDAY', '12:00', '17:00', 'MED0000004'), -- viernes
+	('HRA0000011', 'SATURDAY', '12:00', '17:00', 'MED0000004'), -- sabado
+	('HRA0000012', 'THURSDAY', '12:00', '17:00', 'MED0000005'),-- Jueves 
+	('HRA0000013', 'FRIDAY', '12:00', '17:00', 'MED0000005'), -- viernes
+	('HRA0000014', 'SATURDAY', '12:00', '17:00', 'MED0000005'); -- sdabado
 go
 
 insert into Gestion.tipoConsulta (tipoConsultaCodigo, tipoConsultaDescripcion)
@@ -255,14 +304,39 @@ values
 ('TDC0000001', 'Consulta General'),
 ('TDC0000002', 'Consulta Especializada');
 go
-insert into Gestion.cita (citaCodigo, citaFechaHora, citaPacienteCodigo, citaTipoConsultaCodigo, citaMedicoCodigo)
+insert into Gestion.cita (citaCodigo, citaFechaHora)
 values
-('CIT0000001', '2024-11-20 10:30:00', 'PAC0000001', 'TDC0000001', 'MED0000001'),
-('CIT0000002', '2024-11-21 15:00:00', 'PAC0000002', 'TDC0000002', 'MED0000002'),
-('CIT0000003', '2024-11-22 09:00:00', 'PAC0000003', 'TDC0000001', 'MED0000001'),
-('CIT0000004', '2024-11-23 11:00:00', 'PAC0000004', 'TDC0000002', 'MED0000002');
+('CIT0000001', '2024-11-18 10:00:00'),
+('CIT0000002', '2024-12-19 15:00:00'),
+('CIT0000003', '2024-12-20 09:00:00'),
+('CIT0000004', '2024-12-21 12:00:00'),
+('CIT0000005', '2024-12-21 14:00:00'),
+('CIT0000006', '2024-12-20 09:00:00');
 go
 
 
+insert into Gestion.Consulta (consultaCodigo,consultacitaCodigo, consultaFechaHoraFinal,[pacienteCodigo], [medicoCodigo], [tipoConsultaCodigo])
+values
+('CON0000001','CIT0000001', '2024-12-1 10:00:00', 'PAC0000001', 'MED0000001', 'TDC0000001'),
+('CON0000002','CIT0000002', '2024-12-1 11:30:00', 'PAC0000002', 'MED0000002', 'TDC0000002'),
+('CON0000003','CIT0000003', '2024-12-1 09:00:00', 'PAC0000003', 'MED0000003', 'TDC0000002'),
+('CON0000004','CIT0000004', '2024-12-1 14:00:00', 'PAC0000004', 'MED0000004', 'TDC0000001'),
+('CON0000005','CIT0000005', '2024-11-1 09:00:00', 'PAC0000005' , 'MED0000004', 'TDC0000001' ),
+('CON0000006','CIT0000006', '2024-11-1 14:00:00', 'PAC0000002', 'MED0000002', 'TDC0000002');
 
+
+
+insert into Salud.Diagnostico (diagnosticoCodigo, diagnosticoconsultaCodigo, diagnosticoDescripcion)
+values
+('DIA0000001', 'CON0000001', 'Angina de pecho'),
+('DIA0000002', 'CON0000002', 'Peso dentro del rango normal'),
+('DIA0000003', 'CON0000003', 'Hipertensión controlada'),
+('DIA0000004', 'CON0000004', 'Crecimiento adecuado');
+
+insert into Salud.RecetaMedica (recetaCodigo, recetaConsultaCodigo, recetaDescripcion, recetaTratamiento, recetaRecomendaciones)
+values
+('REC0000001', 'CON0000001', 'Nitroglicerina sublingual', '1 tableta al día', 'Evitar esfuerzos físicos'),
+('REC0000002', 'CON0000002', 'Multivitamínicos pediátricos', '1 por día', 'Mantener dieta equilibrada'),
+('REC0000003', 'CON0000003', 'Losartán 50mg', '1 tableta al día', 'Medir presión arterial diariamente'),
+('REC0000004', 'CON0000004', 'Suplemento de calcio', '1 tableta al día', 'Seguir dieta rica en calcio');
 

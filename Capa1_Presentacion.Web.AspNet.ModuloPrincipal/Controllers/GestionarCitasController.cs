@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web.Mvc;
 using Capa2_Aplicacion.ModuloPrincipal.Servicio;
@@ -23,8 +24,6 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
         {
             return View();
         }
-
-
         [HttpGet]
         public JsonResult ListarMedicosConEspecialidad()
         {
@@ -60,26 +59,53 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
 
         // Obtener todas las citas
         [HttpGet]
-        public JsonResult ObtenerTodasCitas()
+        public JsonResult ObtenerTodaslasCitas()
         {
             bool accionExitosa;
             string mensajeRetorno;
-            List<Cita> listaCitas;
+            List<object> listaCitaFormateada;
 
             try
             {
-                listaCitas = gestionarCitaServicio.ObtenerTodasCitas();
+                var listaCitas = gestionarCitaServicio.ObtenerTodasCitas();
+                listaCitaFormateada = listaCitas.Select(c => new{
+                    CitaCodigo = c.Cita.CitaCodigo,
+                    Fecha = c.Cita.CitaFechaHora.ToString("dd-MM-yyyy HH:mm:ss"),
+                    TipoConsulta = c.TipoConsulta.TipoConsultaDescripcion,
+                    MedicoNombre = $"Dr. {c.Medico.MedicoNombre} {c.Medico.MedicoApellido}",
+                    Especialidad = c.Medico.Especialidad.EspecialidadNombre,
+                    Estado = GetEstadoDescripcion(c.Cita.CitaEstado), 
+                    CodigoPaciente = c.Paciente.PacienteCodigo,
+                    NombrePaciente = c.Paciente.PacienteNombreCompleto,
+                    EspecialidadCod =c.Medico.Especialidad.EspecialidadCodigo,
+                    MedicoCodigo = c.Medico.MedicoCodigo
+                }).ToList<object>();
                 accionExitosa = true;
                 mensajeRetorno = "Consulta exitosa.";
             }
             catch (Exception ex)
             {
-                listaCitas = null;
+                listaCitaFormateada  = null;
                 accionExitosa = false;
                 mensajeRetorno = ex.Message;
             }
 
-            return Json(new { data = listaCitas, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+            return Json(new { data = listaCitaFormateada, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+        }
+
+
+        private string GetEstadoDescripcion(string estado)
+        {
+            if (estado == "P")
+                return "Pendiente";
+            else if (estado == "N")
+                return "No Asistida";
+            else if (estado == "A")
+                return "Atendida";
+            else if (estado == "C")
+                return "Cancelada";
+            else
+                return "N/A";
         }
 
 
@@ -89,7 +115,7 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
         {
             bool accionExitosa;
             string mensajeRetorno;
-            List<Cita> listaCitas;
+            List<Consulta> listaCitas;
 
             try
             {
@@ -116,20 +142,33 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
 
             try
             {
-                var cita = new Cita
+                if (citaDTO.CitaFechaHora == default(DateTime) || citaDTO.CitaFechaHora < new DateTime(1753, 1, 1))
                 {
-                    //CitaCodigo = citaDTO.CitaCodigo,
-                    CitaFechaHora = citaDTO.CitaFechaHora,
-                    CitaEstado = "P" 
+                    throw new ArgumentException("La fecha y hora de la cita es inválida.");
+                }
+
+                var consulta = new Consulta
+                {
+                    Cita = new Cita()
+                    {
+                        CitaFechaHora = citaDTO.CitaFechaHora,
+                        CitaEstado = "P"// por seacaso le puse p pero no es necasrio por default es P 
+                    },
+                    Paciente = new Paciente()
+                    {
+                        PacienteCodigo = citaDTO.PacienteCodigo,
+                    },
+                    Medico = new Medico()
+                    {
+                        MedicoCodigo = citaDTO.MedicoCodigo,
+                    },
+                    TipoConsulta = new TipoConsulta()
+                    {
+                        TipoConsultaCodigo = citaDTO.TipoConsultaCodigo
+                    }
                 };
 
-                // Crear las instancias de los objetos relacionados
-                cita.CitaPaciente = new Paciente { PacienteCodigo = citaDTO.PacienteCodigo };
-                cita.CitaMedico = new Medico { MedicoCodigo = citaDTO.MedicoCodigo };
-                cita.CitaTipoConsulta = new TipoConsulta { TipoConsultaCodigo = citaDTO.TipoConsultaCodigo };
-
-
-                gestionarCitaServicio.RegistrarCita(cita);
+                gestionarCitaServicio.RegistrarCita(consulta);
                 accionExitosa = true;
                 mensajeRetorno = "Cita registrada exitosamente.";
             }
@@ -170,22 +209,22 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
         {
             bool accionExitosa;
             string mensajeRetorno;
-            Cita cita;
+            Consulta consulta;
 
             try
             {
-                cita = gestionarCitaServicio.ObtenerCitaPorId(citaCodigo);
+                consulta = gestionarCitaServicio.ObtenerCitaPorId(citaCodigo);
                 accionExitosa = true;
                 mensajeRetorno = "";
             }
             catch (Exception ex)
             {
-                cita = null;
+                consulta = null;
                 accionExitosa = false;
                 mensajeRetorno = ex.Message;
             }
 
-            return Json(new { data = cita, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+            return Json(new { data = consulta, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
@@ -193,22 +232,54 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
         {
             bool accionExitosa;
             string mensajeRetorno;
-            Paciente paciente = new Paciente { PacienteDNI = dni };
+            object pacienteFormateado;
 
             try
             {
-                paciente = gestionarCitaServicio.obtenerPacientePorDni(paciente);
+                // Obtener el paciente utilizando el servicio
+                Paciente paciente = gestionarCitaServicio.obtenerPacientePorDni(new Paciente { PacienteDNI = dni });
+
+                // Formatear los datos como un objeto anónimo antes de enviarlo
+                if (paciente != null)
+                {
+                    pacienteFormateado = new
+                    {
+                        PacienteCodigo = paciente.PacienteCodigo,
+                        PacienteDNI = paciente.PacienteDNI,
+                        PacienteNombreCompleto = paciente.PacienteNombreCompleto,
+                        PacienteFechaNacimiento = paciente.PacienteFechaNacimiento.ToString("dd-MM-yyyy"), // Formato de fecha
+                        PacienteDireccion = paciente.PacienteDireccion ?? "N/A", // Si no tiene dirección, coloca "N/A"
+                        PacienteTelefono = paciente.PacienteTelefono ?? "N/A", // Lo mismo para teléfono
+                        PacienteCorreoElectronico = paciente.PacienteCorreoElectronico ?? "N/A", // Lo mismo para correo
+                        PacienteEstado = GetEstadoDescripcionDni(paciente.PacienteEstado) // Llamada al método para obtener el estado
+                    };
+                }
+                else
+                {
+                    pacienteFormateado = null;
+                }
+
                 accionExitosa = true;
-                mensajeRetorno = "";
+                mensajeRetorno = paciente != null ? "Consulta exitosa." : "Paciente no encontrado.";
             }
             catch (Exception ex)
             {
-                paciente = null;
+                pacienteFormateado = null;
                 accionExitosa = false;
                 mensajeRetorno = ex.Message;
             }
 
-            return Json(new { data = paciente, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+            return Json(new { data = pacienteFormateado, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+        }
+
+        private string GetEstadoDescripcionDni(string estado)
+        {
+            if (estado == "A")
+                return "Activo";
+            else if (estado == "I")
+                return "Inactivo";
+            else
+                return "Desconocido"; 
         }
 
         // Cancelar una cita

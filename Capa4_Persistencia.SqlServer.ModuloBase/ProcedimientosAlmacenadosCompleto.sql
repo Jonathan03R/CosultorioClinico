@@ -20,6 +20,7 @@ Parámetros:
     - @pacienteCorreoElectronico: Correo electrónico del paciente (opcional).
     - @pacienteEstado: Estado del paciente (A = Activo, I = Inactivo). Por defecto es 'A'.
 ******************************************************************************************/
+
 create or alter procedure pro_Crear_Paciente
     @pacienteCodigo nchar(10),
     @pacienteDNI nchar(8),
@@ -28,7 +29,7 @@ create or alter procedure pro_Crear_Paciente
     @pacienteDireccion nvarchar(255) = null,
     @pacienteTelefono nvarchar(15) = null,
     @pacienteCorreoElectronico nvarchar(100) = null,
-    @pacienteEstado nchar(1) = 'A'
+	@historialClinicoCodigo nchar(10) null
 	as
 	set nocount on;
 
@@ -41,7 +42,7 @@ create or alter procedure pro_Crear_Paciente
 		pacienteDireccion,
 		pacienteTelefono,
 		pacienteCorreoElectronico,
-		pacienteEstado
+		historialClinicoCodigo
 	)
 	values 
 	(
@@ -52,7 +53,7 @@ create or alter procedure pro_Crear_Paciente
 		@pacienteDireccion,
 		@pacienteTelefono,
 		@pacienteCorreoElectronico,
-		@pacienteEstado
+		@historialClinicoCodigo
 	);
 go
 
@@ -151,22 +152,18 @@ create or alter procedure pro_listar_pacientes
 	as
 begin
     set nocount on;
-
     select 
         P.pacienteCodigo,
-        HC.historialClinicoCodigo as pacienteHistorialClinicoCodigo,
         P.pacienteDNI,
         P.pacienteNombreCompleto,
         P.pacienteFechaNacimiento,
         P.pacienteDireccion,
         P.pacienteTelefono,
         P.pacienteCorreoElectronico,
-        P.pacienteEstado
+        P.pacienteEstado,
+		p.historialClinicoCodigo
     from 
         Salud.Pacientes as P
-    left join 
-        Salud.HistoriaClinica as HC on P.pacienteCodigo = HC.pacienteCodigo;
-
     set nocount off;
 end
 go
@@ -178,20 +175,29 @@ con el médico que lo atendió.
 Parámetros:
     - @pacienteCodigo: Código único del paciente cuyo historial clínico se desea obtener.
 ******************************************************************************************/
-create or alter procedure pro_Mostrar_HistoriaClinica
-		@pacienteCodigo nchar(10)
-	as
-	set nocount on;
+CREATE OR ALTER PROCEDURE pro_Mostrar_HistoriaClinica
+    @pacienteCodigo NCHAR(10)
+AS
+BEGIN
+    SET NOCOUNT ON;
 
-	select hc.historialClinicoCodigo,
-		   hc.pacienteCodigo,
-		   hc.antecedentesMedicos,
-		   hc.alergias,
-		   hc.fechaCreacion,
-		   hc.fechaActualizacion
-	from Salud.HistoriaClinica hc
-	where hc.pacienteCodigo = @pacienteCodigo;
-go
+    SELECT 
+        p.pacienteCodigo,               
+        hc.historialClinicoCodigo,      
+        hc.HistoriaClinicafechaCreacion,
+        c.consultaCodigo,
+        c.consultacitaCodigo
+    FROM Salud.Pacientes p
+    INNER JOIN Salud.HistoriaClinica hc
+        ON p.historialClinicoCodigo = hc.historialClinicoCodigo
+    LEFT JOIN Gestion.Consulta c
+        ON p.pacienteCodigo = c.pacienteCodigo
+    WHERE p.pacienteCodigo = @pacienteCodigo;
+END;
+GO
+
+exec pro_Mostrar_HistoriaClinica @pacienteCodigo = PAC0000001
+GO
 
 /******************************************************************************************
 Procedimiento: pro_Mostrar_ContactosEmergencia
@@ -200,16 +206,21 @@ Parámetros:
     - @pacienteCodigo: Código único del paciente cuyos contactos de emergencia se desean obtener.
 ******************************************************************************************/
 create or alter procedure pro_Mostrar_ContactosEmergencia
-		@pacienteCodigo nchar(10)
-	as
-	set nocount on;
+    @pacienteCodigo nchar(10)
+as
+begin
+    set nocount on;
 
-	select ce.contactoEmergenciaCodigo,
-		   ce.contactoEmergenciaNombre,
-		   ce.contactoEmergenciaRelacion,
-		   ce.contactoEmergenciaTelefono
-	from Salud.ContactosEmergencia ce
-	where ce.pacienteCodigo = @pacienteCodigo;
+    select 
+        ce.contactoEmergenciaCodigo,
+        ce.contactoEmergenciaNombre,
+        ce.contactoEmergenciaRelacion,
+        ce.contactoEmergenciaTelefono
+    from Salud.ContactosEmergencia ce
+    where ce.pacienteCodigo = @pacienteCodigo;
+
+    set nocount off;
+end;
 go
 
 /******************************************************************************************
@@ -218,12 +229,12 @@ Descripción de procedimiento almacenado:
 Procedimiento almacenado para agregar un contacto de emergencia en la tabla `ContactosEmergencia`.
 
 **********************************************************************************************/
-create or alter procedure pro_ContactosEmergencia_Agregar 
+create or alter procedure pro_Agregar_ContactoEmergencia 
     @contactoEmergenciaCodigo nchar(10),
     @contactoEmergenciaNombre nvarchar(100),
     @contactoEmergenciaRelacion nvarchar(50),
     @contactoEmergenciaTelefono nvarchar(15),
-    @pacienteCodigo nchar(10)
+	@pacienteCodigo nchar(10)
 as
 begin
     set nocount on;
@@ -233,14 +244,14 @@ begin
         contactoEmergenciaNombre,
         contactoEmergenciaRelacion,
         contactoEmergenciaTelefono,
-        pacienteCodigo
+		pacienteCodigo
     )
     values (
         @contactoEmergenciaCodigo,
         @contactoEmergenciaNombre,
         @contactoEmergenciaRelacion,
         @contactoEmergenciaTelefono,
-        @pacienteCodigo
+		@pacienteCodigo
     );
 
     set nocount off;
@@ -249,38 +260,25 @@ go
 
 
 
-/******************************************************************************************
-Procedimiento: pro_Agregar_ContactosEmergencia
-Descripción: agrega contasto de emergencia para un paciente en especifico
-Parámetros:
-    - @pacienteCodigo: Código único del paciente cuyos contactos de emergencia se desean obtener.
-******************************************************************************************/
+create or alter procedure pro_Actualizar_ContactoEmergencia
+    @contactoEmergenciaCodigo nchar(10),
+    @contactoEmergenciaNombre nvarchar(100),
+    @contactoEmergenciaRelacion nvarchar(50),
+    @contactoEmergenciaTelefono nvarchar(15)
+as
+begin
+    set nocount on;
 
-create or alter procedure pro_AgregarContactosEmergencia
-	@ContactoEmergenciaCodigo nchar(10),
-	@ContactoEmergenciaNombre nvarchar(100),
-	@ContactoEmergenciaRelacion nvarchar(50),
-	@ContactoEmergenciaTelefono nvarchar(15),
-	@CodigoPacientes nvarchar(10)
-	as
-	set nocount on;
-	insert into Salud.ContactosEmergencia
-	(
-		contactoEmergenciaCodigo, 
-		contactoEmergenciaNombre, 
-		contactoEmergenciaRelacion,
-		contactoEmergenciaTelefono,
-		pacienteCodigo
-	)values
-	(
-		@ContactoEmergenciaCodigo ,
-		@ContactoEmergenciaNombre ,
-		@ContactoEmergenciaRelacion ,
-		@ContactoEmergenciaTelefono ,
-		@CodigoPacientes 
-	);
-	
+    update Salud.ContactosEmergencia
+    set
+        contactoEmergenciaNombre = @contactoEmergenciaNombre,
+        contactoEmergenciaRelacion = @contactoEmergenciaRelacion,
+        contactoEmergenciaTelefono = @contactoEmergenciaTelefono
+    where
+        contactoEmergenciaCodigo = @contactoEmergenciaCodigo;
+end;
 go
+
 
 /******************************************************************************************
 Procedimiento: pro_Mostrar_MedicosConEspecialidad
@@ -315,6 +313,33 @@ create or alter procedure Pro_Listar_TipoConsulta
             tipoConsultaDescripcion
 end
 go
+
+
+/*********************************************************************************************
+Procedimiento: pro_Mostrar_Medico_por_codigo
+Descripcion: Lista un medico dependiendo del medico
+*********************************************************************************************/
+
+create or alter procedure pro_Mostrar_Medico_por_codigo
+    @medicoCodigo nchar(10)
+as
+begin
+    set nocount on;
+
+    select 
+        medicoCodigo,
+        medicoApellido,
+        medicoNombre,
+        medicoCorreo,
+        medicoDNI,
+        medicoTelefono,
+        medicoEstado,
+        especialidadCodigo
+    from Administracion.Medico
+    where medicoCodigo = @medicoCodigo;
+end;
+go
+
 
 /*********************************************************************************************
 Procedimiento: pro_Listar_Especialidad
@@ -355,11 +380,7 @@ Parámetros:
 CREATE or alter PROCEDURE pro_Insertar_Cita
     @citaCodigo nchar(10),
     @citaEstado nchar(1) = 'P',
-    @citaFechaHora datetime,
-    @citaNotificacionCodigo nchar(10) = NULL,
-    @citaPacienteCodigo nchar(10),
-    @citaTipoConsultaCodigo nchar(10),
-    @citaMedicoCodigo nchar(10)
+    @citaFechaHora datetime
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -368,37 +389,17 @@ BEGIN
     (
         citaCodigo,
         citaEstado,
-        citaFechaHora,
-        citaNotificacionCodigo,
-        citaPacienteCodigo,
-        citaTipoConsultaCodigo,
-        citaMedicoCodigo
+        citaFechaHora
     )
     VALUES 
     (
         @citaCodigo,
         @citaEstado,
-        @citaFechaHora,
-        @citaNotificacionCodigo,
-        @citaPacienteCodigo,
-        @citaTipoConsultaCodigo,
-        @citaMedicoCodigo
+        @citaFechaHora
     );
 END
 GO
-/*********************************
-select * from Salud.paciente
-select * from Gestion.notificacion
-select * from Administracion.medico
-select * from Gestion.tipoConsulta
-EXEC pro_Insertar_Cita 
-    @citaCodigo = 'CITA004', 
-    @citaFechaHora = '2024-10-22 10:00', 
-    @citaNotificacionCodigo = 'N001', 
-    @citaPacienteCodigo = 'P001', 
-    @citaTipoConsultaCodigo = 'TC01', 
-    @citaMedicoCodigo = 'M001';
-*****************************************/
+
 
 /*************************************************************************************************************************
 Procedimiento: pro_Buscar_Paciente
@@ -455,26 +456,6 @@ BEGIN
 END
 GO
 
---------------------------------------
-/*************************************************************************************************************************
-Procedimiento: pro_Cancelar_Cita
-Descripción: procedimiento almacenado para cancelar una cita cambiando el estado de la cita.
-Parámetros: 
- -@citaCodigo: El codigo de la cita a cambiar estado.
-
-***************************************************************************************************************************/
-CREATE or alter PROCEDURE pro_Cancelar_Cita
-    @citaCodigo nchar(10)
-AS
-BEGIN
-    UPDATE Gestion.cita
-    SET citaEstado = 'X'
-    WHERE citaCodigo = @citaCodigo;
-END
-GO
---select * from Gestion.cita
---EXEC pro_Cancelar_Cita 'CITA001';
-
 /*************************************************************************************************************************
 Procedimiento: pro_CambiarEstadoPaciente
 Descripción: Cambiar el estado pacienteEstado con I de inactivo al momento de eliminar al paciente.
@@ -503,7 +484,7 @@ Parámetros:
 
 ***************************************************************************************************************************/
 
-CREATE or alter PROCEDURE pro_VisualizarCitasPaciente
+CREATE OR ALTER PROCEDURE pro_VisualizarCitasPaciente
     @pacienteCodigo nchar(10)
 AS
 BEGIN
@@ -513,18 +494,28 @@ BEGIN
         c.citaCodigo,
         c.citaEstado,
         c.citaFechaHora,
-        c.citaTipoConsultaCodigo,
-        c.citaNotificacionCodigo,
+        tc.tipoConsultaDescripcion,
         m.medicoNombre,
-        m.medicoApellido
+        m.medicoApellido,
+        con.consultaFechaHoraFinal
     FROM 
         Gestion.cita c
-    JOIN 
-        Administracion.medico m ON c.citaMedicoCodigo = m.medicoCodigo
+    INNER JOIN 
+        Gestion.Consulta con ON c.citaCodigo = con.consultacitaCodigo
+    INNER JOIN 
+        Gestion.tipoConsulta tc ON con.tipoConsultaCodigo = tc.tipoConsultaCodigo
+    INNER JOIN 
+        Administracion.Medico m ON con.medicoCodigo = m.medicoCodigo
+    INNER JOIN 
+        Salud.Pacientes p ON con.pacienteCodigo = p.pacienteCodigo
+    INNER JOIN 
+        Salud.HistoriaClinica hc ON hc.historialClinicoCodigo = p.historialClinicoCodigo
     WHERE 
-        c.citaPacienteCodigo = @pacienteCodigo;
-END
+        p.pacienteCodigo = @pacienteCodigo;
+END;
 GO
+
+--exec pro_VisualizarCitasPaciente @pacienteCodigo = PAC0000001
 
 /*************************************************************************************************************************
 Procedimiento: pro_Mostrar_Citas
@@ -534,31 +525,39 @@ Parámetros:
 
 ***************************************************************************************************************************/
 
-create or alter procedure pro_Mostrar_Citas
-as
-begin
-    set nocount on;
+CREATE OR ALTER PROCEDURE pro_Mostrar_Citas
+AS
+BEGIN
+    SET NOCOUNT ON;
 
-    select 
-        c.citaCodigo as CodigoCita,
-        c.citaEstado as EstadoCita,
-        c.citaFechaHora as FechaHoraCita,
-        c.citaTipoConsultaCodigo as TipoConsultaCodigo,
-        c.citaNotificacionCodigo as NotificacionCodigo,
-        m.medicoNombre as NombreMedico,
-        m.medicoApellido as ApellidoMedico,
-		p.pacienteCodigo,
-		p.pacienteNombreCompleto As NombrePaciente
-    from 
-        Gestion.cita as c
-    join 
-        Administracion.medico as m on c.citaMedicoCodigo = m.medicoCodigo
-	join
-		Salud.Pacientes as p on c.citaPacienteCodigo = p.pacienteCodigo;
+    SELECT 
+        c.citaCodigo,
+        c.citaEstado,
+        c.citaFechaHora,
+        tc.tipoConsultaDescripcion AS citaTipoConsultaDescripcion,
+        m.medicoCodigo,
+        m.medicoNombre,
+        m.medicoApellido,
+        e.especialidadCodigo,
+        e.especialidadNombre,
+        p.pacienteCodigo,
+        p.pacienteNombreCompleto
+    FROM 
+        Gestion.cita AS c
+    LEFT JOIN 
+        Gestion.Consulta AS con ON c.citaCodigo = con.consultacitaCodigo
+    LEFT JOIN 
+        Administracion.Medico AS m ON con.medicoCodigo = m.medicoCodigo
+    LEFT JOIN 
+        Administracion.Especialidad AS e ON m.especialidadCodigo = e.especialidadCodigo
+    LEFT JOIN 
+        Salud.Pacientes AS p ON con.pacienteCodigo = p.pacienteCodigo
+    LEFT JOIN 
+        Gestion.tipoConsulta AS tc ON con.tipoConsultaCodigo = tc.tipoConsultaCodigo;
 
-    set nocount off;
-end
-go
+    SET NOCOUNT OFF;
+END;
+GO
 
 
 /******************************************************************************************
@@ -572,41 +571,107 @@ Fecha        Usuario         Descripción de cambio
 ---------------------------------------------------------------------------------------------
 <12/11/2024> <Jonathan Roque>      Creación inicial
 **************************************************************************************/
-create or alter procedure pro_AgregarHistoriaClinica
-    @historialClinicoCodigo nchar(10),
-    @pacienteCodigo nchar(10),
-    @antecedentesMedicos nvarchar(255) = null,
-    @alergias nvarchar(255) = null,
-    @fechaCreacion date,
-    @fechaActualizacion date
+create or alter procedure pro_Crear_HistoriaClinica
+    @historialClinicoCodigo nchar(10)
 	as
 	begin
 		set nocount on;
 
 		insert into Salud.HistoriaClinica
 		(
-			historialClinicoCodigo,
-			pacienteCodigo,
-			antecedentesMedicos,
-			alergias,
-			fechaCreacion,
-			fechaActualizacion
+			historialClinicoCodigo
 		)
 		values
 		(
-			@historialClinicoCodigo,
-			@pacienteCodigo,
-			@antecedentesMedicos,
-			@alergias,
-			@fechaCreacion,
-			@fechaActualizacion
+			@historialClinicoCodigo
 		);
 
 		set nocount off;
 	end
 go
 
+/******************************************************************************************
+Descripción de procedimiento almacenado:
+---------------------------------------------------------------------------------------------
+listar la hostorial clinica de un paciente.
 
+**************************************************************************************/
+CREATE OR ALTER PROCEDURE pro_listar_HistoriaClinica
+    @historialClinicoCodigo NCHAR(10)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        c.consultaCodigo,
+        c.consultacitaCodigo,
+        c.consultaFechaHoraFinal,
+        c.tipoConsultaCodigo,
+        c.medicoCodigo,
+        c.pacienteCodigo,
+		ci.citaEstado
+    FROM 
+        Gestion.Consulta AS c
+    INNER JOIN 
+        Salud.Pacientes AS p ON c.pacienteCodigo = p.pacienteCodigo
+	inner join
+		Gestion.cita as ci on c.consultacitaCodigo = ci.citaCodigo
+    WHERE 
+        p.historialClinicoCodigo = @historialClinicoCodigo;
+
+    SET NOCOUNT OFF;
+END;
+GO
+
+--exec pro_listar_HistoriaClinica @historialClinicoCodigo = HIS0000002
+--go
+/******************************************************************************************
+Descripción de procedimiento almacenado:
+---------------------------------------------------------------------------------------------
+Lista los diagnosticos por consulta
+**************************************************************************************/
+
+CREATE OR ALTER PROCEDURE pro_listar_DiagnosticosPorConsulta
+    @consultaCodigo NCHAR(10)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        diagnosticoCodigo,
+        diagnosticoDescripcion
+    FROM 
+        Salud.Diagnostico
+    WHERE 
+        diagnosticoconsultaCodigo = @consultaCodigo;
+
+    SET NOCOUNT OFF;
+END;
+GO
+
+CREATE OR ALTER PROCEDURE pro_listar_RecetasPorConsulta
+    @consultaCodigo NCHAR(10)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        recetaCodigo,
+        recetaDescripcion,
+        recetaTratamiento,
+        recetaRecomendaciones
+    FROM 
+        Salud.RecetaMedica
+    WHERE 
+        recetaConsultaCodigo = @consultaCodigo;
+
+    SET NOCOUNT OFF;
+END;
+GO
+
+
+--exec pro_listar_RecetasPorConsulta @consultaCodigo = CON0000002
+--go
 CREATE or alter PROCEDURE pro_Listar_Medicos
 AS
 BEGIN
@@ -631,49 +696,44 @@ GO
 --*******************************************************************************************************************************************************
 --PROCEDIMIENTOS ALMACENADOS PARA ATENDER CONSULTAS 
 /******************************************************************************************
-Procedimiento: pro_Guardar_Consulta
+Procedimiento: pro_Crear_Consulta
 Descripción: Este procedimiento se enfoca únicamente en insertar los datos proporcionados en la tabla Gestion.Consulta.
 -@consultaCodigo: Código único para la consulta.
--@consultaFechaHora: Fecha y hora de la consulta.
+-@consultaCitaCodigo: Codigo de la cita
+-@consultaFechaHoraFinal: Fecha y hora de la consulta.
 -@consultaMedicoCodigo: Código del médico asociado a la consulta.
 -@consultaPacienteCodigo: Código del paciente asociado.
 -@consultaMotivo: Motivo de la consulta.
 -@consultaEstado: Estado de la consulta (P = Pendiente, por defecto).
 ******************************************************************************************/
-CREATE or alter PROCEDURE pro_Guardar_Consulta
+create or alter procedure pro_Crear_Consulta
     @consultaCodigo nchar(10),
-    @consultaFechaHora datetime,
-    @consultaMedicoCodigo nchar(10),
-    @consultaPacienteCodigo nchar(10),
-    @consultaMotivo nvarchar(255),
-    @consultaEstado nchar(1) = 'P' 
-AS
-BEGIN
-    BEGIN TRY
-        INSERT INTO Gestion.Consulta (
-            consultaCodigo,
-            consultaFechaHora,
-            consultaMedicoCodigo,
-            consultaPacienteCodigo,
-            consultaMotivo,
-            consultaEstado
-        )
-        VALUES (
-            @consultaCodigo,
-            @consultaFechaHora,
-            @consultaMedicoCodigo,
-            @consultaPacienteCodigo,
-            @consultaMotivo,
-            @consultaEstado
-        );
+    @consultaCitaCodigo nchar(10),
+    @consultaFechaHoraFinal datetime = null,
 
-        PRINT 'Consulta guardada exitosamente.';
-    END TRY
-    BEGIN CATCH
-        PRINT 'Error al guardar la consulta: ' + ERROR_MESSAGE();
-    END CATCH
-END;
-GO
+	@medicoCodigo nchar(10),
+    @tipoConsultaCodigo nchar(10),
+	@pacienteCodigo nchar(10)
+    as
+    begin
+        set nocount on;
+
+    -- Inserción directa en la tabla Gestion.Consulta
+    insert into Gestion.Consulta (
+		[consultaCodigo], [consultacitaCodigo], [consultaFechaHoraFinal], [medicoCodigo], [tipoConsultaCodigo], [pacienteCodigo]
+    )
+    values (
+        @consultaCodigo,
+        @consultaCitaCodigo,
+        @consultaFechaHoraFinal,
+		@medicoCodigo,
+		@tipoConsultaCodigo,
+		@pacienteCodigo
+    );
+    set nocount off;
+end;
+go
+
 
 /******************************************************************************************
 Procedimiento: pro_Listar_Consulta
@@ -685,157 +745,148 @@ Descripción: Procedimiento almacenado que devuelve una lista de consultas ordena
 -Motivo: Motivo de la consulta.
 -Estado: Estado de la consulta (P, C, X).
 ******************************************************************************************/
-CREATE or alter PROCEDURE pro_Listar_Consulta
+
+CREATE OR ALTER PROCEDURE pro_Listar_Consulta
 AS
 BEGIN
-    BEGIN TRY
-        SELECT 
-            consultaCodigo AS Codigo,
-            consultaFechaHora AS FechaHora,
-            consultaMedicoCodigo AS Medico,
-            consultaPacienteCodigo AS Paciente,
-            consultaMotivo AS Motivo,
-            consultaEstado AS Estado
-        FROM 
-            Gestion.Consulta
-        ORDER BY 
-            CASE 
-                WHEN consultaEstado = 'P' THEN 1 
-                WHEN consultaEstado = 'C' THEN 2
-                ELSE 3 
-            END,
-            consultaFechaHora DESC; 
+    SET NOCOUNT ON;
 
-        PRINT 'Consultas listadas exitosamente.';
-    END TRY
-    BEGIN CATCH
-        PRINT 'Error al listar consultas: ' + ERROR_MESSAGE();
-    END CATCH
+    SELECT 
+        C.consultaCodigo,
+		C.consultacitaCodigo,
+		ci.citaFechaHora,
+		ci.citaEstado,
+		C.consultaFechaHoraFinal,
+		c.pacienteCodigo,
+		p.pacienteNombreCompleto,
+		c.medicoCodigo,
+		me.medicoNombre,
+		me.medicoApellido,
+		c.tipoConsultaCodigo,
+		p.historialClinicoCodigo
+		
+    FROM 
+        Gestion.Consulta AS c
+    LEFT join 
+		Gestion.cita as ci on ci.citaCodigo = c.consultacitaCodigo
+	left join 
+		Administracion.Medico as me on c.medicoCodigo = me.medicoCodigo
+	left join
+		Salud.Pacientes as p on c.pacienteCodigo = p.pacienteCodigo
+    SET NOCOUNT OFF;
 END;
 GO
-/******************************************************************************************
-Procedimiento: pro_GuardarCambios_Consulta
-Descripción: Este procedimiento almacenado actualizará los datos de una consulta y, adicionalmente, 
-registrará el cambio en la tabla RegistroCambios para hacer un seguimiento de las modificaciones.
--@consultaCodigo: Código de la consulta a modificar.
--@nuevoMotivo: Nuevo motivo o descripción de la consulta.
--@nuevoEstado: Nuevo estado de la consulta (P, C, X).
--@cambiomedicoCodigo: El código del médico que realiza el cambio.
--@cambioDescripcion: Descripción del cambio realizado.
-******************************************************************************************/
-CREATE or alter PROCEDURE pro_GuardarCambios_Consulta
-(
-    @consultaCodigo nchar(10),              
-    @nuevoMotivo nvarchar(255),       
-    @nuevoEstado nchar(1),                
-    @cambiomedicoCodigo nchar(10),          
-    @cambioDescripcion nvarchar(255)         
-)
-AS
-BEGIN
-    BEGIN TRANSACTION;
 
-    UPDATE Gestion.Consulta
-    SET 
-        consultaMotivo = @nuevoMotivo,
-        consultaEstado = @nuevoEstado
-    WHERE consultaCodigo = @consultaCodigo;
 
-    INSERT INTO Salud.RegistroCambios
-    (
-        cambioCodigo,
-        cambioHistorialClinicoCodigo,
-        cambioDescripcion,
-        cambioFecha,
-        cambiomedicoCodigo
-    )
-    VALUES
-    (
-        NEWID(),                                         
-        (SELECT historialClinicoCodigo FROM Salud.HistoriaClinica WHERE pacienteCodigo = (SELECT consultaPacienteCodigo FROM Gestion.Consulta WHERE consultaCodigo = @consultaCodigo)),
-        @cambioDescripcion,
-        GETDATE(),                                      
-        @cambiomedicoCodigo                               
-    );
-
-    COMMIT TRANSACTION;
-END
-GO
 
 /******************************************************************************************
-Procedimiento: pro_Mostrar_Consulta_Pacientes
-Descripción: Procedimiento almacenado para mostrar los pacientes con su motivo de consulta.
--pacienteCodigo: El código único del paciente.
--pacienteNombreCompleto: El nombre completo del paciente.
--pacienteDNI: El DNI del paciente.
--pacienteTelefono: El teléfono del paciente.
--consultaCodigo: El código de la consulta.
--consultaMotivo: El motivo de la consulta.
--La condición c.consultaEstado = 'P' filtra las consultas que están en estado Pendiente. Puedes quitar o modificar este filtro según tus necesidades.
-******************************************************************************************/
-CREATE or alter PROCEDURE pro_Mostrar_Consulta_Pacientes
-AS
-BEGIN
-    SELECT 
-        p.pacienteCodigo,
-        p.pacienteNombreCompleto,
-        p.pacienteDNI,
-        p.pacienteTelefono,
-        c.consultaCodigo,
-        c.consultaMotivo
-    FROM 
-        Salud.Pacientes p
-    INNER JOIN 
-        Gestion.Consulta c ON p.pacienteCodigo = c.consultaPacienteCodigo
-    WHERE 
-        c.consultaEstado = 'P' 
-    ORDER BY 
-        p.pacienteNombreCompleto; 
-END
-GO
-/******************************************************************************************
-Procedimiento: pro_Cambiar_Estado_Consulta
+Procedimiento: pro_Cambiar_Estado_Cita
 Descripción:  Procedimiento almacenado para cambiar el estado de una consulta.
 -@consultaCodigo: El código de la consulta que deseas modificar.
 -@nuevoEstado: El nuevo estado que deseas asignar a la consulta. Los posibles valores son 'P', 'C', 'X'.
 -@cambiomedicoCodigo: El código del médico que está realizando el cambio.
 -@cambioDescripcion: Una descripción que indica qué cambio se ha realizado.
 ******************************************************************************************/
-CREATE or alter PROCEDURE pro_Cambiar_Estado_Consulta
-(
-    @consultaCodigo nchar(10),           
-    @nuevoEstado nchar(1),                
-    @cambiomedicoCodigo nchar(10),        
-    @cambioDescripcion nvarchar(255)     
-)
+
+
+create or alter procedure pro_Actualizar_Estado_CitaPendiente
+    @citaCodigo nchar(10)
+as
+begin
+    set nocount on;
+
+    update Gestion.cita
+    set citaEstado = 'P'
+    where citaCodigo = @citaCodigo;
+
+    set nocount off;
+end;
+go
+
+create or alter procedure pro_Actualizar_Estado_CitaCancelado
+    @citaCodigo nchar(10)
+as
+begin
+    set nocount on;
+
+    update Gestion.cita
+    set citaEstado = 'C'
+    where citaCodigo = @citaCodigo;
+
+    set nocount off;
+end;
+go
+
+create or alter procedure pro_Actualizar_Estado_CitaNoAsistio
+    @citaCodigo nchar(10)
+as
+begin
+    set nocount on;
+
+    update Gestion.cita
+    set citaEstado = 'N'
+    where citaCodigo = @citaCodigo;
+
+    set nocount off;
+end;
+go
+
+create or alter procedure pro_Actualizar_Estado_CitaAtendido
+    @citaCodigo nchar(10)
+as
+begin
+    set nocount on;
+
+    update Gestion.cita
+    set citaEstado = 'A'
+    where citaCodigo = @citaCodigo;
+
+    set nocount off;
+end
+go
+
+
+
+
+CREATE OR ALTER PROCEDURE pro_Actualizar_Estado_CitaAtendiendose
+    @citaCodigo NCHAR(10)
 AS
 BEGIN
-    UPDATE Gestion.Consulta
-    SET 
-        consultaEstado = @nuevoEstado
-    WHERE consultaCodigo = @consultaCodigo;
+    SET NOCOUNT ON;
 
-    INSERT INTO Salud.RegistroCambios
-    (
-        cambioCodigo,
-        cambioHistorialClinicoCodigo,
-        cambioDescripcion,
-        cambioFecha,
-        cambiomedicoCodigo
-    )
-    VALUES
-    (
-        NEWID(),                                  
-        (SELECT historialClinicoCodigo FROM Salud.HistoriaClinica WHERE pacienteCodigo = (SELECT consultaPacienteCodigo FROM Gestion.Consulta WHERE consultaCodigo = @consultaCodigo)),
-        @cambioDescripcion,
-        GETDATE(),                                      
-        @cambiomedicoCodigo                            
-    );
+    -- Actualizar el estado y la hora de inicio de la cita
+    UPDATE Gestion.cita
+    SET 
+        citaEstado = 'T',
+        citaFechaHora = GETDATE() -- Asegúrate de que esta columna sea la correcta
+    WHERE citaCodigo = @citaCodigo;
 END
 GO
 
 
 
+/******************************************************************************************
+Descripción de procedimiento almacenado: Verificar si la cita existe
+---------------------------------------------------------------------------------------------
+**************************************************************************************/
+
+
+
+--CREATE or alter PROCEDURE pro_Verificar_Cita_Existente
+--		@fechaHora DATETIME,
+--		@medicoCodigo VARCHAR(50)
+--	AS
+--	BEGIN
+--		IF EXISTS (SELECT 1 FROM Gestion.cita WHERE CitaFechaHora = @fechaHora AND CitaMedicoCodigo = @medicoCodigo)
+--		BEGIN
+--			SELECT 1;  -- La cita ya existe
+--		END
+--		ELSE
+--		BEGIN
+--			SELECT 0;  -- No hay cita existente
+--		END
+--	END
+--go
 /******************************************************************************************
 Descripción de procedimiento almacenado: Genera un código único basado en un prefijo y la secuencia en una columna específica.
 ---------------------------------------------------------------------------------------------
@@ -843,6 +894,7 @@ Descripción de procedimiento almacenado: Genera un código único basado en un pre
 ---------------------------------------------------------------------------------------------
  12/11/2024  Usuario       Creación del procedimiento con ajuste a nchar(10)
 **************************************************************************************/
+
 
 create or alter procedure spGenerarCodigoUnico
     @prefijo nvarchar(3),         
@@ -865,3 +917,197 @@ as
 
 set nocount off;
 go
+
+
+/******************************************************************************************
+Descripción de procedimiento almacenado: 
+Este procedimiento me lista la agenda de un medico en una fecha elegida 
+---------------------------------------------------------------------------------------------
+ Fecha     Usuario      Descripción de cambio
+---------------------------------------------------------------------------------------------
+ 12/11/2024  Usuario       Creación del procedimiento con ajuste a nchar(10)
+**************************************************************************************/
+--EXEC pro_Listar_AgendaMedico @medicoCodigo = 'MED0000004', @fecha = '2024-12-21';
+
+
+CREATE OR ALTER PROCEDURE pro_Listar_AgendaMedico
+    @medicoCodigo nchar(10),
+    @fecha date
+AS
+BEGIN
+    -- Variables para almacenar las horas de inicio y fin del horario
+    DECLARE @horaInicio time;
+    DECLARE @horaFin time;
+    
+    -- Seleccionar el horario del médico para el día especificado
+    SELECT 
+        @horaInicio = h.horarioHoraInicio,
+        @horaFin = h.horarioHoraFin
+    FROM 
+        Gestion.horario h
+    WHERE 
+        h.medicoCodigo = @medicoCodigo
+        AND UPPER(h.horarioDia) = UPPER(DATENAME(weekday, @fecha));
+
+    -- Validar si se encontró el horario
+    IF @horaInicio IS NULL OR @horaFin IS NULL
+    BEGIN
+        PRINT 'No se encontró horario para el médico en el día especificado.';
+        RETURN;
+    END
+
+    -- Crear una tabla temporal para los intervalos de tiempo
+    CREATE TABLE #IntervalosTiempo (
+        HoraInicio time,
+        HoraFin time
+    );
+    
+    -- Insertar intervalos de tiempo basados en el horario del médico
+    DECLARE @intervaloMinutos int = 60; -- Intervalo de 1 hora (60 minutos)
+    DECLARE @currentInicio time = @horaInicio;
+    DECLARE @currentFin time;
+
+    WHILE @currentInicio < @horaFin
+    BEGIN
+        SET @currentFin = DATEADD(minute, @intervaloMinutos, @currentInicio);
+        
+        IF @currentFin <= @horaFin
+        BEGIN
+            INSERT INTO #IntervalosTiempo (HoraInicio, HoraFin)
+            VALUES (@currentInicio, @currentFin);
+        END
+        
+        SET @currentInicio = @currentFin;
+    END;
+    
+    -- Seleccionar la agenda del médico
+    SELECT 
+        i.HoraInicio,
+        i.HoraFin,
+        COALESCE(c.citaEstado, 'Libre') AS estado,
+        c.citaCodigo,
+        c.citaPacienteCodigo,
+        c.citaMedicoCodigo,
+        ISNULL(m.medicoNombre + ' ' + m.medicoApellido, 'N/A') AS nombreMedico,
+        ISNULL(p.pacienteNombreCompleto, 'N/A') AS pacienteNombreCompleto
+    FROM 
+        #IntervalosTiempo i
+    LEFT JOIN 
+        Gestion.cita c ON c.citaMedicoCodigo = @medicoCodigo 
+                       AND CONVERT(date, c.citaFechaHora) = @fecha
+                       AND CONVERT(time, c.citaFechaHora) >= i.HoraInicio
+                       AND CONVERT(time, c.citaFechaHora) < DATEADD(minute, @intervaloMinutos, i.HoraInicio)
+    LEFT JOIN 
+        Administracion.Medico m ON c.citaMedicoCodigo = m.medicoCodigo
+    LEFT JOIN 
+        Salud.Pacientes p ON c.citaPacienteCodigo = p.pacienteCodigo
+    ORDER BY 
+        i.HoraInicio;
+
+    -- Eliminar la tabla temporal
+    DROP TABLE #IntervalosTiempo;
+END
+GO
+
+--EXEC pro_Listar_AgendaMedico @medicoCodigo = 'MED0000004', @fecha = '2024-12-21';
+
+
+/******************************************************************************************
+Descripción de procedimiento almacenado: 
+Procedimiento para crear detaññes de ima comsulta
+
+**************************************************************************************/
+CREATE or alter PROCEDURE pro_registrar_DetallesConsulta
+    @DetallesConsultaCodigo NCHAR(10),
+    @DetallesConsultaHistoriaEnfermedad NVARCHAR(500) = NULL,
+    @DetallesConsultaRevisiones NVARCHAR(500) = NULL,
+    @DetallesConsultaEvaluacionPsico NVARCHAR(500) = NULL,
+    @DetallesConsultaMotivoConsulta NVARCHAR(500) = NULL,
+    @ConsultaCodigo NCHAR(10)
+AS
+BEGIN
+        -- Insertar en la tabla DetallesConsulta
+        INSERT INTO Gestion.DetallesConsulta (
+            detallesConsultaCodigo,
+            detallesConsultaHistoriaEnfermedad,
+            detallesConsultaRevisiones,
+            detallesConsultaEvaluacionPsico,
+            detallesConsultaMotivoConsulta,
+            consultaCodigo
+        )
+        VALUES (
+            @DetallesConsultaCodigo,
+            @DetallesConsultaHistoriaEnfermedad,
+            @DetallesConsultaRevisiones,
+            @DetallesConsultaEvaluacionPsico,
+            @DetallesConsultaMotivoConsulta,
+            @ConsultaCodigo
+        );
+END;
+GO
+
+--procedimiento aqui oe
+CREATE OR ALTER PROCEDURE pro_registrar_RecetaMedica
+        @RecetaCodigo NCHAR(10),
+        @RecetaConsultaCodigo NCHAR(10),
+        @RecetaDescripcion NVARCHAR(500),
+        @RecetaTratamiento NVARCHAR(500),
+        @RecetaRecomendaciones NVARCHAR(500)
+AS
+BEGIN
+        -- Insertar en la tabla RecetaMedica
+        INSERT INTO Salud.RecetaMedica (
+            recetaCodigo,
+            recetaConsultaCodigo,
+            recetaDescripcion,
+            recetaTratamiento,
+            recetaRecomendaciones
+        )
+        VALUES (
+            @RecetaCodigo,
+            @RecetaConsultaCodigo,
+            @RecetaDescripcion,
+            @RecetaTratamiento,
+            @RecetaRecomendaciones
+    );
+END;
+GO
+
+
+CREATE OR ALTER PROCEDURE pro_registrar_Diagnostico
+    @DiagnosticoCodigo NCHAR(10),
+    @DiagnosticoConsultaCodigo NCHAR(10),
+    @DiagnosticoDescripcion NVARCHAR(255),
+    @DiagnosticoCodigoCie11  nvarchar(50) NULL
+AS
+BEGIN
+    INSERT INTO Salud.Diagnostico (
+        diagnosticoCodigo,
+        diagnosticoconsultaCodigo,
+        diagnosticoDescripcion,
+        diagnosticosCodigoCie11
+    )
+    VALUES (
+        @DiagnosticoCodigo,
+        @DiagnosticoConsultaCodigo,
+        @DiagnosticoDescripcion,
+        @DiagnosticoCodigoCie11
+
+    );
+END;
+GO
+
+--este procedimiento me ayudara a actualziar la hora final de la consulta
+CREATE or alter PROCEDURE pro_actualizar_HoraFinalConsulta
+    @ConsultaCodigo NCHAR(10)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE Gestion.Consulta
+    SET consultaFechaHoraFinal = GETDATE()
+    WHERE consultaCodigo = @ConsultaCodigo;
+END
+GO
+
+

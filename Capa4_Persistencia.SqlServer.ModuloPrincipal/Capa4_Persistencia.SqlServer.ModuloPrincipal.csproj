@@ -46,11 +46,14 @@
     <Compile Include="CodigoSQL.cs" />
     <Compile Include="ConsultaSQL.cs" />
     <Compile Include="ContactoEmergenciaSQL.cs" />
+    <Compile Include="DetallesConsultaSQL.cs" />
+    <Compile Include="DiagnosticoSQL.cs" />
     <Compile Include="EspecialidadSQL.cs" />
     <Compile Include="HistoriaClinicaSQL.cs" />
     <Compile Include="MedicoSQL.cs" />
     <Compile Include="PacienteSQL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RecetasMedicasSQL.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Capa3_Dominio.ModuloPrincipal\Capa3_Dominio.ModuloPrincipal.csproj">
@@ -61,6 +64,9 @@
       <Project>{89b50410-4744-4a48-9ca7-614acd9888bb}</Project>
       <Name>Capa4_Persistencia.SqlServer.ModuloBase</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

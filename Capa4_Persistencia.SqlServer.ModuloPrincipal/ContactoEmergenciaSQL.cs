@@ -28,9 +28,18 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                 SqlDataReader resultadoSQL = comandoSQL.ExecuteReader();
                 while (resultadoSQL.Read())
                 {
-                    ContactoEmergencia contacto = ObtenerContactoEmergencia(resultadoSQL);
+
+                    ContactoEmergencia contacto = new ContactoEmergencia
+                    {
+                        ContactoEmergenciaCodigo = resultadoSQL.GetString(0), // contactoEmergenciaCodigo
+                        ContactoEmergenciaNombre = resultadoSQL.GetString(1), // contactoEmergenciaNombre
+                        ContactoEmergenciaRelacion = resultadoSQL.GetString(2), // contactoEmergenciaRelacion
+                        ContactoEmergenciaTelefono = resultadoSQL.GetString(3), // contactoEmergenciaTelefono
+                    };
+
                     listaContactos.Add(contacto);
                 }
+                resultadoSQL.Close();
             }
             catch (SqlException)
             {
@@ -39,22 +48,9 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             return listaContactos;
         }
 
-        private ContactoEmergencia ObtenerContactoEmergencia(SqlDataReader resultadoSQL)
+        public void AgregarContactoEmergencia(ContactoEmergencia contactoEmergencia)
         {
-            ContactoEmergencia contactoEmergencia = new ContactoEmergencia
-            {
-                ContactoEmergenciaCodigo = resultadoSQL.GetString(0),
-                ContactoEmergenciaNombre = resultadoSQL.GetString(1),
-                ContactoEmergenciaRelacion = resultadoSQL.GetString(2),
-                ContactoEmergenciaTelefono = resultadoSQL.GetString(3)
-            };
-            return contactoEmergencia;
-        }
-
-
-        public void AgregarContactoEmergencia(ContactoEmergencia contactoEmergencia, string pacienteCodigo)
-        {
-            string procedimientoSQL = "pro_ContactosEmergencia_Agregar";
+            string procedimientoSQL = "pro_Agregar_ContactoEmergencia";
             try
             {
                 SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
@@ -63,7 +59,7 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                 comandoSQL.Parameters.Add(new SqlParameter("@contactoEmergenciaNombre", contactoEmergencia.ContactoEmergenciaNombre));
                 comandoSQL.Parameters.Add(new SqlParameter("@contactoEmergenciaRelacion", contactoEmergencia.ContactoEmergenciaRelacion));
                 comandoSQL.Parameters.Add(new SqlParameter("@contactoEmergenciaTelefono", contactoEmergencia.ContactoEmergenciaTelefono));
-                comandoSQL.Parameters.Add(new SqlParameter("@pacienteCodigo", pacienteCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@pacienteCodigo", contactoEmergencia.Paciente.PacienteCodigo));
 
                 comandoSQL.ExecuteNonQuery();
             }
@@ -74,6 +70,27 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                 throw ex;
             }
             
+        }
+
+
+        public void ActualizarContactoEmergencia(ContactoEmergencia contactoEmergencia)
+        {
+            string procedimientoSQL = "pro_Actualizar_ContactoEmergencia";
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
+
+                comandoSQL.Parameters.Add(new SqlParameter("@contactoEmergenciaCodigo", contactoEmergencia.ContactoEmergenciaCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@contactoEmergenciaNombre", contactoEmergencia.ContactoEmergenciaNombre));
+                comandoSQL.Parameters.Add(new SqlParameter("@contactoEmergenciaRelacion", contactoEmergencia.ContactoEmergenciaRelacion));
+                comandoSQL.Parameters.Add(new SqlParameter("@contactoEmergenciaTelefono", contactoEmergencia.ContactoEmergenciaTelefono));
+
+                comandoSQL.ExecuteNonQuery();
+            }
+            catch (SqlException ex)
+            {
+                throw new Exception("Error al actualizar el contacto de emergencia.", ex);
+            }
         }
 
     }

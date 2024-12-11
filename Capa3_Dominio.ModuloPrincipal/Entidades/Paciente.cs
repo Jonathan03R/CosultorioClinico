@@ -18,6 +18,8 @@ namespace Capa3_Dominio.ModuloPrincipal
         private string pacienteCorreoElectronico;
         private string pacienteEstado;
 
+        private HistoriaClinica historiaClinica;
+
         public string PacienteCodigo { get => pacienteCodigo; set => pacienteCodigo = value; }
         public string PacienteDNI { get => pacienteDNI; set => pacienteDNI = value; }
         public string PacienteNombreCompleto { get => pacienteNombreCompleto; set => pacienteNombreCompleto = value; }
@@ -26,35 +28,44 @@ namespace Capa3_Dominio.ModuloPrincipal
         public string PacienteTelefono { get => pacienteTelefono; set => pacienteTelefono = value; }
         public string PacienteCorreoElectronico { get => pacienteCorreoElectronico; set => pacienteCorreoElectronico = value; }
         public string PacienteEstado { get => pacienteEstado; set => pacienteEstado = value; }
-
-
+        public HistoriaClinica HistoriaClinica { get => historiaClinica; set => historiaClinica = value; }
 
         public bool EsValidoElNumeroDelPaciente() 
         {
-            if (string.IsNullOrEmpty(pacienteTelefono))
+            if (string.IsNullOrEmpty(PacienteTelefono))
                 return false;
 
-            if (!pacienteTelefono.All(char.IsDigit))
+            if (!PacienteTelefono.All(char.IsDigit))
                 return false;
 
-            if (pacienteTelefono.Length == 9 && pacienteTelefono.StartsWith("9"))
+            if (PacienteTelefono.Length == 9 && PacienteTelefono.StartsWith("9"))
                 return true;
 
             return false;
         }
 
+        public bool EsFechaNacimientoValida()
+        {
+            // La fecha de nacimiento no puede ser en el futuro
+            if (PacienteFechaNacimiento > DateTime.Now)
+            {
+                return false;
+            }
+            // El paciente debe tener al menos un día de nacido
+            TimeSpan edad = DateTime.Now - PacienteFechaNacimiento;
+            if (edad.TotalDays < 1)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public bool esPacienteActivo()
         {
-            return pacienteEstado == "A";
+            return PacienteEstado == "A";
         }
 
-        public bool EsDatosValidos()
-        {
-            bool esNombreValido = !string.IsNullOrEmpty(pacienteNombreCompleto);
-
-            bool esDniValido = !string.IsNullOrEmpty(pacienteDNI) && pacienteDNI.Length == 8 && pacienteDNI.All(char.IsDigit);
-            return esNombreValido && esDniValido;
-        }
     }
 }
 

@@ -17,8 +17,9 @@
         <input type="search" id="buscador-personalizado" class="form-control rounded-end " placeholder="buscar" aria-label="Search" aria-describedby="search-addon" />
     </div>
 
+
     <div class="d-flex align-items-center my-3">
-        <ul class="nav ">
+        <ul class="nav " id="sub-nav">
             <li class="nav-item">
                 <a class="nav-link active" href="#" data-filter="all">All <span id="total-count" class="badge badge-custom">0</span></a>
             </li>
@@ -64,9 +65,7 @@
         var actualizarPacienteUrl = '@Url.Action("ActualizarPaciente", "GestionarPacientes")';
         var urlBuscarDni = '@Url.Action("ObtenerPacientePorDni", "GestionarCitas")';
         var listarContactosUrl = '@Url.Action("ListarContactosPorPaciente", "GestionarPacientes")';
-
-        //aun no esta inplementado
-        var actualizarContactoUrl = '@Url.Action("ActualizarContacto", "GestionarPacientes")';
+        var actualizarContactoUrl = '@Url.Action("ActualizarContactoEmergencia", "GestionarPacientes")';
     </script>
 
     <script src="~/Scripts/GestionasPacientesScripts/utils.js"></script>

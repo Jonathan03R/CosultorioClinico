@@ -1,0 +1,14 @@
+﻿.links-nav nav ul li a {
+    color: #000;
+    font-size: 24px;
+}
+
+    .links-nav nav ul li a:hover {
+        color: #5e5adb !important;
+    }
+
+    .links-nav nav ul li a.active,
+    .links-nav nav ul li a:active {
+        color: #5e5adb !important;
+        border-bottom: 2px solid #5e5adb; 
+    }

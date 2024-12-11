@@ -1,4 +1,5 @@
 ﻿using Capa3_Dominio.ModuloPrincipal;
+using Capa3_Dominio.ModuloPrincipal.Entidad;
 using Capa4_Persistencia.SqlServer.ModuloBase;
 using System;
 using System.Collections.Generic;
@@ -19,98 +20,87 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
             this.accesoSQLServer = accesoSQLServer;
         }
 
-
-        public void GuardarConsulta(Consulta consulta)
+        public void CrearConsulta(Consulta consulta)
         {
-            string procedimientoSQL = "pro_Guardar_Consulta";
+            string procedimientoSQL = "pro_Crear_Consulta";
             try
             {
                 SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
                 comandoSQL.Parameters.Add(new SqlParameter("@consultaCodigo", consulta.ConsultaCodigo));
-                comandoSQL.Parameters.Add(new SqlParameter("@consultaFechaHora", consulta.ConsultaFechaHora));
-                comandoSQL.Parameters.Add(new SqlParameter("@consultaMedicoCodigo", consulta.ConsultaMedicoCodigo));
-                comandoSQL.Parameters.Add(new SqlParameter("@consultaPacienteCodigo", consulta.ConsultaPacienteCodigo));
-                comandoSQL.Parameters.Add(new SqlParameter("@consultaMotivo", consulta.ConsultaMotivo));
-                comandoSQL.Parameters.Add(new SqlParameter("@consultaEstado", consulta.ConsultaEstado));
+                comandoSQL.Parameters.Add(new SqlParameter("@consultacitaCodigo", consulta.Cita.CitaCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@consultaFechaHoraFinal", consulta.ConsultaFechaHoraFinal));
+
+                comandoSQL.Parameters.Add(new SqlParameter("@medicoCodigo", consulta.Medico.MedicoCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@tipoConsultaCodigo", consulta.TipoConsulta.TipoConsultaCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@pacienteCodigo", consulta.Paciente.PacienteCodigo));
                 comandoSQL.ExecuteNonQuery();
             }
             catch (SqlException ex)
             {
-                throw new Exception($"Error al guardar la consulta: {ex.Message}");
+                throw new Exception($"Error al guardar la consulta: {ex.Message}"); 
             }
         }
+
 
 
         public List<Consulta> ListarConsultas()
         {
             List<Consulta> consultas = new List<Consulta>();
             string procedimientoSQL = "pro_Listar_Consulta";
+
             try
             {
                 SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
-                SqlDataReader resultadoSQL = comandoSQL.ExecuteReader();
-                while (resultadoSQL.Read())
+
+                using (SqlDataReader resultadoSQL = comandoSQL.ExecuteReader())
                 {
-                    Consulta consulta = new Consulta
+                    while (resultadoSQL.Read())
                     {
-                        ConsultaCodigo = resultadoSQL["Codigo"].ToString().Trim(),
-                        ConsultaFechaHora = Convert.ToDateTime(resultadoSQL["FechaHora"]),
-                        ConsultaMedicoCodigo = resultadoSQL["Medico"].ToString().Trim(),
-                        ConsultaPacienteCodigo = resultadoSQL["Paciente"].ToString().Trim(),
-                        ConsultaMotivo = resultadoSQL["Motivo"].ToString().Trim(),
-                        ConsultaEstado = resultadoSQL["Estado"].ToString().Trim()
-                    };
-                    consultas.Add(consulta);
+
+                        Consulta consulta = new Consulta()
+                        {
+                            ConsultaCodigo = resultadoSQL.GetString(0),
+                            
+                            ConsultaFechaHoraFinal = resultadoSQL.IsDBNull(4) ? (DateTime?)null : resultadoSQL.GetDateTime(4),
+                            Cita = new Cita() 
+                            {
+                                CitaCodigo = resultadoSQL.GetString(1),
+                                CitaFechaHora = resultadoSQL.GetDateTime(2),
+                                CitaEstado = resultadoSQL.GetString(3)
+                            },
+                            Paciente = new Paciente() 
+                            {
+                                PacienteCodigo = resultadoSQL.GetString(5),
+                                PacienteNombreCompleto = resultadoSQL.GetString(6),
+                                
+                            },
+                            Medico = new Medico() 
+                            {
+                                MedicoCodigo = resultadoSQL.GetString(7),
+                                MedicoNombre = resultadoSQL.GetString(8),
+                                MedicoApellido = resultadoSQL.GetString(9) 
+                            },
+                            TipoConsulta = new TipoConsulta() 
+                            {
+                                TipoConsultaCodigo = resultadoSQL.GetString(10)
+                            },
+                            HistoriaClinica = new HistoriaClinica()
+                            {
+                                HistorialClinicoCodigo = resultadoSQL.GetString(11),
+                            }
+                        };
+
+                        consultas.Add(consulta);
+                    }
                 }
             }
-            catch (SqlException ex)
+            catch (Exception ex)
             {
-                throw new Exception($"Error al listar consultas: {ex.Message}");
+                throw new Exception($"Error al listar consultas: {ex.Message}", ex);
             }
+
             return consultas;
         }
-
-
-        public void GuardarCambiosConsulta(Consulta consulta, string cambioDescripcion, string medicoCodigo)
-        {
-            string procedimientoSQL = "pro_GuardarCambios_Consulta";
-            try
-            {
-                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
-                comandoSQL.Parameters.Add(new SqlParameter("@consultaCodigo", consulta.ConsultaCodigo));
-                comandoSQL.Parameters.Add(new SqlParameter("@nuevoMotivo", consulta.ConsultaMotivo));
-                comandoSQL.Parameters.Add(new SqlParameter("@nuevoEstado", consulta.ConsultaEstado));
-                comandoSQL.Parameters.Add(new SqlParameter("@cambiomedicoCodigo", medicoCodigo));
-                comandoSQL.Parameters.Add(new SqlParameter("@cambioDescripcion", cambioDescripcion));
-                comandoSQL.ExecuteNonQuery();
-            }
-            catch (SqlException ex)
-            {
-                throw new Exception($"Error al guardar cambios en la consulta: {ex.Message}");
-            }
-        }
-
-
-
-        public void CambiarEstadoConsulta(string consultaCodigo, string nuevoEstado, string medicoCodigo, string descripcionCambio)
-        {
-            string procedimientoSQL = "pro_Cambiar_Estado_Consulta";
-            try
-            {
-                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
-                comandoSQL.Parameters.Add(new SqlParameter("@consultaCodigo", consultaCodigo));
-                comandoSQL.Parameters.Add(new SqlParameter("@nuevoEstado", nuevoEstado));
-                comandoSQL.Parameters.Add(new SqlParameter("@cambiomedicoCodigo", medicoCodigo));
-                comandoSQL.Parameters.Add(new SqlParameter("@cambioDescripcion", descripcionCambio));
-                comandoSQL.ExecuteNonQuery();
-            }
-            catch (SqlException ex)
-            {
-                throw new Exception($"Error al cambiar el estado de la consulta: {ex.Message}");
-            }
-        }
-
-
 
     }
 }

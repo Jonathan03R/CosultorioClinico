@@ -13,5 +13,6 @@ namespace Capa3_Dominio.ModuloPrincipal.TransferenciaDatos
         public string PacienteCodigo { get; set; }
         public string MedicoCodigo { get; set; }
         public string TipoConsultaCodigo { get; set; }
+        public string MotivoConsilta { get; set; }
     }
 }

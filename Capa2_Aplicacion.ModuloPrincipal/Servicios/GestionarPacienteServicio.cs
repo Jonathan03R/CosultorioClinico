@@ -26,16 +26,20 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
 
         public void RegistrarPacienteConHistoria(Paciente paciente, List<ContactoEmergencia> contactosEmergencia)
         {
-
             if (contactosEmergencia == null || !contactosEmergencia.Any())
             {
                 throw new ArgumentException("Debe agregar al menos un contacto de emergencia.");
             }
-            if (!paciente.EsValidoElNumeroDelPaciente()) 
-            {
-                throw new ArgumentException($"El número del paciente {paciente.PacienteTelefono} no es valido");
 
+            if (!paciente.EsValidoElNumeroDelPaciente())
+            {
+                throw new ArgumentException($"El número del paciente {paciente.PacienteTelefono} no es válido.");
             }
+            if (!paciente.EsFechaNacimientoValida()) 
+            {
+                throw new ArgumentException($"Ingrese su fecha de nacimiento correcta");
+            }
+
             foreach (var contacto in contactosEmergencia)
             {
                 if (!contacto.EsNumeroTelefonoValido())
@@ -45,28 +49,26 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
             }
 
             accesoSQLServer.IniciarTransaccion();
-            paciente.PacienteCodigo = codigoSQL.GenerarCodigoUnico("PAC", "Salud.Pacientes", "pacienteCodigo");
             try
             {
-                pacienteSQL.CrearPaciente(paciente);
-                
                 HistoriaClinica nuevaHistoriaClinica = new HistoriaClinica
                 {
                     HistorialClinicoCodigo = codigoSQL.GenerarCodigoUnico("HIS", "Salud.HistoriaClinica", "historialClinicoCodigo"),
-                    Paciente = paciente,
-                    FechaCreacion = DateTime.Now,
-                    FechaActualizacion = DateTime.Now,
-                    AntecedentesMedicos = null,
-                    Alergias = null
                 };
+
+                historiaClinicaSQL.AgregarHistoriaClinica(nuevaHistoriaClinica);
+
+                paciente.HistoriaClinica = nuevaHistoriaClinica;
+                paciente.PacienteCodigo = codigoSQL.GenerarCodigoUnico("PAC", "Salud.Pacientes", "pacienteCodigo");
+                pacienteSQL.CrearPaciente(paciente);
 
                 foreach (var contacto in contactosEmergencia)
                 {
                     contacto.ContactoEmergenciaCodigo = codigoSQL.GenerarCodigoUnico("CEM", "Salud.ContactosEmergencia", "contactoEmergenciaCodigo");
-                    contactoEmergenciaSQL.AgregarContactoEmergencia(contacto, paciente.PacienteCodigo);
+                    contacto.Paciente = paciente;
+                    contactoEmergenciaSQL.AgregarContactoEmergencia(contacto);
                 }
 
-                historiaClinicaSQL.AgregarHistoriaClinica(nuevaHistoriaClinica);
                 accesoSQLServer.TerminarTransaccion();
             }
             catch (Exception ex)
@@ -79,10 +81,40 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
         public void ActualizarPaciente(Paciente paciente)
         {
 
+            if (!paciente.EsValidoElNumeroDelPaciente())
+            {
+                throw new ArgumentException($"El número de teléfono {paciente.PacienteTelefono} no es válido.");
+            }
+
             accesoSQLServer.IniciarTransaccion();
             try
             {
                 pacienteSQL.ActualizarPaciente(paciente);
+                accesoSQLServer.TerminarTransaccion();
+            }
+            catch (Exception ex)
+            {
+                accesoSQLServer.CancelarTransaccion();
+                throw ex;
+            }
+        }
+
+        public void ActualizarContactoEmergencia(ContactoEmergencia contactoEmergencia)
+        {
+            if (string.IsNullOrEmpty(contactoEmergencia.ContactoEmergenciaCodigo))
+            {
+                throw new ArgumentException("El código del contacto de emergencia no puede estar vacío.");
+            }
+
+            if (!contactoEmergencia.EsNumeroTelefonoValido())
+            {
+                throw new ArgumentException($"El número de teléfono {contactoEmergencia.ContactoEmergenciaTelefono} no es válido.");
+            }
+
+            accesoSQLServer.IniciarTransaccion();
+            try
+            {
+                contactoEmergenciaSQL.ActualizarContactoEmergencia(contactoEmergencia);
                 accesoSQLServer.TerminarTransaccion();
             }
             catch (Exception ex)
@@ -115,10 +147,10 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicio
             accesoSQLServer.CerrarConexion();
         }
 
-        public List<HistoriaClinica> listarPacientes()
+        public List<Paciente> listarPacientes()
         {
             accesoSQLServer.AbrirConexion();
-            List<HistoriaClinica> listaPacientes = pacienteSQL.ListarPacientes();
+            List<Paciente> listaPacientes = pacienteSQL.ListarPacientes();
             accesoSQLServer.CerrarConexion();
             return listaPacientes;
         }
