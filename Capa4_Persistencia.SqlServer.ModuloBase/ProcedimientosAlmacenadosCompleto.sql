@@ -989,7 +989,7 @@ BEGIN
     );
 
     -- Insertar los horarios desde la función
-    INSERT INTO #HorariosConCitas (MedicoCodigo, HoraInicio, HoraFin)
+    INSERT INTO #HorariosConCitas (MedicoCodigo,MedicoNombre, HoraInicio, HoraFin)
     SELECT 
         MedicoCodigo,
 		MedicoNombre,
@@ -1033,7 +1033,6 @@ BEGIN
         CitaCodigo,
         PacienteCodigo,
         CitaEstado,
-        MedicoNombre,
         PacienteNombre
     FROM 
         #HorariosConCitas
