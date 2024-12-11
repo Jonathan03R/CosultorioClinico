@@ -31,7 +31,7 @@ function guardarCita() {
             if (response.transaccionExitosa) {
                 alert(response.mensaje);
                 $('#ModalNuevaCita').modal('hide');
-                table.ajax.reload(null, false);
+                cargarHorarios();
 
             } else {
                 alert('Error al registrar la cita: ' + response.mensaje);
@@ -48,7 +48,7 @@ function obtenerDatosFormularioCita() {
     return {
         CitaFechaHora: $('#inputFechaHora').val(),
         PacienteCodigo: $('#pacienteCodigo').text(),
-        MedicoCodigo: $('#inputSelectMedicoModal').val(),
+        MedicoCodigo: $('#inputMedicoCodigo').val(),
         TipoConsultaCodigo: $('#inputSelectTipoConsulta').val()
     };
 

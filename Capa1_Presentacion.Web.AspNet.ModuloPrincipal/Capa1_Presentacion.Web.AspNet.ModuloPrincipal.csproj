@@ -468,6 +468,7 @@
     <Content Include="Views\AtenderConsultas\_Inicio.cshtml" />
     <Content Include="Views\AtenderConsultas\_Diagnosticos.cshtml" />
     <Content Include="Views\AtenderConsultas\_Tratamiento.cshtml" />
+    <Content Include="Views\GestionarCitas\GestionCitaEliminar.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

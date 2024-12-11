@@ -59,6 +59,7 @@
     <Compile Include="TransferenciaDatos\CitaDTO.cs" />
     <Compile Include="TransferenciaDatos\DetallesConsultaDTO.cs" />
     <Compile Include="TransferenciaDatos\DiagnosticoDTO.cs" />
+    <Compile Include="Entidades\HorarioConCita.cs" />
     <Compile Include="TransferenciaDatos\RecetaMedicaDTO.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

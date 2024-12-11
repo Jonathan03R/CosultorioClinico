@@ -73,6 +73,8 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
         }
 
 
+
+
         // Actualizar una cita existente
         [HttpPost]
         public JsonResult ActualizarEstadoConsultaProceso(string citaCodigo)

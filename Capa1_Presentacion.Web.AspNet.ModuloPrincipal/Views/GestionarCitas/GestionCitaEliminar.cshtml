@@ -1,0 +1,133 @@
+﻿@{
+    ViewBag.Title = "GestionCitaEliminar";
+}
+
+@section customStyles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+}
+
+<div class="container">
+    <h2>Agendar Cita</h2>
+
+    <form method="post">
+        <div class="input-group mb-3">
+            <label class="input-group-text" for="inputSelectEspecialidad">Especialidad:</label>
+            <select class="form-select" id="inputSelectEspecialidad">
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="fechaSeleccionada">Fecha</label>
+            <input type="date" id="fechaSeleccionada" name="fechaSeleccionada" class="form-control" onchange="cargarHorarios()">
+        </div>
+
+        <div class="form-group">
+            <label>Horarios Disponibles</label>
+            <div id="horariosDisponibles" class="list-group">
+                <!-- Aquí se cargarán los horarios disponibles -->
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Confirmar Cita</button>
+    </form>
+</div>
+
+<div style="width:150px;">
+    <button class="btn btn-success " data-bs-toggle="modal" data-bs-target="#ModalNuevaCita">Nueva Cita</button>
+</div>
+
+
+@Html.Partial("modals/_CrearCitasModal")
+
+
+@section Scripts {
+
+    <script>
+        var urlRegistrarCita = '@Url.Action("RegistrarCita", "GestionarCitas")';
+        console.log('@Url.Action("ObtenerTodasCitas", "GestionarCitas")');
+
+    </script>
+
+    <script src="~/Scripts/GestionarCitasScripts/LlenarSelects.js"></script>
+    <script src="~/Scripts/GestionarCitasScripts/BuscarEmpleado.js"></script>
+    <script src="~/Scripts/GestionarCitasScripts/AgregarCita.js"></script>
+    <script src="~/Scripts/GestionarCitasScripts/tablaCitas.js"></script>
+    <script src="~/Scripts/GestionarCitasScripts/buscadorCustomCitas.js"></script>
+
+    <script>
+    $(document).ready(function() {
+        cargarEspecialidades();
+    });
+
+    function cargarHorarios() {
+        const fecha = $('#fechaSeleccionada').val();
+        const especialidadCodigo = $('#inputSelectEspecialidad').val();
+
+        $.ajax({
+            url: '@Url.Action("ListarHorariosConCitas", "GestionarCitas")',
+            type: 'GET',
+            data: {
+                especialidadCodigo: especialidadCodigo,
+                fecha: fecha
+            },
+            success: function(response) {
+                const horariosDiv = $('#horariosDisponibles');
+                horariosDiv.html('');
+
+                if (response.consultaExitosa) {
+                    const horarios = response.data;
+                    horarios.forEach(horario => {
+                        const horarioElement = $(`
+                            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-1">${horario.HoraInicio} - ${horario.HoraFin}</h5>
+                                    <p class="mb-1">Estado: ${horario.CitaEstado}</p>
+                                    <small>Médico: ${horario.NombreMedico}</small><br>
+                                    <small>Paciente: ${horario.NombrePaciente || 'N/A'}</small>
+                                </div>
+
+                                    <button class="btn btn-primary abrir-modal" type="button" data-bs-toggle="modal" data-bs-target="#ModalNuevaCita"
+                                    data-bs-toggle="modal" data-bs-target="#ModalNuevaCita"
+                                    data-horainicio="${horario.HoraInicio}"
+                                    data-horafin="${horario.HoraFin}"
+                                    data-medico-codigo="${horario.MedicoCodigo}"
+                                    data-nombre-medico="${horario.NombreMedico}"
+                                    data-fecha="${fecha}"
+                                    data-especialidad="${especialidadCodigo}"
+                                    >Elegir</button>
+                                 </div>
+                                `);
+
+                        horariosDiv.append(horarioElement);
+                    });
+
+                    $('#ModalNuevaCita').on('show.bs.modal', function (event) {
+                        var button = $(event.relatedTarget);
+                        var horaInicio = button.data('horainicio');
+                        var horaFin = button.data('horafin');
+                        var medicoCodigo = button.data('medico-codigo');
+                        var nombreMedico = button.data('nombre-medico');
+                        var fecha = button.data('fecha');
+                        var especialidad = button.data('especialidad');
+
+                        var modal = $(this);
+                        modal.find('#inputHoraInicio').val(horaInicio);
+                        modal.find('#inputMedicoNombre').val(nombreMedico);
+                        modal.find('#inputMedicoCodigo').val(medicoCodigo);
+                        modal.find('#inputFechaHora').val(fecha + 'T' + horaInicio);
+                        modal.find('#inputEspecialidadModal').val(especialidad);
+
+                    });
+                } else {
+                    horariosDiv.append('<p>No se encontraron horarios disponibles.</p>');
+                }
+            },
+            error: function() {
+                $('#horariosDisponibles').html('<p>Error al cargar los horarios.</p>');
+            }
+        });
+    }
+    </script>
+
+}
+

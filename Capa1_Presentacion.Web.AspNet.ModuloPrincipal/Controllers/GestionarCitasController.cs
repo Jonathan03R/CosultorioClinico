@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Web.Mvc;
 using Capa2_Aplicacion.ModuloPrincipal.Servicio;
+using Capa2_Aplicacion.ModuloPrincipal.Servicios;
 using Capa3_Dominio.ModuloPrincipal;
 using Capa3_Dominio.ModuloPrincipal.Entidad;
 using Capa3_Dominio.ModuloPrincipal.TransferenciaDatos;
@@ -21,6 +22,11 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
         
         // Página principal de gestión de citas
         public ActionResult GestionCita()
+        {
+            return View();
+        }
+
+        public ActionResult GestionCitaEliminar()
         {
             return View();
         }
@@ -106,6 +112,46 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
                 return "Cancelada";
             else
                 return "N/A";
+        }
+
+
+        // Listar los horarios con citas para una especialidad y fecha específica
+        [HttpGet]
+        public JsonResult ListarHorariosConCitas(string especialidadCodigo, string fecha)
+        {
+            bool accionExitosa;
+            string mensajeRetorno;
+            List<object> listaHorariosFormatada;
+
+            try
+            {
+                DateTime fechaConsulta = DateTime.Parse(fecha);
+                List<HorarioConCita> horariosConCitas = gestionarCitaServicio.MostrarHorariosConCitas(especialidadCodigo, fechaConsulta);
+                listaHorariosFormatada = horariosConCitas.Select(h => new
+                {
+                    MedicoCodigo = h.MedicoCodigo,
+                    HoraInicio = h.HoraInicio.ToString(@"hh\:mm"),
+                    HoraFin = h.HoraFin.ToString(@"hh\:mm"),
+                    ConsultaCodigo = h.ConsultaCodigo,
+                    CitaCodigo = h.CitaCodigo,
+                    PacienteCodigo = h.PacienteCodigo,
+                    CitaEstado = GetEstadoDescripcion(h.CitaEstado) ,
+                    NombreMedico = h.MedicoNombre,
+                    NombrePaciente = h.PacienteNombre
+                }).ToList<object>();
+
+                accionExitosa = true;
+                mensajeRetorno = "Consulta exitosa";
+            }
+            catch (Exception ex)
+            {
+                listaHorariosFormatada = new List<object>();
+                accionExitosa = false;
+                mensajeRetorno = $"Error: {ex.Message}";
+            }
+
+            // Retornar el resultado como JSON
+            return Json(new { data = listaHorariosFormatada, consultaExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
         }
 
 
@@ -291,7 +337,7 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
 
             try
             {
-                gestionarCitaServicio.CancelarCita(citaCodigo);
+                gestionarCitaServicio.cambiarEstadoActivoConsultaCancelada(citaCodigo);
                 accionExitosa = true;
                 mensajeRetorno = "Cita cancelada exitosamente.";
             }
