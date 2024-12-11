@@ -154,6 +154,7 @@
                 success: function (response) {
                     if (response.transaccionExitosa) {
                         alert(response.mensaje);
+                        limpiarCamposDiagnostico();
                     } else {
                         alert('Error: ' + response.mensaje);
                     }
@@ -165,5 +166,18 @@
             });
         });
     });
+
+    function limpiarCamposDiagnostico() {
+        // Obtiene todos los elementos de entrada dentro del formulario
+        const inputs = document.querySelectorAll('#formularioDiagnostico input');
+
+        // Itera sobre cada campo y lo limpia, excepto el campo con id="CodigoConsultaInput"
+        inputs.forEach(function (input) {
+            if (input.id !== "CodigoConsultaInput") {
+                input.value = ''; // Limpia el valor del campo
+            }
+        });
+    }
+
 </script>
 

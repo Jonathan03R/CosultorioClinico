@@ -7,7 +7,7 @@
         $('#fechaCita').text(data.ConsultaFechaCita || 'No disponible');
         $('#Hora').text(data.ConsultaHoraFecha || 'No disponible');
         $('#medico').text(data.MedicoNombre || 'No disponible'); 
-        $('#CodigoConsulta').text(data.ConsultaCodigo || 'No disponible');
+        $('#CodigoConsulta').text(data.CitaCodigo || 'No disponible');
         $('#CodigoConsultaInput').val(data.ConsultaCodigo);
 
 

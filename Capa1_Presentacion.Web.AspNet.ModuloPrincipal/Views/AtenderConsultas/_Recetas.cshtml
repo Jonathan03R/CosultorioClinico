@@ -3,102 +3,17 @@
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    <h5>Registrar Receta Médica</h5>
+                    <h5>Recetas Médicas</h5>
                 </div>
-                <div class="card-body">
-                    <form id="formRegistrarReceta">
-                        <div class="form-group">
-                            <label for="codigoConsulta">Código de Consulta</label>
-                            <input type="text" class="form-control" id="codigoConsulta" placeholder="Ingrese el código de consulta" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="recetaDescripcion">Descripción</label>
-                            <textarea class="form-control" id="recetaDescripcion" rows="3" placeholder="Ingrese la descripción de la receta" required></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="recetaTratamiento">Tratamiento</label>
-                            <textarea class="form-control" id="recetaTratamiento" rows="3" placeholder="Ingrese el tratamiento" required></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="recetaRecomendaciones">Recomendaciones</label>
-                            <textarea class="form-control" id="recetaRecomendaciones" rows="3" placeholder="Ingrese las recomendaciones" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Registrar Receta</button>
-                    </form>
-
-                    <div id="mensajeResultado" class="mt-3"></div>
-
-                    <div class="card mt-3">
-                        <div class="card-header bg-success text-white">
-                            <h5>Recetas Registradas</h5>
-                        </div>
-                        <div class="card-body" style="max-height: 45vh; overflow-y: auto;">
-                            <ul id="listaRecetas" class="list-group">
-                                <!-- Aquí se mostrarán las recetas registradas -->
-                            </ul>
-                        </div>
-                    </div>
+                <div class="card-body" style="max-height: 45vh; overflow-y: auto;">
+                    <ul id="listaRecetas" class="list-group">
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<script>$(document).ready(function () {
-        // Manejo del formulario para registrar receta
-        $('#formRegistrarReceta').submit(function (event) {
-            event.preventDefault(); // Evita que el formulario se envíe de la manera tradicional
-
-            // Recoger los datos del formulario
-            var recetaData = {
-                codigoConsulta: $('#codigoConsulta').val(),
-                recetaDescripcion: $('#recetaDescripcion').val(),
-                recetaTratamiento: $('#recetaTratamiento').val(),
-                recetaRecomendaciones: $('#recetaRecomendaciones').val()
-            };
-
-            // Enviar los datos al servidor usando AJAX
-            $.ajax({
-                url: '/Controlador/RegistrarRecetaMedica', // Ruta del controlador
-                type: 'POST',
-                data: JSON.stringify(recetaData),
-                contentType: 'application/json',
-                success: function (response) {
-                    if (response.transaccionExitosa) {
-                        $('#mensajeResultado').html('<div class="alert alert-success">Receta médica registrada exitosamente.</div>');
-                        $('#formRegistrarReceta')[0].reset();
-                        actualizarListaRecetas();
-                    } else {
-                        $('#mensajeResultado').html('<div class="alert alert-danger">' + response.mensaje + '</div>');
-                    }
-                },
-                error: function () {
-                    // Mostrar mensaje de error si ocurre un problema con la solicitud
-                    $('#mensajeResultado').html('<div class="alert alert-danger">Ocurrió un error al registrar la receta médica.</div>');
-                }
-            });
-        });
-
-
-
-        // Función para actualizar la lista de recetas registradas (esto puede ser opcional si no se requiere)
-        function actualizarListaRecetas() {
-            $.ajax({
-                url: '/Controlador/ObtenerListaRecetas', // Ruta del controlador para obtener las recetas
-                type: 'GET',
-                success: function (response) {
-                    var listaHtml = '';
-                    response.recetas.forEach(function (receta) {
-                        listaHtml += '<li class="list-group-item">' + receta.recetaDescripcion + ' - ' + receta.recetaTratamiento + '</li>';
-                    });
-                    $('#listaRecetas').html(listaHtml);
-                },
-                error: function () {
-                    console.error('Error al cargar las recetas registradas');
-                }
-            });
-        }
-
-        // Cargar la lista de recetas cuando la página se cargue
-        actualizarListaRecetas();
-    });</script>
+<script>
+    
+</script>

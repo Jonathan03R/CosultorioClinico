@@ -90,20 +90,22 @@ function configurarBotonConfirmacion(data) {
     $('#confirmarIniciarConsulta').off('click').on('click', function () {
         console.log('Continuando con la consulta:', data.HistoriaClinica); 
         console.log('Valor de consultaCodigo:', data.CitaCodigo); 
-        actualizarEstadoConsultaprocesandoCita(data.CitaCodigo);
+        actualizarEstadoConsultaprocesandoCita(data);
     });
 }
 
-function actualizarEstadoConsultaprocesandoCita(citaCodigo) {
+//es cuando el estado esta en pendiente , entonces podre comenzar ua cita
+function actualizarEstadoConsultaprocesandoCita(data) {
     // Llamar al endpoint para actualizar el estado
     $.ajax({
         url: '/AtenderConsultas/ActualizarEstadoConsultaProceso',
         type: 'POST',
         data: {
-            consultaCodigo: citaCodigo,
+            consultaCodigo: data.CitaCodigo,
         },
         success: function (response) {
             if (response.transaccionExitosa) {
+                sessionStorage.setItem('consultaData', JSON.stringify(data));
                 window.location.href = '/AtenderConsultas/Atendiendo';
             } else {
                 alert('Error al actualizar el estado: ' + response.mensaje);
@@ -116,6 +118,7 @@ function actualizarEstadoConsultaprocesandoCita(citaCodigo) {
     });
 }
 
+//es cuando la cita es en estado atendiendo.... recupera los datos anteriores
 function ContinuarCita(data) {
     console.log('Continuando con la consulta:', data.HistoriaClinica); 
     console.log('Continuando con la consulta:', data.CitaCodigo); 

@@ -95,6 +95,27 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
             return Json(new { transaccionExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpPost]
+        public JsonResult ActualizarEstadoFinalizadoConsulta(string citaCodigo)
+        {
+            bool accionExitosa;
+            string mensajeRetorno;
+
+            try
+            {
+                atenderConsultaServicio.cambiarEstadoActivoConsultaAtendido(citaCodigo);
+                accionExitosa = true;
+                mensajeRetorno = "Consulta Finalizada";
+            }
+            catch (Exception ex)
+            {
+                accionExitosa = false;
+                mensajeRetorno = ex.Message;
+            }
+
+            return Json(new { transaccionExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+        }
+
 
         //detalles de la historia medica 
         [HttpPost]

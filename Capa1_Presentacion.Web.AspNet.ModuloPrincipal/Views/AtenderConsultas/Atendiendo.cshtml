@@ -83,9 +83,6 @@
                     <li class="nav-item mx-4">
                         <a class="nav-link fw-bold" data-content="Tratamiento" href="#">Tratamiento</a>
                     </li>
-                    <li class="nav-item mx-4">
-                        <a class="nav-link fw-bold" data-content="Finalizacion" href="#">Finalizacion</a>
-                    </li>
                 </ul>
             </div>
         </nav>
@@ -93,7 +90,57 @@
     </div>
 </div>
 
+
+<!-- Modal de confirmación -->
+<div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacionLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalConfirmacionLabel">Confirmación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Está seguro de que desea finalizar la consulta?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnConfirmarFinalizar" class="btn btn-success" data-bs-dismiss="modal">Finalizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script src="~/Scripts/AtenderConsultasScripts/Atendiendo.js"></script>
     <script src="~/Scripts/AtenderConsultasScripts/llenarDatosPaciente.js"></script>
+
+
+    <script>
+        document.getElementById("btnConfirmarFinalizar").addEventListener("click", function() {
+        var citaCodigo = document.getElementById("CodigoConsulta").textContent.trim();
+
+        if (citaCodigo !== "") {
+            // Llamar al controlador para actualizar el estado de la consulta
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("ActualizarEstadoFinalizadoConsulta", "AtenderConsultas")',
+                data: { citaCodigo: citaCodigo },
+                success: function(response) {
+                    if (response.transaccionExitosa) {
+                        alert(response.mensaje);
+                        // Redirigir a la vista Consultas
+                        window.location.href = '@Url.Action("Consultas", "AtenderConsultas")';
+                    } else {
+                        alert("Error: " + response.mensaje);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert("Hubo un problema al finalizar la consulta.");
+                }
+            });
+            } else {
+                alert("El código de la consulta no está disponible.");
+            }
+        });
+    </script>
 }

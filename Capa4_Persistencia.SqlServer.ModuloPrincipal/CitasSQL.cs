@@ -217,13 +217,13 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
         }
 
         //estado Atendido
-        public void CambiarEstadoAtendido(string consultaCodigo)
+        public void CambiarEstadoAtendido(string CitaCodigo)
         {
             string procedimientoSQL = "pro_Actualizar_Estado_CitaAtendido";
             try
             {
                 SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
-                comandoSQL.Parameters.Add(new SqlParameter("@citaCodigo", consultaCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@citaCodigo", CitaCodigo));
                 comandoSQL.ExecuteNonQuery();
             }
             catch (SqlException sqlEx)

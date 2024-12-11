@@ -70,7 +70,8 @@ $(document).ready(function () {
                 console.log('Respuesta del servidor:', response);  // Punto de depuración
                 if (response.transaccionExitosa) {
                     alert(response.mensaje);
-                    mostrarDetallesRegistrados(detallesConsulta);
+                    limpiarCamposConsulta(); 
+                    //mostrarDetallesRegistrados(detallesConsulta);
                 } else {
                     alert('Error: ' + response.mensaje);
                 }
@@ -82,20 +83,20 @@ $(document).ready(function () {
         });
     }
 
-    function mostrarDetallesRegistrados(detallesConsulta) {
-        const detallesHTML = `
-            <div class="card mt-3">
-                <div class="card-body">
-                    <h5 class="card-title">Detalles Registrados</h5>
-                    <p><strong>Motivo de la Consulta:</strong> ${detallesConsulta.DetallesConsultaMotivoConsulta}</p>
-                    <p><strong>Historia de Enfermedades:</strong> ${detallesConsulta.DetallesConsultaHistoriaEnfermedad}</p>
-                    <p><strong>Revisión por el Sistema:</strong> ${detallesConsulta.DetallesConsultaRevisiones}</p>
-                    <p><strong>Evaluación Psicológica:</strong> ${detallesConsulta.DetallesConsultaEvaluacionPsico}</p>
-                </div>
-            </div>
-        `;
-        $('#detallesRegistrados').html(detallesHTML);
-    }
+    //function mostrarDetallesRegistrados(detallesConsulta) {
+    //    const detallesHTML = `
+    //        <div class="card mt-3">
+    //            <div class="card-body">
+    //                <h5 class="card-title">Detalles Registrados</h5>
+    //                <p><strong>Motivo de la Consulta:</strong> ${detallesConsulta.DetallesConsultaMotivoConsulta}</p>
+    //                <p><strong>Historia de Enfermedades:</strong> ${detallesConsulta.DetallesConsultaHistoriaEnfermedad}</p>
+    //                <p><strong>Revisión por el Sistema:</strong> ${detallesConsulta.DetallesConsultaRevisiones}</p>
+    //                <p><strong>Evaluación Psicológica:</strong> ${detallesConsulta.DetallesConsultaEvaluacionPsico}</p>
+    //            </div>
+    //        </div>
+    //    `;
+    //    $('#detallesRegistrados').html(detallesHTML);
+    //}
 
     // Asegúrate de que el formulario no se envíe por defecto
     $('#formularioConsulta').on('submit', function (e) {
@@ -103,4 +104,16 @@ $(document).ready(function () {
         enviarDetallesConsulta();  // Llamada a la función para enviar los datos
     });
 });
+
+
+ function limpiarCamposConsulta() {
+     const inputsYTextareas = document.querySelectorAll('#formularioConsulta input, #formularioConsulta textarea');
+
+     inputsYTextareas.forEach(function (element) {
+         if (element.id !== "CodigoConsultaInput") {
+             element.value = ''; 
+         }
+     });
+ }
+
 </script>

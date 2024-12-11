@@ -3,11 +3,9 @@
         <div class="col-12">
             <!-- Formulario para Agregar Receta Médica -->
             <form id="formularioRecetaMedica">
+                <input id="CodigoConsultaInput" type="text" name="codConsulta" value="" />
                 <div class="card shadow-sm">
-                    
                     <div class="card-body">
-                        
-
                         <div class="row">
                             <!-- Descripción de la Receta -->
                             <div class="col-md-12 mb-3">
@@ -30,9 +28,11 @@
                             </div>
                         </div>
 
-                        <!-- Botón para Guardar la Receta -->
+                        <!-- Botones de acción -->
                         <div class="d-flex justify-content-end">
                             <button type="submit" class="btn btn-primary mt-3">Guardar Receta</button>
+                            <button type="button" id="btnFinalizar" class="btn btn-success mt-3 ms-2" data-bs-toggle="modal" data-bs-target="#modalConfirmacion">Finalizar</button>
+
                         </div>
                     </div>
                 </div>
@@ -40,3 +40,49 @@
         </div>
     </div>
 </div>
+
+<script>
+
+    document.getElementById("formularioRecetaMedica").addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevenir que el formulario se envíe de forma tradicional
+    var recetaDescripcion = document.getElementById("recetaDescripcion").value;
+    var recetaTratamiento = document.getElementById("recetaTratamiento").value;
+    var recetaRecomendaciones = document.getElementById("recetaRecomendaciones").value;
+    var codigoConsulta = document.getElementById("CodigoConsultaInput").value;
+
+    var recetaData = {
+        recetaDescripcion: recetaDescripcion,
+        recetaTratamiento: recetaTratamiento,
+        recetaRecomendaciones: recetaRecomendaciones,
+        codigoConsulta: codigoConsulta
+    };
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("RegistrarRecetaMedica", "AtenderConsultas")',
+            data: JSON.stringify(recetaData),
+            contentType: "application/json",
+            success: function(response) {
+                if (response.transaccionExitosa) {
+                    alert(response.mensaje);
+                    limpiarCamposRecetaMedica();
+                } else {
+                    alert("Error: " + response.mensaje);
+                }
+            },
+            error: function(xhr, status, error) {
+                alert("Hubo un problema al registrar la receta.");
+            }
+        });
+    });
+   
+
+    function limpiarCamposRecetaMedica() {
+        const inputsYTextareas = document.querySelectorAll('#formularioRecetaMedica input, #formularioRecetaMedica textarea');
+        inputsYTextareas.forEach(function (element) {
+            if (element.id !== "CodigoConsultaInput") {
+                element.value = ''; // Limpia el valor del campo
+            }
+        });
+    }
+</script>

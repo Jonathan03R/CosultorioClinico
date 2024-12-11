@@ -61,7 +61,7 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                 comandoSQL.Parameters.Add(new SqlParameter("@RecetaConsultaCodigo", recetaMedica.Consulta.ConsultaCodigo));
                 comandoSQL.Parameters.Add(new SqlParameter("@RecetaDescripcion", recetaMedica.RecetaDescripcion));
                 comandoSQL.Parameters.Add(new SqlParameter("@RecetaTratamiento", recetaMedica.RecetaTratamiento));
-                comandoSQL.Parameters.Add(new SqlParameter("@RecetaRecomendaciones", recetaMedica.RecetaTratamiento));
+                comandoSQL.Parameters.Add(new SqlParameter("@RecetaRecomendaciones", recetaMedica.RecetaRecomendaciones));
 
                 // Ejecutar el comando
                 comandoSQL.ExecuteNonQuery();
