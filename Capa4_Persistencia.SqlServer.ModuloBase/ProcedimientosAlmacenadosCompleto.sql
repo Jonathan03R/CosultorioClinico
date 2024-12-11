@@ -847,19 +847,22 @@ go
 
 
 
-create or alter procedure pro_Actualizar_Estado_CitaAtendiendose
-    @citaCodigo nchar(10)
-as
-begin
-    set nocount on;
 
-    update Gestion.cita
-    set citaEstado = 'T'
-    where citaCodigo = @citaCodigo;
+CREATE OR ALTER PROCEDURE pro_Actualizar_Estado_CitaAtendiendose
+    @citaCodigo NCHAR(10)
+AS
+BEGIN
+    SET NOCOUNT ON;
 
-    set nocount off;
-end
-go
+    -- Actualizar el estado y la hora de inicio de la cita
+    UPDATE Gestion.cita
+    SET 
+        citaEstado = 'T',
+        citaFechaHora = GETDATE() -- Asegúrate de que esta columna sea la correcta
+    WHERE citaCodigo = @citaCodigo;
+END
+GO
+
 
 
 /******************************************************************************************
@@ -1093,3 +1096,18 @@ BEGIN
     );
 END;
 GO
+
+--este procedimiento me ayudara a actualziar la hora final de la consulta
+CREATE or alter PROCEDURE pro_actualizar_HoraFinalConsulta
+    @ConsultaCodigo NCHAR(10)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE Gestion.Consulta
+    SET consultaFechaHoraFinal = GETDATE()
+    WHERE consultaCodigo = @ConsultaCodigo;
+END
+GO
+
+

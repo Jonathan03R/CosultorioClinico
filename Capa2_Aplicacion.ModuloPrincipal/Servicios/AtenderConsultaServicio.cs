@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Capa3_Dominio.ModuloPrincipal.Entidades;
+using System.Globalization;
 namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
 {
     public class AtenderConsultaServicio
@@ -180,36 +181,28 @@ namespace Capa2_Aplicacion.ModuloPrincipal.Servicios
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        public void cambiarEstadoAtencionEnProceso(string codigoConsulta)
+        public void ActualizarHoraFinalConsulta(string codigoConsulta)
         {
-                accesoSQLServer.AbrirConexion();
-                var todasLasCitas = citaSQL.MostrarCitas();
-                var consultaEnAtencion = todasLasCitas.FirstOrDefault(c => c.Cita.CitaEstado == "T");
-                if (consultaEnAtencion != null)
-                {
-                    throw new ArgumentException("Hay una cita que esta siendo atendida.");
-                }
-                citaSQL.CambiarEstadoAtencionProceso(codigoConsulta);
-                accesoSQLServer.CerrarConexion();
+            accesoSQLServer.AbrirConexion();
+            citaSQL.ActualizarFechaFinalCita(codigoConsulta);
+            accesoSQLServer.CerrarConexion();
         }
+
+
+  
+        public void cambiarEstadoAtencionEnProceso(string citaCodigo)
+        {
+             accesoSQLServer.AbrirConexion();
+             var todasLasCitas = citaSQL.MostrarCitas();
+             var consultaEnAtencion = todasLasCitas.FirstOrDefault(c => c.Cita.CitaEstado == "T");
+             if (consultaEnAtencion != null)
+             {
+                 throw new ArgumentException("Hay una cita que esta siendo atendida.");
+             }
+             citaSQL.CambiarEstadoAtencionProceso(citaCodigo);
+             accesoSQLServer.CerrarConexion();
+        }
+
 
         public void cambiarEstadoConsultaPendientree(string codigoConsulta)
         {

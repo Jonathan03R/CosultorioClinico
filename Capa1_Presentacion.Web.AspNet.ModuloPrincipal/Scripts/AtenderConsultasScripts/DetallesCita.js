@@ -22,7 +22,7 @@
 function formatearDetalles(data) {
     const estadoClase = obtenerClaseEstado(data.ConsultaEstado);
     const fechaActivacion = data.ConsultaFechaCita || "Error al cargar fecha";
-
+    console.log(data)
     let detallesHTML = `
         <div class="expansion-content">
             <div class="contenido">
@@ -30,7 +30,7 @@ function formatearDetalles(data) {
 
     switch (data.ConsultaEstado) {
         case "Pendiente":
-            detallesHTML += `Tiene cita ${fechaActivacion}.</p>
+            detallesHTML += `Tiene cita ${fechaActivacion} a las  ${data.ConsultaHoraFecha}</p>
                 <p>Estado actual: <span class="badge ${estadoClase}">${data.ConsultaEstado}</span></p>
                 
                 <p>
@@ -49,9 +49,10 @@ function formatearDetalles(data) {
             `;
             break;
         case "Atendido":
-            detallesHTML += `Fue atendido el ${fechaActivacion}.</p>
+            detallesHTML += `La cita se atendio el ${fechaActivacion}  las ${data.ConsultaHoraFecha}</p>
+                <p>Finalizo el ${data.ConsultaFechaHoraFinal} </p>
+
                 <p>Estado actual: <span class="badge ${estadoClase}">${data.ConsultaEstado}</span></p>
-                <p>Notas adicionales: ${data.NotasAdicionales || "Sin notas adicionales"}</p>
             `;
             break;
         case "Cancelado":
@@ -101,7 +102,7 @@ function actualizarEstadoConsultaprocesandoCita(data) {
         url: '/AtenderConsultas/ActualizarEstadoConsultaProceso',
         type: 'POST',
         data: {
-            consultaCodigo: data.CitaCodigo,
+            citaCodigo: data.CitaCodigo,
         },
         success: function (response) {
             if (response.transaccionExitosa) {

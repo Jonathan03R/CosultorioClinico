@@ -51,6 +51,7 @@
     <div class="col-3 p-4">
         <div class="border p-3">
             <h4 class="mb-3">Consulta</h4>
+            <input id="CodigoConsultaInputMain" type="text" name="name" value="" />
             <div>
                 <label>Fecha:</label>
                 <p class="ms-3" id="fechaCita"></p>
@@ -65,7 +66,7 @@
             </div>
             <div>
                 <label>Codigo:</label>
-                <p class="ms-3" id="CodigoConsulta"> No hay</p>
+                <p class="ms-3" id="CodigoCita"> No hay</p>
             </div>
         </div>
     </div>
@@ -116,31 +117,35 @@
 
 
     <script>
-        document.getElementById("btnConfirmarFinalizar").addEventListener("click", function() {
-        var citaCodigo = document.getElementById("CodigoConsulta").textContent.trim();
+        document.getElementById("btnConfirmarFinalizar").addEventListener("click", function () {
+            var citaCodigo = document.getElementById("CodigoCita").textContent.trim();
 
-        if (citaCodigo !== "") {
-            // Llamar al controlador para actualizar el estado de la consulta
+            var consultaCodigo = document.getElementById("CodigoConsultaInput").value.trim();
+
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("ActualizarEstadoFinalizadoConsulta", "AtenderConsultas")',
                 data: { citaCodigo: citaCodigo },
-                success: function(response) {
-                    if (response.transaccionExitosa) {
-                        alert(response.mensaje);
-                        // Redirigir a la vista Consultas
-                        window.location.href = '@Url.Action("Consultas", "AtenderConsultas")';
-                    } else {
-                        alert("Error: " + response.mensaje);
-                    }
+                success: function (response) {
+                    alert(response.mensaje);
+                    window.location.href = '@Url.Action("Consultas", "AtenderConsultas")';
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     alert("Hubo un problema al finalizar la consulta.");
                 }
             });
-            } else {
-                alert("El código de la consulta no está disponible.");
-            }
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("ActualizarHoraFinalConsulta", "AtenderConsultas")',
+                data: { codigoConsulta: consultaCodigo },
+                success: function (response) {
+                    alert(response.mensaje);
+                },
+                error: function (xhr, status, error) {
+                    alert("Hubo un problema al actualizar la fecha y hora final.");
+                }
+            });
         });
     </script>
 }

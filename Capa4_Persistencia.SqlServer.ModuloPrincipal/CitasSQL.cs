@@ -259,13 +259,13 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
 
         //estado Cuando se esta atendendo un paciente
 
-        public void CambiarEstadoAtencionProceso(string consultaCodigo)
+        public void CambiarEstadoAtencionProceso(string citaCodigo)
         {
             string procedimientoSQL = "pro_Actualizar_Estado_CitaAtendiendose";
             try
             {
                 SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoSQL);
-                comandoSQL.Parameters.Add(new SqlParameter("@citaCodigo", consultaCodigo));
+                comandoSQL.Parameters.Add(new SqlParameter("@citaCodigo", citaCodigo));
                 comandoSQL.ExecuteNonQuery();
             }
             catch (SqlException sqlEx)
@@ -279,6 +279,27 @@ namespace Capa4_Persistencia.SqlServer.ModuloPrincipal
                 throw ex;
             }
         }
+
+        public void ActualizarFechaFinalCita(string codigoConsulta) 
+        {
+            string procedimientoAlmacenado = "pro_actualizar_HoraFinalConsulta";
+            try
+            {
+                SqlCommand comandoSQL = accesoSQLServer.ObtenerComandoDeProcedimiento(procedimientoAlmacenado);
+                comandoSQL.Parameters.Add(new SqlParameter("@ConsultaCodigo", codigoConsulta ));
+                comandoSQL.ExecuteNonQuery();   
+            }
+            catch (SqlException sqlEx)
+            {
+                throw sqlEx;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+       
 
 
 

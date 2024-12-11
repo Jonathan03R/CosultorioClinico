@@ -3,12 +3,14 @@
 
     if (data && data.HistoriaClinica) {
         console.log('data', data);
+        var codigoConsulta = data.ConsultaCodigo
         $('#HistoriaClinica').text(data.HistoriaClinica || 'No disponible');
         $('#fechaCita').text(data.ConsultaFechaCita || 'No disponible');
         $('#Hora').text(data.ConsultaHoraFecha || 'No disponible');
         $('#medico').text(data.MedicoNombre || 'No disponible'); 
-        $('#CodigoConsulta').text(data.CitaCodigo || 'No disponible');
-        $('#CodigoConsultaInput').val(data.ConsultaCodigo);
+        $('#CodigoCita').text(data.CitaCodigo || 'No disponible');
+        $('#CodigoConsultaInput').val(codigoConsulta); 
+        $('#CodigoConsultaInputMain').val(codigoConsulta); 
 
 
         obtenerDatosConsulta(data.HistoriaClinica);

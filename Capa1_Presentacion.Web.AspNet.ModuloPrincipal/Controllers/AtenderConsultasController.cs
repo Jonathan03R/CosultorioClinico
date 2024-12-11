@@ -49,7 +49,7 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
                     ConsultaFechaCita = c.Cita.CitaFechaHora.ToString("dd-MMMM-yyyy"),
                     ConsultaHoraFecha = c.Cita.CitaFechaHora.ToString("hh:mm tt"),
                     ConsultaFechaHoraFinal = c.ConsultaFechaHoraFinal.HasValue
-                    ? c.ConsultaFechaHoraFinal.Value.ToString("dd-MM-yyyy HH:mm:ss")
+                    ? c.ConsultaFechaHoraFinal.Value.ToString("dd-MMMM-yyyy hh:mm tt")
                     : null,
                     MedicoNombre = $"{c.Medico.MedicoNombre} {c.Medico.MedicoApellido}",
                     PacienteNombre = c.Paciente.PacienteNombreCompleto,
@@ -75,14 +75,14 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
 
         // Actualizar una cita existente
         [HttpPost]
-        public JsonResult ActualizarEstadoConsultaProceso(string consultaCodigo)
+        public JsonResult ActualizarEstadoConsultaProceso(string citaCodigo)
         {
             bool accionExitosa;
             string mensajeRetorno;
 
             try
             {
-                atenderConsultaServicio.cambiarEstadoAtencionEnProceso(consultaCodigo);
+                atenderConsultaServicio.cambiarEstadoAtencionEnProceso(citaCodigo);
                 accionExitosa = true;
                 mensajeRetorno = "Atendiendo Citas";
             }
@@ -94,6 +94,28 @@ namespace Capa1_Presentacion.Web.AspNet.ModuloPrincipal.Controllers
 
             return Json(new { transaccionExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpPost]
+        public JsonResult ActualizarHoraFinalConsulta(string codigoConsulta)
+        {
+            bool accionExitosa;
+            string mensajeRetorno;
+
+            try
+            {
+                atenderConsultaServicio.ActualizarHoraFinalConsulta(codigoConsulta);
+                accionExitosa = true;
+                mensajeRetorno = "Fecha Actualizar";
+            }
+            catch (Exception ex)
+            {
+                accionExitosa = false;
+                mensajeRetorno = ex.Message;
+            }
+
+            return Json(new { transaccionExitosa = accionExitosa, mensaje = mensajeRetorno }, JsonRequestBehavior.AllowGet);
+        }
+
 
         [HttpPost]
         public JsonResult ActualizarEstadoFinalizadoConsulta(string citaCodigo)
