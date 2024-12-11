@@ -165,15 +165,9 @@ create table Gestion.cita
     citaEstado nchar(1) default 'P',
     citaFechaHora datetime not null,
     citaNotificacionCodigo nchar(8),
-    --citaPacienteCodigo nchar(10),
-    --citaTipoConsultaCodigo nchar(10),
-	--citaMedicoCodigo nchar(10),
 
     constraint CitaPK primary key (citaCodigo),
-    --constraint CitaPacienteFK foreign key (citaPacienteCodigo) references Salud.pacientes(pacienteCodigo),
     constraint CitaNotificacionFK foreign key (citaNotificacionCodigo) references Gestion.notificacion(notificacionCodigo),
-	--constraint CitaMedicoFK foreign key (citaMedicoCodigo) references Administracion.medico(medicoCodigo),
-    --constraint CitaTipoConsultaFK foreign key (citaTipoConsultaCodigo) references Gestion.tipoConsulta(tipoConsultaCodigo),
     constraint CitaEstadoCK check (citaEstado in ('P', 'N', 'A', 'C', 'T')),-- P: pendiente, N: No Asistida, A: atendida, C: cancelada , T:'Atendiendo'
     )
 go
@@ -185,14 +179,11 @@ create table Gestion.Consulta (
     consultaCodigo nchar(10),
     consultacitaCodigo nchar(10),
     consultaFechaHoraFinal datetime null,
-    --consultaMotivo nvarchar(255) null,
-	--HistorialClinicoCodigo nchar(10),
 	medicoCodigo nchar(10),
 	tipoConsultaCodigo nchar(10),
 	pacienteCodigo NCHAR(10)
     constraint ConsultaPK primary key (consultaCodigo),
     constraint consultacitaCodigoFK foreign key (consultacitaCodigo) references  Gestion.cita(citaCodigo),
-	--constraint HistorialClinicoCodigoFK foreign key (HistorialClinicoCodigo) references Salud.HistoriaClinica(historialClinicoCodigo),
 	constraint medicoCodigo foreign key(medicoCodigo) references Administracion.medico(medicoCodigo),
 	constraint tipoConsultaCodigo foreign key(tipoConsultaCodigo) references Gestion.tipoConsulta(tipoConsultaCodigo),
 	constraint pacienteCodigoFK foreign key (pacienteCodigo) references Salud.pacientes(pacienteCodigo),

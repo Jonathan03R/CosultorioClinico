@@ -928,7 +928,7 @@ Este procedimiento me lista la agenda de un medico en una fecha elegida
  12/11/2024  Usuario       Creación del procedimiento con ajuste a nchar(10)
 **************************************************************************************/
 --EXEC pro_Listar_AgendaMedico @medicoCodigo = 'MED0000004', @fecha = '2024-12-21';
-
+--EXEC pro_Listar_AgendaMedico @medicoCodigo = 'MED0000004', @fecha = '2024-12-21'
 
 CREATE OR ALTER PROCEDURE pro_Listar_AgendaMedico
     @medicoCodigo nchar(10),
@@ -986,21 +986,16 @@ BEGIN
         i.HoraFin,
         COALESCE(c.citaEstado, 'Libre') AS estado,
         c.citaCodigo,
-        c.citaPacienteCodigo,
-        c.citaMedicoCodigo,
-        ISNULL(m.medicoNombre + ' ' + m.medicoApellido, 'N/A') AS nombreMedico,
-        ISNULL(p.pacienteNombreCompleto, 'N/A') AS pacienteNombreCompleto
+        c.citaNotificacionCodigo,
+        ISNULL(m.medicoNombre + ' ' + m.medicoApellido, 'N/A') AS nombreMedico
     FROM 
         #IntervalosTiempo i
     LEFT JOIN 
-        Gestion.cita c ON c.citaMedicoCodigo = @medicoCodigo 
-                       AND CONVERT(date, c.citaFechaHora) = @fecha
+        Gestion.cita c ON CONVERT(date, c.citaFechaHora) = @fecha
                        AND CONVERT(time, c.citaFechaHora) >= i.HoraInicio
                        AND CONVERT(time, c.citaFechaHora) < DATEADD(minute, @intervaloMinutos, i.HoraInicio)
     LEFT JOIN 
-        Administracion.Medico m ON c.citaMedicoCodigo = m.medicoCodigo
-    LEFT JOIN 
-        Salud.Pacientes p ON c.citaPacienteCodigo = p.pacienteCodigo
+        Administracion.Medico m ON c.citaNotificacionCodigo = m.medicoCodigo
     ORDER BY 
         i.HoraInicio;
 
@@ -1008,6 +1003,8 @@ BEGIN
     DROP TABLE #IntervalosTiempo;
 END
 GO
+
+
 
 --EXEC pro_Listar_AgendaMedico @medicoCodigo = 'MED0000004', @fecha = '2024-12-21';
 
