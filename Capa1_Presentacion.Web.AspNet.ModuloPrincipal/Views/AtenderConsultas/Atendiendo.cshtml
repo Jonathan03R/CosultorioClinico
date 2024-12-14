@@ -11,8 +11,8 @@
 <div class="row">
     @* Numero de expediente card *@
     <div class="col-3 p-4  Expediente">
-        <div class="border p-2">
-            <h5>Expediente Nro.</h5>
+        <div class="border shadow-sm rounded-3 p-2 d-flex flex-column justify-content-center align-items-center" style="height: 320px;" >
+            <h5 class="my-3" >Expediente Nro.</h5>
             <p id="HistoriaClinica"></p>
             <svg width="143" height="157" viewBox="0 0 143 157" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <ellipse cx="71.5822" cy="78.387" rx="71.0127" ry="77.7226" fill="url(#pattern0_229_9829)" />
@@ -48,10 +48,10 @@
 </div>
 <hr />
 <div class="row">
-    <div class="col-3 p-4">
-        <div class="border p-3">
-            <h4 class="mb-3">Consulta</h4>
-            <input id="CodigoConsultaInputMain" type="text" name="name" value="" />
+    <div class="col-3 p-4 pt-5 ">
+        <div class="border p-3 mt-5 rounded-3 shadow-sm">
+            <h4 class="mb-3 text-center">Consulta</h4>
+            <input id="CodigoConsultaInputMain" type="hidden" name="name" value="" />
             <div>
                 <label>Fecha:</label>
                 <p class="ms-3" id="fechaCita"></p>
@@ -127,7 +127,7 @@
                 url: '@Url.Action("ActualizarEstadoFinalizadoConsulta", "AtenderConsultas")',
                 data: { citaCodigo: citaCodigo },
                 success: function (response) {
-                    alert(response.mensaje);
+                    //alert(response.mensaje);
                     window.location.href = '@Url.Action("Consultas", "AtenderConsultas")';
                 },
                 error: function (xhr, status, error) {
@@ -140,7 +140,7 @@
                 url: '@Url.Action("ActualizarHoraFinalConsulta", "AtenderConsultas")',
                 data: { codigoConsulta: consultaCodigo },
                 success: function (response) {
-                    alert(response.mensaje);
+                    //alert(response.mensaje);
                 },
                 error: function (xhr, status, error) {
                     alert("Hubo un problema al actualizar la fecha y hora final.");
