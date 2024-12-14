@@ -3,40 +3,38 @@
         <div class="col-12">
             <!-- Formulario para Agregar Diagnóstico -->
             <form id="formularioDiagnostico">
-                <!-- Campo oculto para el código de la consulta --> <input type="text" id="CodigoConsultaInput" name="codConsulta" value="">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <div class="row">
-                            <!-- Campo para Código CIE-11 -->
-                            <div class="col-md-6 mb-3">
-                                <label for="cie11Codigo" class="form-label">Código CIE-11</label>
+                <input type="hidden" id="CodigoConsultaInput" name="codConsulta" value="">
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Campo para Código CIE-11 -->
+                        <div class="col-md-6 mb-3">
+                            <label for="cie11Codigo" class="form-label">Código CIE-11</label>
+                            <div class="d-flex">
                                 <input type="text" id="cie11Codigo" name="cie11Codigo" class="form-control" placeholder="Selecciona un código CIE-11" readonly />
+                                <button type="button" id="btnSeleccionarCIE11" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalSeleccionarCIE11">
+                                    Buscar CIE-11
+                                </button>
                             </div>
-
-                            <!-- Campo para Descripción del Diagnóstico -->
-                            <div class="col-md-6 mb-3">
-                                <label for="descripcionDiagnostico" class="form-label">Descripción del Diagnóstico</label>
-                                <input type="text" id="descripcionDiagnostico" class="form-control" placeholder="Selecciona un diagnóstico" />
-                            </div>
-
                         </div>
-
-                        <!-- Botón para Seleccionar CIE-11 -->
-                        <div class="d-flex justify-content-end">
-                            <button type="button" id="btnSeleccionarCIE11" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalSeleccionarCIE11">
-                                Buscar CIE-11
-                            </button>
+                        <!-- Campo para Descripción del Diagnóstico -->
+                        <div class="col-md-6 mb-3">
+                            <label for="descripcionDiagnostico" class="form-label">Descripción del Diagnóstico</label>
+                            <textarea id="descripcionDiagnostico" class="form-control" rows="4" placeholder="Selecciona un diagnóstico"></textarea>
                         </div>
-
-                        <!-- Botón para Guardar el Diagnóstico -->
-                        <div class="d-flex justify-content-end">
-                            <button type="submit" class="btn btn-success mt-3">Guardar Diagnóstico</button>
-                        </div>
+                    </div>
+                    <!-- Botones para agregar y guardar cambios -->
+                    <div class="d-flex justify-content-end">
+                        <button type="button" id="btnAgregarDiagnostico" class="btn btn-primary mt-3">Agregar Diagnóstico</button>
+                        <button type="button" id="btnEnviarDiagnosticos" class="btn btn-success mt-3 ms-2">Enviar Diagnósticos</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
+</div>
+<!-- Contenedor para mostrar los detalles registrados -->
+<div id="detallesDiagnosticos" class="mt-4">
+    <!-- Aquí se mostrarán los detalles registrados dinámicamente -->
 </div>
 
 <!-- Modal -->
@@ -73,7 +71,8 @@
 <script>
     $(document).ready(function () {
         let debounceTimer;
-
+        inicializarEventosDiagnostico(); // Cargar diagnósticos desde localStorage al iniciar 
+        cargarDiagnosticosDesdeLocalStorage();
         // Filtrar datos mientras se escribe
         $('#terminoBusqueda').on('input', function () {
             clearTimeout(debounceTimer);
@@ -167,17 +166,98 @@
         });
     });
 
-    function limpiarCamposDiagnostico() {
-        // Obtiene todos los elementos de entrada dentro del formulario
-        const inputs = document.querySelectorAll('#formularioDiagnostico input');
+    function inicializarEventosDiagnostico() {
+        $('#btnAgregarDiagnostico').on('click', function (e) {
+            e.preventDefault();
+            agregarDiagnostico();
+        });
 
-        // Itera sobre cada campo y lo limpia, excepto el campo con id="CodigoConsultaInput"
-        inputs.forEach(function (input) {
-            if (input.id !== "CodigoConsultaInput") {
-                input.value = ''; // Limpia el valor del campo
+        $('#btnEnviarDiagnosticos').on('click', function (e) {
+            e.preventDefault();
+            enviarDiagnosticos();
+        });
+    }
+
+    function agregarDiagnostico() {
+        const diagnosticoData = obtenerDatosFormularioDiagnostico();
+        mostrarDiagnosticosRegistrados(diagnosticoData);
+        guardarDiagnosticosEnLocalStorage(diagnosticoData);
+        limpiarCamposDiagnostico();
+    }
+
+    function enviarDiagnosticos() {
+        let diagnosticos = JSON.parse(localStorage.getItem('diagnosticos')) || [];
+        if (diagnosticos.length === 0) {
+            alert('No hay diagnósticos para enviar.');
+            return;
+        }
+
+        diagnosticos.forEach(diagnostico => {
+            $.ajax({
+                url: '/AtenderConsultas/RegistrarDiagnostico',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(diagnostico),
+                success: function (response) {
+                    if (response.transaccionExitosa) {
+                        alert(response.mensaje);
+                    } else {
+                        alert('Error: ' + response.mensaje);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert("Error al registrar el diagnóstico.");
+                }
+            });
+        });
+
+        localStorage.removeItem('diagnosticos');
+        $('#detallesDiagnosticos').empty();
+    }
+
+    function obtenerDatosFormularioDiagnostico() {
+        return {
+            DiagnosticoCie11: $('#cie11Codigo').val(),
+            DiagnosticoDescripcion: $('#descripcionDiagnostico').val(),
+            DiagnosticoconsultaCodigo: $('#CodigoConsultaInput').val(),
+        };
+    }
+
+    function mostrarDiagnosticosRegistrados(diagnosticoData) {
+        const diagnosticosHTML = `
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title">Diagnósticos Registrados</h5>
+                <p><strong>Código CIE-11:</strong> ${diagnosticoData.DiagnosticoCie11}</p>
+                <p><strong>Descripción:</strong> ${diagnosticoData.DiagnosticoDescripcion}</p>
+            </div>
+        </div>
+    `;
+        $('#detallesDiagnosticos').append(diagnosticosHTML);
+    }
+
+    function guardarDiagnosticosEnLocalStorage(diagnosticoData) {
+        let diagnosticosGuardados = JSON.parse(localStorage.getItem('diagnosticos')) || [];
+        diagnosticosGuardados.push(diagnosticoData);
+        localStorage.setItem('diagnosticos', JSON.stringify(diagnosticosGuardados));
+    }
+
+    function cargarDiagnosticosDesdeLocalStorage() {
+        let diagnosticosGuardados = JSON.parse(localStorage.getItem('diagnosticos')) || [];
+        diagnosticosGuardados.forEach(diagnostico => {
+            mostrarDiagnosticosRegistrados(diagnostico);
+        });
+    }
+
+    function limpiarCamposDiagnostico() {
+        const inputsYTextareas = document.querySelectorAll('#formularioDiagnostico input, #formularioDiagnostico textarea');
+        inputsYTextareas.forEach(function (element) {
+            if (element.id !== "CodigoConsultaInput") {
+                element.value = '';
             }
         });
     }
+
 
 </script>
 

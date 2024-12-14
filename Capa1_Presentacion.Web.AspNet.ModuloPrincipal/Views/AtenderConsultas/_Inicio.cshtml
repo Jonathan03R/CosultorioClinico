@@ -3,8 +3,8 @@
         <div class="col-12">
             <!-- Formulario con Text Areas -->
             <form id="formularioConsulta">
-                <div class="card shadow-sm">
-                    <input id="CodigoConsultaInput" type="text" name="codConsulta" value="" />
+                <div class=" px-5">
+                    <input id="CodigoConsultaInput" type="hidden" name="codConsulta" value="" />
                     <div class="card-body">
                         <div class="row">
                             <!-- Motivo Consulta (Texto 1) -->
@@ -34,9 +34,10 @@
                             </div>
                         </div>
 
-                        <!-- Botón para guardar los cambios -->
+                        <!-- Botones para agregar y enviar los cambios -->
                         <div class="d-flex justify-content-end">
-                            <button type="submit" class="btn btn-success mt-3">Guardar Cambios</button>
+                            <button type="button" id="btnAgregarDetalle" class="btn btn-primary mt-3">Agregar Detalle</button>
+                            <button type="button" id="btnEnviarDetalles" class="btn btn-success mt-3 ms-2">Enviar Detalles</button>
                         </div>
                     </div>
                 </div>
@@ -50,17 +51,54 @@
 </div>
 
 <script>
-$(document).ready(function () {
-    function enviarDetallesConsulta() {
-        const detallesConsulta = {
-            DetallesConsultaMotivoConsulta: $('#motivoConsulta').val(),
-            DetallesConsultaHistoriaEnfermedad: $('#historiaEnfermedades').val(),
-            DetallesConsultaRevisiones: $('#revisionSistema').val(),
-            DetallesConsultaEvaluacionPsico: $('#evaluacionPsicologica').val(),
-            CodigoConsulta: $('#CodigoConsultaInput').val(),
-        };
+    $(document).ready(function () {
+        inicializarEventosConsulta();
+
+        // Cargar detalles desde localStorage al iniciar
+        cargarDetallesDesdeLocalStorage();
+    });
+
+    function inicializarEventosConsulta() {
+        $('#btnAgregarDetalle').on('click', function (e) {
+            e.preventDefault();
+            agregarDetalleConsulta();
+        });
+
+        $('#btnEnviarDetalles').on('click', function (e) {
+            e.preventDefault();
+            enviarDetallesAcumulados();
+        });
+    }
+
+    function agregarDetalleConsulta() {
+        const detallesConsulta = obtenerDatosFormularioConsulta();
         console.log('Detalles de la consulta capturados:', detallesConsulta);  // Punto de depuración
 
+        // Agregar los detalles al contenedor
+        mostrarDetallesRegistrados(detallesConsulta);
+
+        // Almacenar los detalles en localStorage
+        guardarDetallesEnLocalStorage(detallesConsulta);
+
+        limpiarCamposConsulta();
+    }
+
+    function enviarDetallesAcumulados() {
+        let detallesConsultas = JSON.parse(localStorage.getItem('detallesConsultas')) || [];
+        if (detallesConsultas.length === 0) {
+            alert('No hay detalles para enviar.');
+            return;
+        }
+
+        detallesConsultas.forEach(detallesConsulta => {
+            enviarDetallesConsulta(detallesConsulta);
+        });
+
+        localStorage.removeItem('detallesConsultas');
+        $('#detallesRegistrados').empty();
+    }
+
+    function enviarDetallesConsulta(detallesConsulta) {
         $.ajax({
             url: '/AtenderConsultas/RegistrarDetallesConsulta',
             type: 'POST',
@@ -70,8 +108,7 @@ $(document).ready(function () {
                 console.log('Respuesta del servidor:', response);  // Punto de depuración
                 if (response.transaccionExitosa) {
                     alert(response.mensaje);
-                    limpiarCamposConsulta(); 
-                    //mostrarDetallesRegistrados(detallesConsulta);
+                    // Puedes añadir código adicional aquí si deseas hacer algo más después de cada éxito
                 } else {
                     alert('Error: ' + response.mensaje);
                 }
@@ -83,37 +120,51 @@ $(document).ready(function () {
         });
     }
 
-    //function mostrarDetallesRegistrados(detallesConsulta) {
-    //    const detallesHTML = `
-    //        <div class="card mt-3">
-    //            <div class="card-body">
-    //                <h5 class="card-title">Detalles Registrados</h5>
-    //                <p><strong>Motivo de la Consulta:</strong> ${detallesConsulta.DetallesConsultaMotivoConsulta}</p>
-    //                <p><strong>Historia de Enfermedades:</strong> ${detallesConsulta.DetallesConsultaHistoriaEnfermedad}</p>
-    //                <p><strong>Revisión por el Sistema:</strong> ${detallesConsulta.DetallesConsultaRevisiones}</p>
-    //                <p><strong>Evaluación Psicológica:</strong> ${detallesConsulta.DetallesConsultaEvaluacionPsico}</p>
-    //            </div>
-    //        </div>
-    //    `;
-    //    $('#detallesRegistrados').html(detallesHTML);
-    //}
+    function obtenerDatosFormularioConsulta() {
+        return {
+            DetallesConsultaMotivoConsulta: $('#motivoConsulta').val(),
+            DetallesConsultaHistoriaEnfermedad: $('#historiaEnfermedades').val(),
+            DetallesConsultaRevisiones: $('#revisionSistema').val(),
+            DetallesConsultaEvaluacionPsico: $('#evaluacionPsicologica').val(),
+            CodigoConsulta: $('#CodigoConsultaInput').val(),
+        };
+    }
 
-    // Asegúrate de que el formulario no se envíe por defecto
-    $('#formularioConsulta').on('submit', function (e) {
-        e.preventDefault();  // Esto debe evitar que la página se recargue
-        enviarDetallesConsulta();  // Llamada a la función para enviar los datos
-    });
-});
+    function mostrarDetallesRegistrados(detallesConsulta) {
+        const detallesHTML = `
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title">Detalles Registrados</h5>
+                <p><strong>Motivo de la Consulta:</strong> ${detallesConsulta.DetallesConsultaMotivoConsulta}</p>
+                <p><strong>Historia de Enfermedades:</strong> ${detallesConsulta.DetallesConsultaHistoriaEnfermedad}</p>
+                <p><strong>Revisión por el Sistema:</strong> ${detallesConsulta.DetallesConsultaRevisiones}</p>
+                <p><strong>Evaluación Psicológica:</strong> ${detallesConsulta.DetallesConsultaEvaluacionPsico}</p>
+            </div>
+        </div>
+    `;
+        $('#detallesRegistrados').append(detallesHTML);
+    }
 
+    function guardarDetallesEnLocalStorage(detallesConsulta) {
+        let detallesGuardados = JSON.parse(localStorage.getItem('detallesConsultas')) || [];
+        detallesGuardados.push(detallesConsulta);
+        localStorage.setItem('detallesConsultas', JSON.stringify(detallesGuardados));
+    }
 
- function limpiarCamposConsulta() {
-     const inputsYTextareas = document.querySelectorAll('#formularioConsulta input, #formularioConsulta textarea');
+    function cargarDetallesDesdeLocalStorage() {
+        let detallesGuardados = JSON.parse(localStorage.getItem('detallesConsultas')) || [];
+        detallesGuardados.forEach(detalle => {
+            mostrarDetallesRegistrados(detalle);
+        });
+    }
 
-     inputsYTextareas.forEach(function (element) {
-         if (element.id !== "CodigoConsultaInput") {
-             element.value = ''; 
-         }
-     });
- }
+    function limpiarCamposConsulta() {
+        const inputsYTextareas = document.querySelectorAll('#formularioConsulta input, #formularioConsulta textarea');
+        inputsYTextareas.forEach(function (element) {
+            if (element.id !== "CodigoConsultaInput") {
+                element.value = '';
+            }
+        });
+    }
 
 </script>

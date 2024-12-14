@@ -3,69 +3,89 @@
         <div class="col-12">
             <!-- Formulario para Agregar Receta Médica -->
             <form id="formularioRecetaMedica">
-                <input id="CodigoConsultaInput" type="text" name="codConsulta" value="" />
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <div class="row">
-                            <!-- Descripción de la Receta -->
-                            <div class="col-md-12 mb-3">
-                                <label for="recetaDescripcion" class="form-label">Descripción de la Receta</label>
-                                <textarea id="recetaDescripcion" class="form-control" rows="4" placeholder="Ingrese la descripción de la receta" required></textarea>
-                            </div>
+                <input id="CodigoConsultaInput" type="hidden" name="codConsulta" value="" />
+                <div class="py-5">
+                    <div class="row">
+                        <!-- Descripción de la Receta -->
+                        <div class="col-md-12 mb-3">
+                            <label for="recetaDescripcion" class="form-label">Descripción de la Receta</label>
+                            <textarea id="recetaDescripcion" class="form-control" rows="4" placeholder="Ingrese la descripción de la receta" required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Tratamiento de la Receta -->
+                        <div class="col-md-6 mb-3">
+                            <label for="recetaTratamiento" class="form-label">Tratamiento</label>
+                            <textarea id="recetaTratamiento" class="form-control" rows="3" placeholder="Ingrese el tratamiento" required></textarea>
                         </div>
 
-                        <div class="row">
-                            <!-- Tratamiento de la Receta -->
-                            <div class="col-md-6 mb-3">
-                                <label for="recetaTratamiento" class="form-label">Tratamiento</label>
-                                <textarea id="recetaTratamiento" class="form-control" rows="3" placeholder="Ingrese el tratamiento" required></textarea>
-                            </div>
-
-                            <!-- Recomendaciones de la Receta -->
-                            <div class="col-md-6 mb-3">
-                                <label for="recetaRecomendaciones" class="form-label">Recomendaciones</label>
-                                <textarea id="recetaRecomendaciones" class="form-control" rows="3" placeholder="Ingrese las recomendaciones" required></textarea>
-                            </div>
+                        <!-- Recomendaciones de la Receta -->
+                        <div class="col-md-6 mb-3">
+                            <label for="recetaRecomendaciones" class="form-label">Recomendaciones</label>
+                            <textarea id="recetaRecomendaciones" class="form-control" rows="3" placeholder="Ingrese las recomendaciones" required></textarea>
                         </div>
+                    </div>
 
-                        <!-- Botones de acción -->
-                        <div class="d-flex justify-content-end">
-                            <button type="submit" class="btn btn-primary mt-3">Guardar Receta</button>
-                            <button type="button" id="btnFinalizar" class="btn btn-success mt-3 ms-2" data-bs-toggle="modal" data-bs-target="#modalConfirmacion">Finalizar</button>
+                    <!-- Botones de acción -->
+                    <div class="d-flex justify-content-end">
+                        <button type="button" id="btnAgregarReceta" class="btn btn-primary mt-3">Agregar Receta</button>
+                        <button type="button" id="btnEnviarRecetas" class="btn btn-success mt-3 ms-2">Enviar Recetas</button>
+                        <button type="button" id="btnFinalizar" class="btn btn-success mt-3 ms-2" data-bs-toggle="modal" data-bs-target="#modalConfirmacion">Finalizar</button>
 
-                        </div>
                     </div>
                 </div>
             </form>
         </div>
     </div>
 </div>
+<!-- Contenedor para mostrar los detalles registrados -->
+<div id="detallesRecetas" class="mt-4">
+    <!-- Aquí se mostrarán los detalles registrados dinámicamente -->
+</div>
+
 
 <script>
+    $(document).ready(function () {
+        inicializarEventosRecetaMedica();
+        cargarRecetasDesdeLocalStorage();
+    });
 
-    document.getElementById("formularioRecetaMedica").addEventListener("submit", function(event) {
-    event.preventDefault(); // Prevenir que el formulario se envíe de forma tradicional
-    var recetaDescripcion = document.getElementById("recetaDescripcion").value;
-    var recetaTratamiento = document.getElementById("recetaTratamiento").value;
-    var recetaRecomendaciones = document.getElementById("recetaRecomendaciones").value;
-    var codigoConsulta = document.getElementById("CodigoConsultaInput").value;
+    function inicializarEventosRecetaMedica() {
+        $('#btnAgregarReceta').on('click', function (e) {
+            e.preventDefault();
+            agregarReceta();
+        });
 
-    var recetaData = {
-        recetaDescripcion: recetaDescripcion,
-        recetaTratamiento: recetaTratamiento,
-        recetaRecomendaciones: recetaRecomendaciones,
-        codigoConsulta: codigoConsulta
-    };
+        $('#btnEnviarRecetas').on('click', function (e) {
+            e.preventDefault();
+            enviarRecetas();
+        });
+    }
 
+    function agregarReceta() {
+    const recetaData = obtenerDatosFormularioReceta();
+    mostrarRecetasRegistradas(recetaData);
+    guardarRecetasEnLocalStorage(recetaData);
+    limpiarCamposRecetaMedica();
+}
+
+function enviarRecetas() {
+    let recetas = JSON.parse(localStorage.getItem('recetas')) || [];
+    if (recetas.length === 0) {
+        alert('No hay recetas para enviar.');
+        return;
+    }
+
+    recetas.forEach(receta => {
         $.ajax({
             type: "POST",
             url: '@Url.Action("RegistrarRecetaMedica", "AtenderConsultas")',
-            data: JSON.stringify(recetaData),
+            data: JSON.stringify(receta),
             contentType: "application/json",
             success: function(response) {
                 if (response.transaccionExitosa) {
                     alert(response.mensaje);
-                    limpiarCamposRecetaMedica();
                 } else {
                     alert("Error: " + response.mensaje);
                 }
@@ -75,14 +95,56 @@
             }
         });
     });
-   
 
-    function limpiarCamposRecetaMedica() {
-        const inputsYTextareas = document.querySelectorAll('#formularioRecetaMedica input, #formularioRecetaMedica textarea');
-        inputsYTextareas.forEach(function (element) {
-            if (element.id !== "CodigoConsultaInput") {
-                element.value = ''; // Limpia el valor del campo
-            }
-        });
-    }
+    localStorage.removeItem('recetas');
+    $('#detallesRecetas').empty();
+}
+
+function obtenerDatosFormularioReceta() {
+    return {
+        recetaDescripcion: $('#recetaDescripcion').val(),
+        recetaTratamiento: $('#recetaTratamiento').val(),
+        recetaRecomendaciones: $('#recetaRecomendaciones').val(),
+        codigoConsulta: $('#CodigoConsultaInput').val(),
+    };
+}
+
+function mostrarRecetasRegistradas(recetaData) {
+    const recetasHTML = `
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title">Recetas Registradas</h5>
+                <p><strong>Descripción:</strong> ${recetaData.recetaDescripcion}</p>
+                <p><strong>Tratamiento:</strong> ${recetaData.recetaTratamiento}</p>
+                <p><strong>Recomendaciones:</strong> ${recetaData.recetaRecomendaciones}</p>
+            </div>
+        </div>
+    `;
+    $('#detallesRecetas').append(recetasHTML);
+}
+
+function guardarRecetasEnLocalStorage(recetaData) {
+    let recetasGuardadas = JSON.parse(localStorage.getItem('recetas')) || [];
+    recetasGuardadas.push(recetaData);
+    localStorage.setItem('recetas', JSON.stringify(recetasGuardadas));
+}
+
+function cargarRecetasDesdeLocalStorage() {
+    let recetasGuardadas = JSON.parse(localStorage.getItem('recetas')) || [];
+    recetasGuardadas.forEach(receta => {
+        mostrarRecetasRegistradas(receta);
+    });
+}
+
+function limpiarCamposRecetaMedica() {
+    const inputsYTextareas = document.querySelectorAll('#formularioRecetaMedica input, #formularioRecetaMedica textarea');
+    inputsYTextareas.forEach(function (element) {
+        if (element.id !== "CodigoConsultaInput") {
+            element.value = ''; // Limpia el valor del campo
+        }
+    });
+}
+
+
+
 </script>
